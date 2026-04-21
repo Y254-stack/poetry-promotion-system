@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.poetry.features.home.ui.HomeFragment"
+        android:label="首页">
+        <action
+            android:id="@+id/action_home_to_searchResult"
+            app:destination="@id/searchResultFragment" />
+        <action
+            android:id="@+id/action_home_to_poemDetail"
+            app:destination="@id/poemDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.poetry.features.auth.ui.LoginFragment"
+        android:label="登录">
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_login_to_forgotPassword"
+            app:destination="@id/forgotPasswordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.poetry.features.auth.ui.RegisterFragment"
+        android:label="注册" />
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.poetry.features.auth.ui.ForgotPasswordFragment"
+        android:label="找回密码" />
+
+    <fragment
+        android:id="@+id/userCenterFragment"
+        android:name="com.example.poetry.features.user.ui.UserCenterFragment"
+        android:label="用户中心">
+        <action
+            android:id="@+id/action_user_to_settings"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_user_to_studyDashboard"
+            app:destination="@id/studyDashboardFragment" />
+        <action
+            android:id="@+id/action_user_to_myCreations"
+            app:destination="@id/myCreationsFragment" />
+        <action
+            android:id="@+id/action_user_to_myFavorites"
+            app:destination="@id/myFavoritesFragment" />
+        <action
+            android:id="@+id/action_user_to_myFollows"
+            app:destination="@id/myFollowsFragment" />
+        <action
+            android:id="@+id/action_user_to_login"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.poetry.features.user.ui.SettingsFragment"
+        android:label="设置" />
+
+    <fragment
+        android:id="@+id/studyDashboardFragment"
+        android:name="com.example.poetry.features.user.ui.StudyDashboardFragment"
+        android:label="学习进度" />
+
+    <fragment
+        android:id="@+id/myCreationsFragment"
+        android:name="com.example.poetry.features.user.ui.MyCreationsFragment"
+        android:label="我的创作" />
+
+    <fragment
+        android:id="@+id/myFavoritesFragment"
+        android:name="com.example.poetry.features.user.ui.MyFavoritesFragment"
+        android:label="我的收藏" />
+
+    <fragment
+        android:id="@+id/myFollowsFragment"
+        android:name="com.example.poetry.features.user.ui.MyFollowsFragment"
+        android:label="我的关注" />
+
+    <fragment
+        android:id="@+id/poemDetailFragment"
+        android:name="com.example.poetry.features.poem.ui.PoemDetailFragment"
+        android:label="诗词详情">
+        <action
+            android:id="@+id/action_poemDetail_to_authorDetail"
+            app:destination="@id/authorDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authorDetailFragment"
+        android:name="com.example.poetry.features.poem.ui.AuthorDetailFragment"
+        android:label="作者详情" />
+
+    <fragment
+        android:id="@+id/searchResultFragment"
+        android:name="com.example.poetry.features.poem.ui.SearchResultFragment"
+        android:label="搜索结果">
+        <action
+            android:id="@+id/action_searchResult_to_poemDetail"
+            app:destination="@id/poemDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/learningHubFragment"
+        android:name="com.example.poetry.features.learning.ui.LearningHubFragment"
+        android:label="趣味学习">
+        <action
+            android:id="@+id/action_learning_to_fillBlank"
+            app:destination="@id/fillBlankFragment" />
+        <action
+            android:id="@+id/action_learning_to_chain"
+            app:destination="@id/chainFragment" />
+        <action
+            android:id="@+id/action_learning_to_feihua"
+            app:destination="@id/feihuaFragment" />
+        <action
+            android:id="@+id/action_learning_to_quiz"
+            app:destination="@id/quizFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fillBlankFragment"
+        android:name="com.example.poetry.features.learning.ui.FillBlankFragment"
+        android:label="选词填空" />
+
+    <fragment
+        android:id="@+id/chainFragment"
+        android:name="com.example.poetry.features.learning.ui.ChainFragment"
+        android:label="诗词接龙" />
+
+    <fragment
+        android:id="@+id/feihuaFragment"
+        android:name="com.example.poetry.features.learning.ui.FeihuaFragment"
+        android:label="飞花令" />
+
+    <fragment
+        android:id="@+id/quizFragment"
+        android:name="com.example.poetry.features.learning.ui.QuizFragment"
+        android:label="诗词小测" />
+
+    <fragment
+        android:id="@+id/communitySquareFragment"
+        android:name="com.example.poetry.features.community.ui.CommunitySquareFragment"
+        android:label="内容广场">
+        <action
+            android:id="@+id/action_community_to_createPost"
+            app:destination="@id/createPostFragment" />
+        <action
+            android:id="@+id/action_community_to_postDetail"
+            app:destination="@id/postDetailFragment" />
+        <action
+            android:id="@+id/action_community_to_notifications"
+            app:destination="@id/notificationsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.poetry.features.community.ui.CreatePostFragment"
+        android:label="发帖" />
+
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.poetry.features.community.ui.PostDetailFragment"
+        android:label="帖子详情" />
+
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.example.poetry.features.community.ui.NotificationsFragment"
+        android:label="通知" />
+</navigation>
