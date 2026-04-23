@@ -36,7 +36,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupRecommendationList() {
         recommendationAdapter = DailyRecommendationAdapter {
-            // TODO: 这里接入真实诗词详情路由参数
             findNavController().navigate(R.id.action_home_to_poemDetail)
         }
 
@@ -50,8 +49,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupCategoryList() {
         categoryAdapter = CategoryAdapter {
-            // TODO: 这里接入真实分类检索逻辑
-            findNavController().navigate(R.id.action_home_to_searchResult)
+            findNavController().navigate(R.id.action_home_to_searchEntry)
         }
 
         binding.categoryRecycler.apply {
@@ -73,8 +71,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun bindActions() {
         binding.searchEntryCard.setOnClickListener {
-            // TODO: 这里接入真实搜索输入与提交逻辑
-            findNavController().navigate(R.id.action_home_to_searchResult)
+            findNavController().navigate(R.id.action_home_to_searchEntry)
         }
     }
 

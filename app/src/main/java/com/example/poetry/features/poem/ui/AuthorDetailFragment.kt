@@ -2,6 +2,7 @@ package com.example.poetry.features.poem.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -26,8 +27,10 @@ class AuthorDetailFragment : Fragment(R.layout.fragment_author_detail) {
         _binding = FragmentAuthorDetailBinding.bind(view)
 
         worksAdapter = PoemSummaryAdapter {
-            // TODO: 传递真实代表作参数
-            findNavController().navigateUp()
+            findNavController().navigate(
+                R.id.poemDetailFragment,
+                bundleOf("workId" to it.workId)
+            )
         }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())

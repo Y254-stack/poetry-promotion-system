@@ -2,6 +2,7 @@ package com.example.poetry.features.poem.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -26,7 +27,10 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
         _binding = FragmentPoemDetailBinding.bind(view)
 
         relatedAdapter = PoemSummaryAdapter {
-            // TODO: 传递真实相关推荐参数
+            findNavController().navigate(
+                R.id.poemDetailFragment,
+                bundleOf("workId" to it.workId)
+            )
         }
         binding.relatedRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -35,14 +39,20 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
             isNestedScrollingEnabled = false
         }
 
+        val workId = arguments?.getLong("workId", 0L) ?: 0L
+        if (workId > 0) {
+            viewModel.loadPoemDetail(workId)
+        }
+
         viewModel.poemDetail.observe(viewLifecycleOwner) { detail ->
             binding.titleText.text = detail.title
             binding.authorButton.text = "${detail.author} · ${detail.dynasty}"
             binding.contentText.text = detail.content
-            binding.translationText.text = detail.translation
-            binding.annotationText.text = detail.annotation
+            binding.translationText.text = detail.translation.ifBlank { "暂无译文" }
+            binding.annotationText.text = detail.annotation.ifBlank { "暂无注释" }
+            binding.appreciationText.text = detail.appreciation.ifBlank { "暂无赏析" }
         }
-        viewModel.searchResults.observe(viewLifecycleOwner) { relatedAdapter.submitList(it) }
+        viewModel.representativeWorks.observe(viewLifecycleOwner) { relatedAdapter.submitList(it) }
 
         binding.authorButton.setOnClickListener {
             findNavController().navigate(R.id.action_poemDetail_to_authorDetail)
