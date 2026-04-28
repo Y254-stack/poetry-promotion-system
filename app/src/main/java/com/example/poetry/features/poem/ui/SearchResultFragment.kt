@@ -31,6 +31,7 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     private var selectedTagIds: MutableList<Long> = mutableListOf()
     private var selectedTagNames: MutableList<String> = mutableListOf()
     private var titleQuery: String = ""
+    private var currentSearchSubType: String = "TITLE" // TITLE, AUTHOR, ALL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,13 +60,16 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             }
             SearchType.TITLE -> {
                 binding.sortToggleGroup.isVisible = false
+                binding.searchTypeToggleGroup.isVisible = true
+                binding.searchTypeToggleGroup.check(R.id.searchByTitleButton)
                 binding.searchInputLayout.isVisible = true
                 binding.searchButton.isVisible = true
                 binding.selectedTagChipGroup.isVisible = false
                 binding.searchInput.setText(titleQuery)
+                setupSearchTypeToggle()
                 bindTitleSearchState()
                 if (titleQuery.isNotEmpty()) {
-                    viewModel.searchByTitle(titleQuery, page = 1)
+                    performSearch(titleQuery, 1)
                 }
             }
         }
@@ -107,7 +111,7 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                 SearchType.TITLE -> {
                     val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
                     if (state.currentPage > 1) {
-                        viewModel.searchByTitle(titleQuery, page = state.currentPage - 1)
+                        performSearch(titleQuery, state.currentPage - 1)
                     }
                 }
             }
@@ -124,7 +128,7 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                 SearchType.TITLE -> {
                     val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
                     if (state.currentPage < state.totalPages) {
-                        viewModel.searchByTitle(titleQuery, page = state.currentPage + 1)
+                        performSearch(titleQuery, state.currentPage + 1)
                     }
                 }
             }
@@ -136,8 +140,42 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             val query = binding.searchInput.text.toString().trim()
             if (query.isNotEmpty()) {
                 titleQuery = query
-                viewModel.searchByTitle(query, page = 1)
+                performSearch(query, 1)
             }
+        }
+    }
+
+    private fun setupSearchTypeToggle() {
+        binding.searchTypeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+
+            currentSearchSubType = when (checkedId) {
+                R.id.searchByTitleButton -> "TITLE"
+                R.id.searchByAuthorButton -> "AUTHOR"
+                R.id.searchByAllButton -> "ALL"
+                else -> "TITLE"
+            }
+
+            // Update hint based on search type
+            binding.searchInput.hint = when (currentSearchSubType) {
+                "TITLE" -> "输入诗词标题"
+                "AUTHOR" -> "输入诗人名字"
+                "ALL" -> "输入诗词标题或诗人"
+                else -> "输入诗词标题"
+            }
+
+            // Re-search if there's a query
+            if (titleQuery.isNotEmpty()) {
+                performSearch(titleQuery, 1)
+            }
+        }
+    }
+
+    private fun performSearch(query: String, page: Int) {
+        when (currentSearchSubType) {
+            "TITLE" -> viewModel.searchByTitle(query, page)
+            "AUTHOR" -> viewModel.searchByAuthor(query, page)
+            "ALL" -> viewModel.searchByAll(query, page)
         }
     }
 

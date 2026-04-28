@@ -71,6 +71,30 @@ public class TagSearchController {
         return tagSearchService.searchByTitle(query.trim(), page, pageSize);
     }
 
+    @GetMapping("/search/author")
+    public PoemTitleSearchResponse searchByAuthor(
+        @RequestParam String query,
+        @RequestParam(defaultValue = "1") @Min(1) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int pageSize
+    ) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "query cannot be empty");
+        }
+        return tagSearchService.searchByAuthor(query.trim(), page, pageSize);
+    }
+
+    @GetMapping("/search/all")
+    public PoemTitleSearchResponse searchByTitleOrAuthor(
+        @RequestParam String query,
+        @RequestParam(defaultValue = "1") @Min(1) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int pageSize
+    ) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "query cannot be empty");
+        }
+        return tagSearchService.searchByTitleOrAuthor(query.trim(), page, pageSize);
+    }
+
     private List<Long> parseTagIds(String tagIds) {
         return List.of(tagIds.split(",")).stream()
             .map(String::trim)

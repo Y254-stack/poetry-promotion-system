@@ -58,5 +58,33 @@ public class TagSearchService {
             total == 0 ? "未找到包含「" + query + "」的诗词" : null
         );
     }
+
+    public PoemTitleSearchResponse searchByAuthor(String query, int page, int pageSize) {
+        int total = repository.countByAuthor(query);
+        List<PoemSearchItemDto> items = repository.searchByAuthor(query, page, pageSize);
+
+        return new PoemTitleSearchResponse(
+            query,
+            page,
+            pageSize,
+            total,
+            items,
+            total == 0 ? "未找到作者「" + query + "」的诗词" : null
+        );
+    }
+
+    public PoemTitleSearchResponse searchByTitleOrAuthor(String query, int page, int pageSize) {
+        int total = repository.countByTitleOrAuthor(query);
+        List<PoemSearchItemDto> items = repository.searchByTitleOrAuthor(query, page, pageSize);
+
+        return new PoemTitleSearchResponse(
+            query,
+            page,
+            pageSize,
+            total,
+            items,
+            total == 0 ? "未找到包含「" + query + "」的诗词或作者" : null
+        );
+    }
 }
 

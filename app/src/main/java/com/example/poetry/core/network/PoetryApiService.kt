@@ -27,6 +27,20 @@ interface PoetryApiService {
         @Query("page_size") pageSize: Int
     ): Call<ApiTitleSearchResponse>
 
+    @GET("api/search/author")
+    fun searchByAuthor(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
+
+    @GET("api/search/all")
+    fun searchByAll(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
+
     @GET("api/poems/{workId}")
     fun getPoemDetail(
         @Path("workId") workId: Long

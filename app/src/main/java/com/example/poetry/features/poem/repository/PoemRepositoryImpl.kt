@@ -33,6 +33,22 @@ class PoemRepositoryImpl(
         return apiService.searchByTitle(query, page, pageSize)
     }
 
+    override fun searchByAuthor(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ): Call<ApiTitleSearchResponse> {
+        return apiService.searchByAuthor(query, page, pageSize)
+    }
+
+    override fun searchByAll(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ): Call<ApiTitleSearchResponse> {
+        return apiService.searchByAll(query, page, pageSize)
+    }
+
     override fun getPoemDetail(workId: Long): Call<ApiPoemDetailDto> {
         return apiService.getPoemDetail(workId)
     }

@@ -282,4 +282,130 @@ class PoemViewModel(
             errorMessage = "搜索服务暂不可用，请稍后重试。"
         )
     }
+
+    fun searchByAuthor(query: String, page: Int = 1) {
+        val current = _titleSearchUiState.value ?: TitleSearchUiState()
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            isLoading = true,
+            errorMessage = null,
+            emptyMessage = null,
+            results = emptyList()
+        )
+
+        repository.searchByAuthor(
+            query = query,
+            page = page,
+            pageSize = current.pageSize
+        ).enqueue(object : Callback<ApiTitleSearchResponse> {
+            override fun onResponse(call: Call<ApiTitleSearchResponse>, response: Response<ApiTitleSearchResponse>) {
+                Log.d(TAG, "searchByAuthor success: code=${response.code()}, query=$query, page=$page")
+                val body = response.body()
+                if (body == null) {
+                    Log.e(TAG, "searchByAuthor empty body: query=$query, page=$page")
+                    applyAuthorSearchError(current, query, page)
+                    return
+                }
+
+                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
+                _titleSearchUiState.value = current.copy(
+                    query = query,
+                    currentPage = body.page,
+                    pageSize = body.pageSize,
+                    totalCount = body.total,
+                    totalPages = totalPages,
+                    results = body.items.map { it.toUiModel() },
+                    emptyMessage = body.emptyMessage,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+
+            override fun onFailure(call: Call<ApiTitleSearchResponse>, t: Throwable) {
+                Log.e(TAG, "searchByAuthor failed: query=$query, page=$page", t)
+                applyAuthorSearchError(current, query, page)
+            }
+        })
+    }
+
+    private fun applyAuthorSearchError(
+        current: TitleSearchUiState,
+        query: String,
+        page: Int
+    ) {
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            results = emptyList(),
+            totalCount = 0,
+            totalPages = 0,
+            emptyMessage = "未找到作者「$query」的诗词",
+            isLoading = false,
+            errorMessage = "搜索服务暂不可用，请稍后重试。"
+        )
+    }
+
+    fun searchByAll(query: String, page: Int = 1) {
+        val current = _titleSearchUiState.value ?: TitleSearchUiState()
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            isLoading = true,
+            errorMessage = null,
+            emptyMessage = null,
+            results = emptyList()
+        )
+
+        repository.searchByAll(
+            query = query,
+            page = page,
+            pageSize = current.pageSize
+        ).enqueue(object : Callback<ApiTitleSearchResponse> {
+            override fun onResponse(call: Call<ApiTitleSearchResponse>, response: Response<ApiTitleSearchResponse>) {
+                Log.d(TAG, "searchByAll success: code=${response.code()}, query=$query, page=$page")
+                val body = response.body()
+                if (body == null) {
+                    Log.e(TAG, "searchByAll empty body: query=$query, page=$page")
+                    applyAllSearchError(current, query, page)
+                    return
+                }
+
+                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
+                _titleSearchUiState.value = current.copy(
+                    query = query,
+                    currentPage = body.page,
+                    pageSize = body.pageSize,
+                    totalCount = body.total,
+                    totalPages = totalPages,
+                    results = body.items.map { it.toUiModel() },
+                    emptyMessage = body.emptyMessage,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+
+            override fun onFailure(call: Call<ApiTitleSearchResponse>, t: Throwable) {
+                Log.e(TAG, "searchByAll failed: query=$query, page=$page", t)
+                applyAllSearchError(current, query, page)
+            }
+        })
+    }
+
+    private fun applyAllSearchError(
+        current: TitleSearchUiState,
+        query: String,
+        page: Int
+    ) {
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            results = emptyList(),
+            totalCount = 0,
+            totalPages = 0,
+            emptyMessage = "未找到包含「$query」的诗词或作者",
+            isLoading = false,
+            errorMessage = "搜索服务暂不可用，请稍后重试。"
+        )
+    }
 }

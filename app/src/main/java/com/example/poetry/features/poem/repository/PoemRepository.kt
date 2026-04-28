@@ -23,5 +23,17 @@ interface PoemRepository {
         pageSize: Int = 20
     ): Call<ApiTitleSearchResponse>
 
+    fun searchByAuthor(
+        query: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTitleSearchResponse>
+
+    fun searchByAll(
+        query: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTitleSearchResponse>
+
     fun getPoemDetail(workId: Long): Call<ApiPoemDetailDto>
 }
