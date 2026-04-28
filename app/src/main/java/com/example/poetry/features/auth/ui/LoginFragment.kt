@@ -2,6 +2,7 @@ package com.example.poetry.features.auth.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -35,8 +36,28 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         viewModel.tips.observe(viewLifecycleOwner) { tipsAdapter.submitList(it) }
 
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.loginButton.isEnabled = !loading
+            binding.loginButton.text = if (loading) "登录中..." else getString(R.string.action_login)
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { err ->
+            err?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+        }
+
+        viewModel.authResult.observe(viewLifecycleOwner) { auth ->
+            auth?.let {
+                val session = com.example.poetry.core.auth.SessionManager(requireContext())
+                session.saveSession(it.token, it.userId, it.username, it.nickname)
+                Toast.makeText(requireContext(), getString(R.string.toast_login_success), Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
+        }
+
         binding.loginButton.setOnClickListener {
-            // TODO: 接入真实登录校验
+            val account = binding.accountEdit.text?.toString().orEmpty()
+            val password = binding.passwordEdit.text?.toString().orEmpty()
+            viewModel.login(account, password)
         }
         binding.registerText.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_register)

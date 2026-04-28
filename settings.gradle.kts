@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Poetry"
-include(":app")
+include(":app",":backend")
  

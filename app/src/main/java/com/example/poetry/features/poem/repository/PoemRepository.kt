@@ -5,6 +5,8 @@ import com.example.poetry.core.network.ApiTagDto
 import com.example.poetry.core.network.ApiTagSearchResponse
 import retrofit2.Call
 
+
+
 interface PoemRepository {
 
     fun getHotTags(limit: Int = 20): Call<List<ApiTagDto>>
