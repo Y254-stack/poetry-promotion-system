@@ -54,3 +54,20 @@ enum class TagSearchSort(val apiValue: String) {
     HOT("hot"),
     PUBLISH_TIME("publish_time")
 }
+
+data class TitleSearchUiState(
+    val query: String = "",
+    val results: List<PoemSummaryUiModel> = emptyList(),
+    val currentPage: Int = 1,
+    val pageSize: Int = 20,
+    val totalCount: Int = 0,
+    val totalPages: Int = 0,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val emptyMessage: String? = null
+)
+
+enum class SearchType {
+    TITLE,
+    TAG
+}

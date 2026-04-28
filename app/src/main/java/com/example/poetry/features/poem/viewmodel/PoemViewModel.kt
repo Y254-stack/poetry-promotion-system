@@ -8,6 +8,7 @@ import com.example.poetry.core.network.ApiPoemDetailDto
 import com.example.poetry.core.network.ApiPoemSearchItemDto
 import com.example.poetry.core.network.ApiTagDto
 import com.example.poetry.core.network.ApiTagSearchResponse
+import com.example.poetry.core.network.ApiTitleSearchResponse
 import com.example.poetry.core.network.NetworkModule
 import com.example.poetry.features.poem.mock.PoemMockData
 import com.example.poetry.features.poem.model.AuthorProfileUiModel
@@ -16,6 +17,7 @@ import com.example.poetry.features.poem.model.PoemSummaryUiModel
 import com.example.poetry.features.poem.model.TagSearchSort
 import com.example.poetry.features.poem.model.TagSearchUiState
 import com.example.poetry.features.poem.model.TagUiModel
+import com.example.poetry.features.poem.model.TitleSearchUiState
 import com.example.poetry.features.poem.repository.PoemRepository
 import com.example.poetry.features.poem.repository.PoemRepositoryImpl
 import kotlin.math.ceil
@@ -42,6 +44,9 @@ class PoemViewModel(
         )
     )
     val searchUiState: LiveData<TagSearchUiState> = _searchUiState
+
+    private val _titleSearchUiState = MutableLiveData(TitleSearchUiState())
+    val titleSearchUiState: LiveData<TitleSearchUiState> = _titleSearchUiState
 
     private val _authorProfile = MutableLiveData(PoemMockData.emptyAuthorProfile())
     val authorProfile: LiveData<AuthorProfileUiModel> = _authorProfile
@@ -214,4 +219,67 @@ class PoemViewModel(
             annotation = annotationText.orEmpty(),
             appreciation = appreciationText.orEmpty()
         )
+
+    fun searchByTitle(query: String, page: Int = 1) {
+        val current = _titleSearchUiState.value ?: TitleSearchUiState()
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            isLoading = true,
+            errorMessage = null,
+            emptyMessage = null,
+            results = emptyList()
+        )
+
+        repository.searchByTitle(
+            query = query,
+            page = page,
+            pageSize = current.pageSize
+        ).enqueue(object : Callback<ApiTitleSearchResponse> {
+            override fun onResponse(call: Call<ApiTitleSearchResponse>, response: Response<ApiTitleSearchResponse>) {
+                Log.d(TAG, "searchByTitle success: code=${response.code()}, query=$query, page=$page")
+                val body = response.body()
+                if (body == null) {
+                    Log.e(TAG, "searchByTitle empty body: query=$query, page=$page")
+                    applyTitleSearchError(current, query, page)
+                    return
+                }
+
+                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
+                _titleSearchUiState.value = current.copy(
+                    query = query,
+                    currentPage = body.page,
+                    pageSize = body.pageSize,
+                    totalCount = body.total,
+                    totalPages = totalPages,
+                    results = body.items.map { it.toUiModel() },
+                    emptyMessage = body.emptyMessage,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+
+            override fun onFailure(call: Call<ApiTitleSearchResponse>, t: Throwable) {
+                Log.e(TAG, "searchByTitle failed: query=$query, page=$page", t)
+                applyTitleSearchError(current, query, page)
+            }
+        })
+    }
+
+    private fun applyTitleSearchError(
+        current: TitleSearchUiState,
+        query: String,
+        page: Int
+    ) {
+        _titleSearchUiState.value = current.copy(
+            query = query,
+            currentPage = page,
+            results = emptyList(),
+            totalCount = 0,
+            totalPages = 0,
+            emptyMessage = "未找到包含「$query」的诗词",
+            isLoading = false,
+            errorMessage = "搜索服务暂不可用，请稍后重试。"
+        )
+    }
 }

@@ -2,6 +2,7 @@ package com.example.poetry.backend.tagsearch.controller;
 
 import com.example.poetry.backend.tagsearch.dto.PoemDetailDto;
 import com.example.poetry.backend.tagsearch.dto.PoemTagSearchResponse;
+import com.example.poetry.backend.tagsearch.dto.PoemTitleSearchResponse;
 import com.example.poetry.backend.tagsearch.dto.TagDto;
 import com.example.poetry.backend.tagsearch.service.TagSearchService;
 import jakarta.validation.constraints.Max;
@@ -56,6 +57,18 @@ public class TagSearchController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Poem not found");
         }
         return detail;
+    }
+
+    @GetMapping("/search/title")
+    public PoemTitleSearchResponse searchByTitle(
+        @RequestParam String query,
+        @RequestParam(defaultValue = "1") @Min(1) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int pageSize
+    ) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "query cannot be empty");
+        }
+        return tagSearchService.searchByTitle(query.trim(), page, pageSize);
     }
 
     private List<Long> parseTagIds(String tagIds) {

@@ -3,6 +3,7 @@ package com.example.poetry.backend.tagsearch.service;
 import com.example.poetry.backend.tagsearch.dto.PoemDetailDto;
 import com.example.poetry.backend.tagsearch.dto.PoemSearchItemDto;
 import com.example.poetry.backend.tagsearch.dto.PoemTagSearchResponse;
+import com.example.poetry.backend.tagsearch.dto.PoemTitleSearchResponse;
 import com.example.poetry.backend.tagsearch.dto.TagDto;
 import com.example.poetry.backend.tagsearch.repository.TagSearchRepository;
 import java.util.List;
@@ -42,6 +43,20 @@ public class TagSearchService {
 
     public PoemDetailDto getPoemDetail(Long workId) {
         return repository.findPoemDetail(workId);
+    }
+
+    public PoemTitleSearchResponse searchByTitle(String query, int page, int pageSize) {
+        int total = repository.countByTitle(query);
+        List<PoemSearchItemDto> items = repository.searchByTitle(query, page, pageSize);
+
+        return new PoemTitleSearchResponse(
+            query,
+            page,
+            pageSize,
+            total,
+            items,
+            total == 0 ? "未找到包含「" + query + "」的诗词" : null
+        );
     }
 }
 

@@ -13,6 +13,7 @@ import com.example.poetry.core.ui.VerticalSpaceItemDecoration
 import com.example.poetry.core.util.dp
 import com.example.poetry.databinding.FragmentSearchResultBinding
 import com.example.poetry.features.poem.adapter.PoemSummaryAdapter
+import com.example.poetry.features.poem.model.SearchType
 import com.example.poetry.features.poem.model.TagSearchSort
 import com.example.poetry.features.poem.model.TagUiModel
 import com.example.poetry.features.poem.viewmodel.PoemViewModel
@@ -26,25 +27,47 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     private val viewModel: PoemViewModel by viewModels()
     private lateinit var adapter: PoemSummaryAdapter
 
+    private var searchType: SearchType = SearchType.TAG
     private var selectedTagIds: MutableList<Long> = mutableListOf()
     private var selectedTagNames: MutableList<String> = mutableListOf()
+    private var titleQuery: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchResultBinding.bind(view)
 
+        searchType = SearchType.valueOf(arguments?.getString("searchType") ?: "TAG")
         selectedTagIds = (arguments?.getLongArray("selectedTagIds") ?: longArrayOf()).toMutableList()
         selectedTagNames = (arguments?.getStringArrayList("selectedTagNames") ?: arrayListOf()).toMutableList()
+        titleQuery = arguments?.getString("titleQuery") ?: ""
 
         setupResultList()
         setupSortToggle()
         setupPagination()
-        binding.sortToggleGroup.check(R.id.hotSortButton)
-        renderSelectedTags()
-        bindState()
+        setupSearchInput()
 
-        if (selectedTagIds.isNotEmpty()) {
-            viewModel.searchByTags(selectedTagIds, TagSearchSort.HOT, page = 1)
+        when (searchType) {
+            SearchType.TAG -> {
+                binding.sortToggleGroup.check(R.id.hotSortButton)
+                binding.sortToggleGroup.isVisible = true
+                binding.searchInputLayout.isVisible = false
+                renderSelectedTags()
+                bindTagSearchState()
+                if (selectedTagIds.isNotEmpty()) {
+                    viewModel.searchByTags(selectedTagIds, TagSearchSort.HOT, page = 1)
+                }
+            }
+            SearchType.TITLE -> {
+                binding.sortToggleGroup.isVisible = false
+                binding.searchInputLayout.isVisible = true
+                binding.searchButton.isVisible = true
+                binding.selectedTagChipGroup.isVisible = false
+                binding.searchInput.setText(titleQuery)
+                bindTitleSearchState()
+                if (titleQuery.isNotEmpty()) {
+                    viewModel.searchByTitle(titleQuery, page = 1)
+                }
+            }
         }
     }
 
@@ -74,21 +97,51 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
 
     private fun setupPagination() {
         binding.previousPageButton.setOnClickListener {
-            val state = viewModel.searchUiState.value ?: return@setOnClickListener
-            if (state.currentPage > 1) {
-                viewModel.searchByTags(selectedTagIds, state.sort, page = state.currentPage - 1)
+            when (searchType) {
+                SearchType.TAG -> {
+                    val state = viewModel.searchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByTags(selectedTagIds, state.sort, page = state.currentPage - 1)
+                    }
+                }
+                SearchType.TITLE -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByTitle(titleQuery, page = state.currentPage - 1)
+                    }
+                }
             }
         }
 
         binding.nextPageButton.setOnClickListener {
-            val state = viewModel.searchUiState.value ?: return@setOnClickListener
-            if (state.currentPage < state.totalPages) {
-                viewModel.searchByTags(selectedTagIds, state.sort, page = state.currentPage + 1)
+            when (searchType) {
+                SearchType.TAG -> {
+                    val state = viewModel.searchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByTags(selectedTagIds, state.sort, page = state.currentPage + 1)
+                    }
+                }
+                SearchType.TITLE -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByTitle(titleQuery, page = state.currentPage + 1)
+                    }
+                }
             }
         }
     }
 
-    private fun bindState() {
+    private fun setupSearchInput() {
+        binding.searchButton.setOnClickListener {
+            val query = binding.searchInput.text.toString().trim()
+            if (query.isNotEmpty()) {
+                titleQuery = query
+                viewModel.searchByTitle(query, page = 1)
+            }
+        }
+    }
+
+    private fun bindTagSearchState() {
         viewModel.searchUiState.observe(viewLifecycleOwner) { state ->
             binding.progressBar.isVisible = state.isLoading
             binding.errorText.isVisible = !state.errorMessage.isNullOrBlank()
@@ -112,6 +165,32 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             binding.recommendTitle.isVisible = !hasResults && state.recommendedTags.isNotEmpty()
             binding.recommendedChipGroup.isVisible = !hasResults && state.recommendedTags.isNotEmpty()
             renderRecommendedTags(state.recommendedTags)
+        }
+    }
+
+    private fun bindTitleSearchState() {
+        viewModel.titleSearchUiState.observe(viewLifecycleOwner) { state ->
+            binding.progressBar.isVisible = state.isLoading
+            binding.errorText.isVisible = !state.errorMessage.isNullOrBlank()
+            binding.errorText.text = state.errorMessage
+
+            val hasResults = state.results.isNotEmpty()
+            binding.recyclerView.isVisible = hasResults
+            adapter.submitList(state.results)
+
+            binding.paginationContainer.isVisible = hasResults && state.totalPages > 0
+            binding.pageInfoText.text = if (state.totalPages > 0) {
+                "第 ${state.currentPage} / ${state.totalPages} 页"
+            } else {
+                "第 0 / 0 页"
+            }
+            binding.previousPageButton.isEnabled = state.currentPage > 1
+            binding.nextPageButton.isEnabled = state.currentPage < state.totalPages
+
+            binding.emptyStateText.isVisible = !hasResults && !state.emptyMessage.isNullOrBlank()
+            binding.emptyStateText.text = state.emptyMessage ?: ""
+            binding.recommendTitle.isVisible = false
+            binding.recommendedChipGroup.isVisible = false
         }
     }
 

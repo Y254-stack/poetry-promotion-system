@@ -204,5 +204,47 @@ public class TagSearchRepository {
             .filter(value -> !value.isBlank())
             .toList();
     }
+
+    public int countByTitle(String query) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM poetry_work
+            WHERE title LIKE CONCAT('%', :query, '%')
+            """;
+        MapSqlParameterSource params = new MapSqlParameterSource("query", query);
+        Integer result = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return result == null ? 0 : result;
+    }
+
+    public List<PoemSearchItemDto> searchByTitle(String query, int page, int pageSize) {
+        String sql = """
+            SELECT
+                w.work_id AS workId,
+                w.title,
+                w.author_name_cache AS authorName,
+                w.dynasty_name AS dynastyName,
+                LEFT(w.content_text, 120) AS contentPreview,
+                '' AS matchedTags,
+                ROUND(
+                    (CASE WHEN w.translation_text IS NOT NULL AND w.translation_text <> '' THEN 30 ELSE 0 END) +
+                    (CASE WHEN w.annotation_text IS NOT NULL AND w.annotation_text <> '' THEN 25 ELSE 0 END) +
+                    (CASE WHEN w.appreciation_text IS NOT NULL AND w.appreciation_text <> '' THEN 20 ELSE 0 END) +
+                    (CASE WHEN w.char_count BETWEEN 12 AND 220 THEN 10 ELSE 0 END),
+                    2
+                ) AS hotScore,
+                DATE_FORMAT(w.created_at, '%%Y-%%m-%%d %%H:%%i:%%s') AS publishTime
+            FROM poetry_work w
+            WHERE w.title LIKE CONCAT('%', :query, '%')
+            ORDER BY w.work_id DESC
+            LIMIT :limit OFFSET :offset
+            """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("query", query)
+            .addValue("limit", pageSize)
+            .addValue("offset", Math.max(page - 1, 0) * pageSize);
+
+        return jdbcTemplate.query(sql, params, poemSearchRowMapper());
+    }
 }
 

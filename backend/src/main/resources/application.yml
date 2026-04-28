@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/poetry_clean?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ${POETRY_DB_USERNAME:root}
-    password: ${POETRY_DB_PASSWORD:}
+    password: ${POETRY_DB_PASSWORD:20060222}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jackson:
