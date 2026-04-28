@@ -1,66 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F9F2EF">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Header / Title -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/titleCard"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="48dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/poemTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="如梦令·昨夜雨疏风骤"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Answer Grids Area -->
+    <LinearLayout
+        android:id="@+id/answerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/candidateContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleCard">
+
+        <!-- Row 1: 4 grids -->
+        <LinearLayout
+            android:id="@+id/row1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="选词填空"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+        </LinearLayout>
+
+        <!-- Row 2: 6 grids -->
+        <LinearLayout
+            android:id="@+id/row2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="春眠不觉晓，处处闻____。"
-                    android:textSize="20sp" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="啼鸟" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="落花" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="流水" />
-                </com.google.android.material.chip.ChipGroup>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/submitButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="提交答案" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+            <TextView style="@style/PoetryGridStyle" />
+        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+    <!-- Candidate Words Area -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/candidateContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="32dp"
+        app:chipSpacingHorizontal="12dp"
+        app:chipSpacingVertical="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnHint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <!-- Candidate buttons will be added programmatically or defined here -->
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Hint Button -->
+    <Button
+        android:id="@+id/btnHint"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:background="@drawable/bg_hint_button"
+        android:text="提示一下"
+        android:textAllCaps="false"
+        android:textColor="#5D4037"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
