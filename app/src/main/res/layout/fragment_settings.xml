@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
             android:text="@string/settings_profile_section"
-            android:textColor="@color/user_center_text_secondary"
+            android:textColor="@color/user_center_green"
             android:textSize="15sp" />
 
         <com.google.android.material.card.MaterialCardView
@@ -76,7 +76,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="更改"
-                        android:textColor="@color/user_center_primary" />
+                        android:textColor="@color/user_center_blue" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -99,7 +99,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="更改"
-                        android:textColor="@color/user_center_primary" />
+                        android:textColor="@color/user_center_green" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
             android:text="@string/settings_security_section"
-            android:textColor="@color/user_center_text_secondary"
+            android:textColor="@color/user_center_blue"
             android:textSize="15sp" />
 
         <com.google.android.material.card.MaterialCardView

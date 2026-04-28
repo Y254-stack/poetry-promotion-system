@@ -40,4 +40,16 @@
     <string name="creation_add">添加创作</string>
     <string name="creation_delete_confirm">删除这条创作？</string>
     <string name="calendar_placeholder">打卡日历（视图迭代预留）</string>
+    <string name="favorite_tab_posts">帖子</string>
+    <string name="favorite_tab_poems">诗词</string>
+    <string name="favorite_search_hint_posts">搜索帖子标题、作者、关键词</string>
+    <string name="favorite_search_hint_poems">搜索诗名、作者、名句</string>
+    <string name="favorite_count_posts_fmt">已收藏 %1$d 条帖子</string>
+    <string name="favorite_count_poems_fmt">已收藏 %1$d 首诗词</string>
+    <string name="favorite_unfavorite">取消收藏</string>
+    <string name="favorite_search_button">搜索</string>
+    <string name="favorite_count_filtered_fmt">%1$s（当前显示 %2$d 条）</string>
+    <string name="favorite_empty_posts">暂无收藏帖子，去发现并收藏你喜欢的帖子吧</string>
+    <string name="favorite_empty_poems">暂无收藏诗词，去发现并收藏你喜欢的诗词吧</string>
+    <string name="favorite_empty_action_discover">去发现</string>
 </resources>

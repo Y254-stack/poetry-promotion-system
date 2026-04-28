@@ -21,6 +21,19 @@ data class ProgressStatUiModel(
     val value: String
 )
 
+enum class FavoriteTypeUi { POST, POEM }
+
+data class FavoriteItemUiModel(
+    val id: Long,
+    val type: FavoriteTypeUi,
+    val title: String,
+    val subtitle: String,
+    /** 原始收藏时间字符串（用于排序，建议为 ISO-8601 / yyyy-MM-dd HH:mm:ss 等可比较格式） */
+    val collectedAt: String = "",
+    val linkedPoemWorkId: Long? = null,
+    val linkedPostId: Long? = null
+)
+
 data class FollowUiModel(
     val userId: String,
     val displayName: String,

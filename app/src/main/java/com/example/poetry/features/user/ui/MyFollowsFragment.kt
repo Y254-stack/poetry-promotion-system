@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
+import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.core.ui.VerticalSpaceItemDecoration
 import com.example.poetry.core.util.dp
 import com.example.poetry.databinding.FragmentMyFollowsBinding
@@ -28,6 +29,9 @@ class MyFollowsFragment : Fragment(R.layout.fragment_my_follows) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMyFollowsBinding.bind(view)
+
+        val session = SessionManager(requireContext())
+        viewModel.setSessionToken(session.token())
 
         adapter = FollowListAdapter(
             onOpenProfile = { item ->
@@ -48,14 +52,23 @@ class MyFollowsFragment : Fragment(R.layout.fragment_my_follows) {
         }
 
         viewModel.follows.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            msg?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+        }
     }
 
     private fun confirmUnfollow(item: FollowUiModel) {
         AlertDialog.Builder(requireContext())
             .setMessage("确认取消关注「${item.displayName}」？")
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.unfollow(item.userId)
-                Toast.makeText(requireContext(), "已取消关注", Toast.LENGTH_SHORT).show()
+                val followedUserId = item.userId.toLongOrNull()
+                if (followedUserId == null) {
+                    Toast.makeText(requireContext(), "用户ID无效", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                viewModel.unfollow(followedUserId) { ok ->
+                    if (ok) Toast.makeText(requireContext(), "已取消关注", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

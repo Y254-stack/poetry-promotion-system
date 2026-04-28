@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.poetry.R
 import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.databinding.FragmentSettingsBinding
+import com.example.poetry.features.user.local.UserLocalStore
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -23,6 +24,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         binding.nicknameButton.setOnClickListener {
             val session = SessionManager(requireContext())
+            UserLocalStore.ensureSeed(
+                userId = session.userId().takeIf { it > 0L } ?: 1L,
+                username = session.username().orEmpty().ifBlank { "demo_user" },
+                nickname = session.nickname().orEmpty().ifBlank { "诗词爱好者" }
+            )
             val input = EditText(requireContext()).apply {
                 setText(session.nickname().orEmpty())
                 hint = "新昵称"
@@ -33,14 +39,16 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 .setPositiveButton("保存") { _, _ ->
                     val text = input.text?.toString()?.trim().orEmpty()
                     if (text.isNotEmpty()) {
+                        val uid = session.userId().takeIf { it > 0L } ?: 1L
+                        UserLocalStore.updateNickname(uid, text)
                         session.saveSession(
-                            session.token().orEmpty(),
-                            session.userId(),
-                            session.username().orEmpty(),
-                            text
+                            token = session.token().orEmpty(),
+                            userId = uid,
+                            username = session.username().orEmpty(),
+                            nickname = text
                         )
                         refreshNicknamePreview()
-                        Toast.makeText(requireContext(), "昵称已更新（本地）", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "已修改成 $text", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton(android.R.string.cancel, null)
@@ -64,10 +72,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.deleteAccountButton.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_delete_account)
-                .setMessage("注销后将清除本地会话，后端流程接入前仅为演示。")
+                .setMessage("注销后将删除本地账号与收藏数据，并清除登录状态（后端流程接入前仅为演示）。")
                 .setPositiveButton("确认注销") { _, _ ->
-                    SessionManager(requireContext()).clearSession()
-                    Toast.makeText(requireContext(), "已清除本地登录状态", Toast.LENGTH_SHORT).show()
+                    val session = SessionManager(requireContext())
+                    val uid = session.userId().takeIf { it > 0L } ?: 1L
+                    UserLocalStore.deleteAccount(uid)
+                    session.clearSession()
+                    Toast.makeText(requireContext(), "账号已注销", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
                 .setNegativeButton(android.R.string.cancel, null)

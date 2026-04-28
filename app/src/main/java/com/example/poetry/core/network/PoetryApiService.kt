@@ -48,4 +48,43 @@ interface PoetryApiService {
         @Header("Authorization") authorization: String,
         @Body request: ApiChangePasswordRequest
     ): Call<ApiAuthResponse>
+
+    @GET("api/user-center/follows")
+    fun getMyFollows(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Call<ApiPagedResponse<ApiFollowedUserDto>>
+
+    @retrofit2.http.DELETE("api/user-center/follows/{followedUserId}")
+    fun unfollow(
+        @Header("Authorization") authorization: String,
+        @Path("followedUserId") followedUserId: Long
+    ): Call<ApiOkResponse>
+
+    @GET("api/user-center/favorites/poems")
+    fun getMyFavoritePoems(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Call<ApiPagedResponse<ApiFavoritePoemDto>>
+
+    @retrofit2.http.DELETE("api/user-center/favorites/poems/{workId}")
+    fun unfavoritePoem(
+        @Header("Authorization") authorization: String,
+        @Path("workId") workId: Long
+    ): Call<ApiOkResponse>
+
+    @GET("api/user-center/favorites/posts")
+    fun getMyFavoritePosts(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Call<ApiPagedResponse<ApiFavoritePostDto>>
+
+    @retrofit2.http.DELETE("api/user-center/favorites/posts/{postId}")
+    fun unfavoritePost(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): Call<ApiOkResponse>
 }

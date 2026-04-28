@@ -2,7 +2,6 @@ package com.example.poetry.backend.user.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -52,12 +51,9 @@ public class JwtTokenProvider {
     }
 
     private Key signingKey() {
-        byte[] keyBytes;
-        try {
-            keyBytes = Decoders.BASE64.decode(jwtSecret);
-        } catch (RuntimeException ex) {
-            keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
-        }
+        // Treat secret as plain text to avoid accidental Base64 decoding errors.
+        // The configured secret should be at least 32 bytes for HS256/HS384/HS512 safety.
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
