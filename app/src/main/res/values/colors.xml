@@ -19,6 +19,7 @@
     
     <!-- Updated palette based on design reference -->
     <color name="background_main">#F9F2EF</color>
+    <color name="text_primary">#5D4037</color>
     <color name="card_background_white">#FFFFFF</color>
     <color name="card_background_light">#FEFEFE</color>
     <color name="button_secondary_bg">#F5F5F5</color>

@@ -5,6 +5,7 @@ import java.util.List;
 public class QuizModels {
     public record FillBlankQuiz(
         Long workId,
+        Long sentenceId,
         String title,
         String author,
         String targetSentence,
@@ -14,8 +15,12 @@ public class QuizModels {
     public record QuizSubmitRequest(
         Long userId,
         Long workId,
+        Long sentenceId,
         String quizType,
         Boolean isCorrect,
-        Integer durationSeconds
+        Integer durationSeconds,
+        String questionPayload,
+        String answerPayload,
+        String correctPayload
     ) {}
 }

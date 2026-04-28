@@ -48,4 +48,13 @@ interface PoetryApiService {
         @Header("Authorization") authorization: String,
         @Body request: ApiChangePasswordRequest
     ): Call<ApiAuthResponse>
+
+    // Learning module APIs
+    @GET("api/learning/quiz/fill-blank/random")
+    fun getRandomFillBlankQuiz(): Call<ApiFillBlankQuizDto>
+
+    @POST("api/learning/quiz/submit")
+    fun submitQuizResult(
+        @Body request: ApiQuizSubmitRequest
+    ): Call<Void>
 }

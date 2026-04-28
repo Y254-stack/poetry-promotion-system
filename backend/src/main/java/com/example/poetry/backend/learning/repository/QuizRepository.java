@@ -1,56 +1,121 @@
 package com.example.poetry.backend.learning.repository;
 
 import com.example.poetry.backend.learning.dto.QuizModels;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class QuizRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(QuizRepository.class);
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public QuizRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Map<String, Object> getRandomSentenceForQuiz() {
+    public Optional<Map<String, Object>> getRandomSentenceForQuiz() {
+        long start = System.currentTimeMillis();
+        
+        // 优化：使用预计算的句子数量，避免每次都COUNT(*)
+        String countSql = "SELECT COUNT(*) FROM work_sentence WHERE char_count BETWEEN 5 AND 30";
+        Integer total = jdbcTemplate.queryForObject(countSql, new MapSqlParameterSource(), Integer.class);
+        
+        if (total == null || total == 0) {
+            log.warn("work_sentence表中没有符合条件的句子，放宽条件...");
+            countSql = "SELECT COUNT(*) FROM work_sentence WHERE char_count >= 2";
+            total = jdbcTemplate.queryForObject(countSql, new MapSqlParameterSource(), Integer.class);
+            if (total == null || total == 0) {
+                log.error("work_sentence表为空！");
+                return Optional.empty();
+            }
+        }
+        
+        log.debug("符合条件的句子总数: {}", total);
+        
+        // 使用高效的随机算法：LIMIT offset, 1
+        int randomOffset = (int) (Math.random() * total);
+        
         String sql = """
-            SELECT ws.work_id, ws.sentence_text, pw.title, pw.author_name_cache as author
+            SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author
             FROM work_sentence ws
             JOIN poetry_work pw ON ws.work_id = pw.work_id
-            WHERE ws.char_count BETWEEN 5 AND 12
-            ORDER BY RAND()
-            LIMIT 1
+            WHERE ws.char_count BETWEEN 5 AND 30
+            LIMIT :offset, 1
             """;
-        return jdbcTemplate.queryForMap(sql, new MapSqlParameterSource());
+        
+        try {
+            Map<String, Object> result = jdbcTemplate.queryForMap(sql, new MapSqlParameterSource("offset", randomOffset));
+            log.debug("SQL查询耗时: {}ms", (System.currentTimeMillis() - start));
+            return Optional.of(result);
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("随机抽取失败，尝试使用RAND()方式...");
+            String fallbackSql = """
+                SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author
+                FROM work_sentence ws
+                JOIN poetry_work pw ON ws.work_id = pw.work_id
+                WHERE ws.char_count >= 2
+                ORDER BY RAND()
+                LIMIT 1
+                """;
+            try {
+                Map<String, Object> result = jdbcTemplate.queryForMap(fallbackSql, new MapSqlParameterSource());
+                log.debug("降级查询耗时: {}ms", (System.currentTimeMillis() - start));
+                return Optional.of(result);
+            } catch (EmptyResultDataAccessException ex) {
+                log.error("无法从数据库获取句子");
+                return Optional.empty();
+            }
+        }
     }
 
     public List<String> getRandomDistractorChars(int count) {
-        String sql = """
-            SELECT SUBSTRING(sentence_text, 1, 1) as char_val
-            FROM work_sentence
-            ORDER BY RAND()
-            LIMIT :count
-            """;
-        return jdbcTemplate.query(sql, new MapSqlParameterSource("count", count), (rs, rowNum) -> rs.getString("char_val"));
+        String sql = "SELECT SUBSTRING(sentence_text, FLOOR(RAND() * CHAR_LENGTH(sentence_text)) + 1, 1) as char_val " +
+                     "FROM work_sentence WHERE char_count >= 5 LIMIT 30";
+        List<String> allChars = jdbcTemplate.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> rs.getString("char_val"));
+        
+        // 过滤标点符号和空字符
+        allChars.removeIf(c -> c == null || c.isEmpty() || c.matches("[，。？！；：、,.?!;:\\s]"));
+        
+        if (allChars.isEmpty()) {
+            log.warn("无法获取干扰字符，使用默认值");
+            return List.of("花", "月", "山", "水", "人");
+        }
+        
+        java.util.Collections.shuffle(allChars);
+        int size = Math.min(count, allChars.size());
+        return allChars.subList(0, size);
     }
 
     public void saveQuizRecord(QuizModels.QuizSubmitRequest request) {
         String sql = """
-            INSERT INTO quiz_record (user_id, work_id, quiz_type, is_correct, duration_seconds, question_payload)
-            VALUES (:userId, :workId, :quizType, :isCorrect, :duration, :payload)
+            INSERT INTO quiz_record (user_id, work_id, sentence_id, quiz_type, difficulty_level, 
+                                    question_payload, answer_payload, correct_payload, 
+                                    is_correct, score, duration_seconds)
+            VALUES (:userId, :workId, :sentenceId, :quizType, :difficulty, 
+                    :questionPayload, :answerPayload, :correctPayload, 
+                    :isCorrect, :score, :duration)
             """;
         MapSqlParameterSource params = new MapSqlParameterSource()
             .addValue("userId", request.userId())
             .addValue("workId", request.workId())
+            .addValue("sentenceId", request.sentenceId())
             .addValue("quizType", request.quizType())
+            .addValue("difficulty", 1)
+            .addValue("questionPayload", request.questionPayload() != null ? request.questionPayload() : "{}")
+            .addValue("answerPayload", request.answerPayload() != null ? request.answerPayload() : "{}")
+            .addValue("correctPayload", request.correctPayload() != null ? request.correctPayload() : "{}")
             .addValue("isCorrect", request.isCorrect() ? 1 : 0)
-            .addValue("duration", request.durationSeconds())
-            .addValue("payload", "{}");
+            .addValue("score", request.isCorrect() ? 10.0 : 0.0)
+            .addValue("duration", request.durationSeconds());
         jdbcTemplate.update(sql, params);
     }
 }

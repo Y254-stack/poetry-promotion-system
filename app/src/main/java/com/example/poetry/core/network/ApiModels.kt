@@ -71,3 +71,25 @@ data class ApiChangePasswordRequest(
     val currentPassword: String,
     val newPassword: String
 )
+
+// Learning module models
+data class ApiFillBlankQuizDto(
+    val workId: Long,
+    val sentenceId: Long,
+    val title: String,
+    val author: String,
+    val targetSentence: String,
+    val candidateWords: List<String>
+)
+
+data class ApiQuizSubmitRequest(
+    val userId: Long,
+    val workId: Long,
+    val sentenceId: Long,
+    val quizType: String,
+    val isCorrect: Boolean,
+    val durationSeconds: Int,
+    val questionPayload: String,
+    val answerPayload: String,
+    val correctPayload: String
+)

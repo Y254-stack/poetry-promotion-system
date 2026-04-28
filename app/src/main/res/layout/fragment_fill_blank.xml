@@ -1,105 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F2EF">
+    android:background="@drawable/bg_learning_scene">
 
-    <!-- Header / Title -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/titleCard"
+    <!-- Top Navigation Icons -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:contentDescription="返回"
+        android:src="@android:drawable/ic_menu_revert"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#8B4513" />
+
+    <ImageView
+        android:id="@+id/btnHistory"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:contentDescription="历史"
+        android:src="@android:drawable/ic_menu_edit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#8B4513" />
+
+    <!-- Poem Title Box -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/poemTitleCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="40dp"
+        app:cardBackgroundColor="#FDFCF8"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:strokeColor="#E8A0A0"
+        app:strokeWidth="1dp">
 
-        <TextView
-            android:id="@+id/poemTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="12dp"
-            android:text="如梦令·昨夜雨疏风骤"
-            android:textColor="#333333"
-            android:textSize="18sp" />
-    </androidx.cardview.widget.CardView>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <!-- Answer Grids Area -->
+            <TextView
+                android:id="@+id/poemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="如梦令·昨夜雨疏风骤"
+                android:textColor="#5D4037"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/poemAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="李清照"
+                android:textColor="#8B7355"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Answer Area -->
     <LinearLayout
-        android:id="@+id/answerContainer"
+        android:id="@+id/answerGrid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_marginTop="60dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/candidateContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleCard">
+        app:layout_constraintTop_toBottomOf="@id/poemTitleCard">
 
-        <!-- Row 1: 4 grids -->
         <LinearLayout
             android:id="@+id/row1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
-
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
         </LinearLayout>
 
-        <!-- Row 2: 6 grids -->
         <LinearLayout
             android:id="@+id/row2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
             android:orientation="horizontal">
-
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
-            <TextView style="@style/PoetryGridStyle" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Candidate Words Area -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/candidateContainer"
-        android:layout_width="0dp"
+    <!-- Options Area (Candidates) -->
+    <GridLayout
+        android:id="@+id/candidatesGrid"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginBottom="32dp"
-        app:chipSpacingHorizontal="12dp"
-        app:chipSpacingVertical="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnHint"
+        android:layout_marginTop="60dp"
+        android:alignmentMode="alignBounds"
+        android:columnCount="4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-        <!-- Candidate buttons will be added programmatically or defined here -->
-    </com.google.android.material.chip.ChipGroup>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/answerGrid">
+    </GridLayout>
 
-    <!-- Hint Button -->
-    <Button
-        android:id="@+id/btnHint"
-        android:layout_width="200dp"
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="48dp"
-        android:background="@drawable/bg_hint_button"
-        android:text="提示一下"
-        android:textAllCaps="false"
-        android:textColor="#5D4037"
-        app:backgroundTint="@null"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReset"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="重置"
+            android:textColor="#8B4513"
+            app:cornerRadius="24dp"
+            app:strokeColor="#E6D29B" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/hintButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#E6D29B"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="提示一下"
+            android:textColor="#8B4513"
+            app:cornerRadius="24dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
