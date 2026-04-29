@@ -9,20 +9,8 @@
         android:name="com.example.poetry.features.home.ui.HomeFragment"
         android:label="首页">
         <action
-            android:id="@+id/action_home_to_searchEntry"
-            app:destination="@id/tagSearchEntryFragment" />
-        <action
             android:id="@+id/action_home_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/tagSearchEntryFragment"
-        android:name="com.example.poetry.features.poem.ui.TagSearchEntryFragment"
-        android:label="标签搜索入口">
-        <action
-            android:id="@+id/action_searchEntry_to_searchResult"
-            app:destination="@id/searchResultFragment" />
     </fragment>
 
     <fragment
@@ -134,15 +122,6 @@
         android:id="@+id/authorDetailFragment"
         android:name="com.example.poetry.features.poem.ui.AuthorDetailFragment"
         android:label="作者详情" />
-
-    <fragment
-        android:id="@+id/searchResultFragment"
-        android:name="com.example.poetry.features.poem.ui.SearchResultFragment"
-        android:label="搜索结果">
-        <action
-            android:id="@+id/action_searchResult_to_poemDetail"
-            app:destination="@id/poemDetailFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/learningHubFragment"
