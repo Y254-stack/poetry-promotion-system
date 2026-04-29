@@ -2,7 +2,6 @@ package com.example.poetry.features.home.ui
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -50,11 +49,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupCategoryList() {
         categoryAdapter = CategoryAdapter {
-            val bundle = bundleOf(
-                "searchType" to "TITLE",
-                "titleQuery" to ""
-            )
-            findNavController().navigate(R.id.action_home_to_searchResult, bundle)
+            findNavController().navigate(R.id.action_home_to_searchResult)
         }
 
         binding.categoryRecycler.apply {
@@ -76,11 +71,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun bindActions() {
         binding.searchEntryCard.setOnClickListener {
-            val bundle = bundleOf(
-                "searchType" to "TITLE",
-                "titleQuery" to ""
-            )
-            findNavController().navigate(R.id.action_home_to_searchResult, bundle)
+            findNavController().navigate(R.id.action_home_to_searchResult)
         }
     }
 

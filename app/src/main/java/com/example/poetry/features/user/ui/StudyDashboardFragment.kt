@@ -19,10 +19,12 @@ class StudyDashboardFragment : Fragment(R.layout.fragment_study_dashboard) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentStudyDashboardBinding.bind(view)
 
-        viewModel.progressStats.observe(viewLifecycleOwner) { stats ->
+        viewModel.dashboardExtraStats.observe(viewLifecycleOwner) { stats ->
             if (stats.size >= 4) {
-                binding.overviewText.text =
-                    "本周累计学习 ${stats[0].value}，连续打卡 ${stats[1].value}，正确率 ${stats[2].value}。"
+                binding.masteredValue.text = stats[0].value
+                binding.cumulativeDaysValue.text = stats[1].value
+                binding.accuracyValue.text = stats[2].value
+                binding.reviewPendingValue.text = stats[3].value
             }
         }
     }

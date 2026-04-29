@@ -1,4 +1,52 @@
 ﻿SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- =========================================================
+-- poetry_full_init.sql
+-- Unified database initialization entry script.
+-- Execution order:
+-- 1) clean_gushiwen.sql
+-- 2) enrich_recommendation.sql
+-- 3) poetry_team_schema.sql
+--
+-- Prerequisites:
+-- 1) gushiwen.sql has been imported into gushiwen_raw.shiwen
+-- 2) MySQL 8.0+
+--
+-- Run from project root:
+-- cmd /c "mysql --default-character-set=utf8mb4 -u root -p < sql\poetry_full_init.sql"
+-- =========================================================
+
+SOURCE sql/clean_gushiwen.sql;
+SOURCE sql/enrich_recommendation.sql;
+SOURCE sql/poetry_team_schema.sql;
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- =========================================================
+-- poetry_full_init.sql
+-- Unified database initialization entry script.
+-- Execution order:
+-- 1) clean_gushiwen.sql
+-- 2) enrich_recommendation.sql
+-- 3) poetry_team_schema.sql
+--
+-- Prerequisites:
+-- 1) gushiwen.sql has been imported into gushiwen_raw.shiwen
+-- 2) MySQL 8.0+
+--
+-- Recommended run command (from project root):
+-- cmd /c "mysql --default-character-set=utf8mb4 -u root -p < sql\poetry_full_init.sql"
+-- =========================================================
+
+SOURCE sql/clean_gushiwen.sql;
+SOURCE sql/enrich_recommendation.sql;
+SOURCE sql/poetry_team_schema.sql;
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET NAMES utf8mb4;
 
 -- =========================================================
 -- poetry_full_init.sql

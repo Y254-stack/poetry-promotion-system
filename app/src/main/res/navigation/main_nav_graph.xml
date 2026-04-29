@@ -65,12 +65,21 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.poetry.features.user.ui.SettingsFragment"
-        android:label="设置" />
+        android:label="@string/settings_title">
+        <action
+            android:id="@+id/action_settings_to_changePassword"
+            app:destination="@id/changePasswordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.poetry.features.auth.ui.ChangePasswordFragment"
+        android:label="修改密码" />
 
     <fragment
         android:id="@+id/studyDashboardFragment"
         android:name="com.example.poetry.features.user.ui.StudyDashboardFragment"
-        android:label="学习进度" />
+        android:label="@string/study_dashboard_title" />
 
     <fragment
         android:id="@+id/myCreationsFragment"
@@ -80,12 +89,28 @@
     <fragment
         android:id="@+id/myFavoritesFragment"
         android:name="com.example.poetry.features.user.ui.MyFavoritesFragment"
-        android:label="我的收藏" />
+        android:label="我的收藏">
+        <action
+            android:id="@+id/action_myFavorites_to_poemDetail"
+            app:destination="@id/poemDetailFragment" />
+        <action
+            android:id="@+id/action_myFavorites_to_authorDetail"
+            app:destination="@id/authorDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/myFollowsFragment"
         android:name="com.example.poetry.features.user.ui.MyFollowsFragment"
-        android:label="我的关注" />
+        android:label="我的关注">
+        <action
+            android:id="@+id/action_myFollows_to_userPublicProfile"
+            app:destination="@id/userPublicProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userPublicProfileFragment"
+        android:name="com.example.poetry.features.user.ui.UserPublicProfileFragment"
+        android:label="用户主页" />
 
     <fragment
         android:id="@+id/poemDetailFragment"

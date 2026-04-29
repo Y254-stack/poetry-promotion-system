@@ -2,6 +2,4 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-    id("org.springframework.boot") version "3.2.4" apply false
-    id("io.spring.dependency-management") version "1.1.4" apply false
 }
