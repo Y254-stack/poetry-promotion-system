@@ -9,7 +9,8 @@ public class QuizModels {
         String title,
         String author,
         String targetSentence,
-        List<String> candidateWords
+        List<String> candidateWords,
+        String translation
     ) {}
 
     public record QuizSubmitRequest(

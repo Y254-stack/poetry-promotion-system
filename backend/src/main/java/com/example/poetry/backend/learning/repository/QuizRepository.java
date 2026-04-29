@@ -25,7 +25,45 @@ public class QuizRepository {
     public Optional<Map<String, Object>> getRandomSentenceForQuiz() {
         long start = System.currentTimeMillis();
         
-        // 优化：使用预计算的句子数量，避免每次都COUNT(*)
+        // 策略：先随机获取一个work_id，再从该work中随机获取句子
+        // 这样避免在大表上做OFFSET操作
+        
+        // 优先获取有译文的作品
+        String getRandomWorkWithTranslation = """
+            SELECT work_id FROM poetry_work 
+            WHERE translation_text IS NOT NULL AND translation_text != ''
+            ORDER BY RAND() LIMIT 1
+            """;
+        
+        try {
+            Long randomWorkId = jdbcTemplate.queryForObject(getRandomWorkWithTranslation, new MapSqlParameterSource(), Long.class);
+            
+            if (randomWorkId != null) {
+                log.debug("随机选中的作品ID: {}", randomWorkId);
+                
+                // 从该作品中随机获取一个符合条件的句子
+                String getSentenceFromWork = """
+                    SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author, pw.translation_text as translation
+                    FROM work_sentence ws
+                    INNER JOIN poetry_work pw ON ws.work_id = pw.work_id
+                    WHERE ws.work_id = :workId AND ws.char_count BETWEEN 5 AND 30
+                    ORDER BY RAND() LIMIT 1
+                    """;
+                
+                try {
+                    Map<String, Object> result = jdbcTemplate.queryForMap(getSentenceFromWork, new MapSqlParameterSource("workId", randomWorkId));
+                    long duration = System.currentTimeMillis() - start;
+                    log.debug("获取到有译文的句子，SQL查询耗时: {}ms", duration);
+                    return Optional.of(result);
+                } catch (EmptyResultDataAccessException e) {
+                    log.warn("该作品没有符合条件的句子，尝试普通查询...");
+                }
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("没有找到有译文的作品，使用普通查询...");
+        }
+        
+        // 使用普通查询（无译文限制）
         String countSql = "SELECT COUNT(*) FROM work_sentence WHERE char_count BETWEEN 5 AND 30";
         Integer total = jdbcTemplate.queryForObject(countSql, new MapSqlParameterSource(), Integer.class);
         
@@ -41,39 +79,25 @@ public class QuizRepository {
         
         log.debug("符合条件的句子总数: {}", total);
         
-        // 使用高效的随机算法：LIMIT offset, 1
+        // 使用高效的随机方式
         int randomOffset = (int) (Math.random() * total);
         
         String sql = """
-            SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author
+            SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author, pw.translation_text as translation
             FROM work_sentence ws
-            JOIN poetry_work pw ON ws.work_id = pw.work_id
+            INNER JOIN poetry_work pw ON ws.work_id = pw.work_id
             WHERE ws.char_count BETWEEN 5 AND 30
             LIMIT :offset, 1
             """;
         
         try {
             Map<String, Object> result = jdbcTemplate.queryForMap(sql, new MapSqlParameterSource("offset", randomOffset));
-            log.debug("SQL查询耗时: {}ms", (System.currentTimeMillis() - start));
+            long duration = System.currentTimeMillis() - start;
+            log.debug("SQL查询耗时: {}ms", duration);
             return Optional.of(result);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("随机抽取失败，尝试使用RAND()方式...");
-            String fallbackSql = """
-                SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author
-                FROM work_sentence ws
-                JOIN poetry_work pw ON ws.work_id = pw.work_id
-                WHERE ws.char_count >= 2
-                ORDER BY RAND()
-                LIMIT 1
-                """;
-            try {
-                Map<String, Object> result = jdbcTemplate.queryForMap(fallbackSql, new MapSqlParameterSource());
-                log.debug("降级查询耗时: {}ms", (System.currentTimeMillis() - start));
-                return Optional.of(result);
-            } catch (EmptyResultDataAccessException ex) {
-                log.error("无法从数据库获取句子");
-                return Optional.empty();
-            }
+            log.warn("随机抽取失败");
+            return Optional.empty();
         }
     }
 

@@ -49,8 +49,9 @@ public class QuizService {
         String sentence = (String) data.get("sentence_text");
         String title = (String) data.get("title");
         String author = (String) data.get("author");
+        String translation = (String) data.get("translation");
         
-        log.info("解析结果: workId={}, sentenceId={}, title={}, author={}", workId, sentenceId, title, author);
+        log.info("解析结果: workId={}, sentenceId={}, title={}, author={}, hasTranslation={}", workId, sentenceId, title, author, translation != null && !translation.isEmpty());
 
         log.info("步骤3: 生成候选词...");
         String cleanSentence = sentence.replaceAll("[，。？！；：、]", "");
@@ -68,7 +69,7 @@ public class QuizService {
         log.info("========== 题目生成完成 ==========");
         log.info("总耗时: {}ms, 句子长度: {}字", (totalEnd - totalStart), cleanSentence.length());
         
-        return new QuizModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates);
+        return new QuizModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates, translation);
     }
 
     public void submitResult(QuizModels.QuizSubmitRequest request) {

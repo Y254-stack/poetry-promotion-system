@@ -29,6 +29,7 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
 
     private var currentQuiz: ApiFillBlankQuizDto? = null
     private var fullAnswer = ""
+    private var currentTranslation: String? = null
     private val answerGrids = mutableListOf<TextView>()
     private var selectedGridIndex = 0
     private var startTime: Long = 0
@@ -49,6 +50,22 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
             resetCurrentQuiz()
         }
         
+        binding.btnShowAnswer.setOnClickListener {
+            showAnswer()
+        }
+        
+        binding.btnTranslation.setOnClickListener {
+            showTranslationPopup()
+        }
+        
+        binding.btnCloseTranslation.setOnClickListener {
+            hideTranslationPopup()
+        }
+        
+        binding.translationPopup.setOnClickListener {
+            hideTranslationPopup()
+        }
+        
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
@@ -63,6 +80,10 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
         answerGrids.clear()
         candidateViews.clear()
         selectedGridIndex = 0
+        
+        binding.hintButton.isEnabled = true
+        binding.btnShowAnswer.isEnabled = true
+        binding.btnReset.isEnabled = true
     }
 
     private fun loadNextQuiz() {
@@ -95,11 +116,15 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
     private fun displayQuiz(quiz: ApiFillBlankQuizDto) {
         binding.poemTitle.text = quiz.title
         binding.poemAuthor.text = quiz.author
+        currentTranslation = quiz.translation
         
         fullAnswer = quiz.targetSentence.replace(Regex("[，。？！；：、]"), "")
         startTime = System.currentTimeMillis()
         setupGrids(fullAnswer.length)
         setupCandidates(quiz.candidateWords)
+        
+        binding.btnTranslation.isEnabled = true
+        binding.btnTranslation.alpha = 1.0f
     }
 
     private fun setupGrids(length: Int) {
@@ -207,6 +232,45 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
             Toast.makeText(context, "提示：第${emptyIndex + 1}个字是「$correctChar」", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(context, "已经没有空格子了！", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showTranslationPopup() {
+        if (!currentTranslation.isNullOrEmpty()) {
+            binding.translationContent.text = currentTranslation
+            binding.translationPopup.visibility = View.VISIBLE
+        } else {
+            Toast.makeText(context, "暂无译文", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun hideTranslationPopup() {
+        binding.translationPopup.visibility = View.GONE
+    }
+
+    private fun showAnswer() {
+        for (i in fullAnswer.indices) {
+            val correctChar = fullAnswer[i].toString()
+            answerGrids[i].text = correctChar
+            answerGrids[i].background = resources.getDrawable(R.drawable.bg_character_box_correct, null)
+            answerGrids[i].setTextColor(resources.getColor(android.R.color.holo_green_dark, null))
+        }
+        
+        candidateViews.forEach { view ->
+            view.isEnabled = false
+            view.alpha = 0.3f
+        }
+        
+        binding.hintButton.isEnabled = false
+        binding.btnShowAnswer.isEnabled = false
+        binding.btnReset.isEnabled = false
+        
+        Toast.makeText(context, "已显示正确答案", Toast.LENGTH_LONG).show()
+        
+        lifecycleScope.launch {
+            delay(2000)
+            resetUiState()
+            loadNextQuiz()
         }
     }
 

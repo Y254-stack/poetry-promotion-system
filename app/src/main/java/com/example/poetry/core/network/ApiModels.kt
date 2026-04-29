@@ -79,7 +79,8 @@ data class ApiFillBlankQuizDto(
     val title: String,
     val author: String,
     val targetSentence: String,
-    val candidateWords: List<String>
+    val candidateWords: List<String>,
+    val translation: String?
 )
 
 data class ApiQuizSubmitRequest(
