@@ -38,10 +38,10 @@ interface PoetryApiService {
     ): Call<ApiAuthResponse>
 
     // Learning module APIs
-    @GET("api/learning/quiz/fill-blank/random")
+    @GET("api/learning/fill-blank/random")
     fun getRandomFillBlankQuiz(): Call<ApiFillBlankQuizDto>
 
-    @POST("api/learning/quiz/submit")
+    @POST("api/learning/fill-blank/submit")
     fun submitQuizResult(
         @Body request: ApiQuizSubmitRequest
     ): Call<Void>

@@ -1,6 +1,6 @@
 package com.example.poetry.backend.learning.repository;
 
-import com.example.poetry.backend.learning.dto.QuizModels;
+import com.example.poetry.backend.learning.dto.FillBlankModels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,10 +25,6 @@ public class FillBlankRepository {
     public Optional<Map<String, Object>> getRandomSentenceForQuiz() {
         long start = System.currentTimeMillis();
         
-        // 策略：先随机获取一个work_id，再从该work中随机获取句子
-        // 这样避免在大表上做OFFSET操作
-        
-        // 优先获取有译文的作品
         String getRandomWorkWithTranslation = """
             SELECT work_id FROM poetry_work 
             WHERE translation_text IS NOT NULL AND translation_text != ''
@@ -41,7 +37,6 @@ public class FillBlankRepository {
             if (randomWorkId != null) {
                 log.debug("随机选中的作品ID: {}", randomWorkId);
                 
-                // 从该作品中随机获取一个符合条件的句子
                 String getSentenceFromWork = """
                     SELECT ws.work_id, ws.sentence_id, ws.sentence_text, pw.title, pw.author_name_cache as author, pw.translation_text as translation
                     FROM work_sentence ws
@@ -63,7 +58,6 @@ public class FillBlankRepository {
             log.warn("没有找到有译文的作品，使用普通查询...");
         }
         
-        // 使用普通查询（无译文限制）
         String countSql = "SELECT COUNT(*) FROM work_sentence WHERE char_count BETWEEN 5 AND 30";
         Integer total = jdbcTemplate.queryForObject(countSql, new MapSqlParameterSource(), Integer.class);
         
@@ -79,7 +73,6 @@ public class FillBlankRepository {
         
         log.debug("符合条件的句子总数: {}", total);
         
-        // 使用高效的随机方式
         int randomOffset = (int) (Math.random() * total);
         
         String sql = """
@@ -106,7 +99,6 @@ public class FillBlankRepository {
                      "FROM work_sentence WHERE char_count >= 5 LIMIT 30";
         List<String> allChars = jdbcTemplate.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> rs.getString("char_val"));
         
-        // 过滤标点符号和空字符
         allChars.removeIf(c -> c == null || c.isEmpty() || c.matches("[，。？！；：、,.?!;:\\s]"));
         
         if (allChars.isEmpty()) {
@@ -119,7 +111,7 @@ public class FillBlankRepository {
         return allChars.subList(0, size);
     }
 
-    public void saveQuizRecord(QuizModels.QuizSubmitRequest request) {
+    public void saveQuizRecord(FillBlankModels.SubmitRequest request) {
         String sql = """
             INSERT INTO quiz_record (user_id, work_id, sentence_id, quiz_type, difficulty_level, 
                                     question_payload, answer_payload, correct_payload, 
