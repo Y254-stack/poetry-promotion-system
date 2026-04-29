@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class QuizRepository {
+public class FillBlankRepository {
 
-    private static final Logger log = LoggerFactory.getLogger(QuizRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(FillBlankRepository.class);
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public QuizRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public FillBlankRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

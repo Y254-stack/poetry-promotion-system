@@ -7,6 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Query
+import com.example.poetry.features.learning.model.QuizQuestion
 
 interface PoetryApiService {
 
@@ -44,4 +45,7 @@ interface PoetryApiService {
     fun submitQuizResult(
         @Body request: ApiQuizSubmitRequest
     ): Call<Void>
+
+    @GET("api/quiz/questions")
+    fun getQuizQuestions(@Query("limit") limit: Int): Call<List<QuizQuestion>>
 }
