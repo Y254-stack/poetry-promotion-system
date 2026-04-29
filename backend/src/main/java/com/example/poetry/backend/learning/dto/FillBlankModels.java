@@ -2,7 +2,7 @@ package com.example.poetry.backend.learning.dto;
 
 import java.util.List;
 
-public class QuizModels {
+public class FillBlankModels {
     public record FillBlankQuiz(
         Long workId,
         Long sentenceId,
@@ -13,7 +13,7 @@ public class QuizModels {
         String translation
     ) {}
 
-    public record QuizSubmitRequest(
+    public record SubmitRequest(
         Long userId,
         Long workId,
         Long sentenceId,

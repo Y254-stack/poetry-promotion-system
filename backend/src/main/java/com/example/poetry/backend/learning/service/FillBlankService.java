@@ -1,7 +1,7 @@
 package com.example.poetry.backend.learning.service;
 
-import com.example.poetry.backend.learning.dto.QuizModels;
-import com.example.poetry.backend.learning.repository.QuizRepository;
+import com.example.poetry.backend.learning.dto.FillBlankModels;
+import com.example.poetry.backend.learning.repository.FillBlankRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,23 +13,23 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class QuizService {
+public class FillBlankService {
 
-    private static final Logger log = LoggerFactory.getLogger(QuizService.class);
-    private final QuizRepository quizRepository;
+    private static final Logger log = LoggerFactory.getLogger(FillBlankService.class);
+    private final FillBlankRepository fillBlankRepository;
 
-    public QuizService(QuizRepository quizRepository) {
-        this.quizRepository = quizRepository;
+    public FillBlankService(FillBlankRepository fillBlankRepository) {
+        this.fillBlankRepository = fillBlankRepository;
     }
 
-    public QuizModels.FillBlankQuiz generateFillBlankQuiz() {
+    public FillBlankModels.FillBlankQuiz generateFillBlankQuiz() {
         log.info("========== 开始生成随机选词填空题 ==========");
         long totalStart = System.currentTimeMillis();
 
         log.info("步骤1: 开始从数据库获取随机句子...");
         long dbStart = System.currentTimeMillis();
         
-        Optional<Map<String, Object>> dataOpt = quizRepository.getRandomSentenceForQuiz();
+        Optional<Map<String, Object>> dataOpt = fillBlankRepository.getRandomSentenceForQuiz();
         
         Map<String, Object> data = dataOpt.orElseThrow(() -> {
             log.error("数据库中没有符合条件的诗句，请确保执行了数据初始化脚本！");
@@ -61,7 +61,6 @@ public class QuizService {
         }
         log.info("原始句子: {}, 候选词数量: {}", sentence, candidates.size());
         
-        // 打乱顺序
         Collections.shuffle(candidates);
         log.info("打乱后的候选词: {}", candidates);
 
@@ -69,10 +68,10 @@ public class QuizService {
         log.info("========== 题目生成完成 ==========");
         log.info("总耗时: {}ms, 句子长度: {}字", (totalEnd - totalStart), cleanSentence.length());
         
-        return new QuizModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates, translation);
+        return new FillBlankModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates, translation);
     }
 
-    public void submitResult(QuizModels.QuizSubmitRequest request) {
-        quizRepository.saveQuizRecord(request);
+    public void submitResult(FillBlankModels.SubmitRequest request) {
+        fillBlankRepository.saveQuizRecord(request);
     }
 }
