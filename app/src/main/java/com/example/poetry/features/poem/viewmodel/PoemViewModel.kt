@@ -5,20 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.poetry.core.network.ApiPoemDetailDto
-import com.example.poetry.core.network.ApiPoemSearchItemDto
-import com.example.poetry.core.network.ApiTagDto
-import com.example.poetry.core.network.ApiTagSearchResponse
 import com.example.poetry.core.network.NetworkModule
 import com.example.poetry.features.poem.mock.PoemMockData
 import com.example.poetry.features.poem.model.AuthorProfileUiModel
 import com.example.poetry.features.poem.model.PoemDetailUiModel
-import com.example.poetry.features.poem.model.PoemSummaryUiModel
-import com.example.poetry.features.poem.model.TagSearchSort
-import com.example.poetry.features.poem.model.TagSearchUiState
-import com.example.poetry.features.poem.model.TagUiModel
 import com.example.poetry.features.poem.repository.PoemRepository
 import com.example.poetry.features.poem.repository.PoemRepositoryImpl
-import kotlin.math.ceil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,68 +26,8 @@ class PoemViewModel(
     private val _poemDetail = MutableLiveData(PoemMockData.emptyPoemDetail())
     val poemDetail: LiveData<PoemDetailUiModel> = _poemDetail
 
-    private val _searchUiState = MutableLiveData(
-        TagSearchUiState(
-            availableTags = emptyList(),
-            results = emptyList(),
-            recommendedTags = emptyList()
-        )
-    )
-    val searchUiState: LiveData<TagSearchUiState> = _searchUiState
-
     private val _authorProfile = MutableLiveData(PoemMockData.emptyAuthorProfile())
     val authorProfile: LiveData<AuthorProfileUiModel> = _authorProfile
-
-    private val _representativeWorks = MutableLiveData<List<PoemSummaryUiModel>>(emptyList())
-    val representativeWorks: LiveData<List<PoemSummaryUiModel>> = _representativeWorks
-
-    fun loadHotTags() {
-        val current = _searchUiState.value ?: TagSearchUiState()
-        _searchUiState.value = current.copy(isLoading = true, errorMessage = null)
-        repository.getHotTags().enqueue(object : Callback<List<ApiTagDto>> {
-            override fun onResponse(call: Call<List<ApiTagDto>>, response: Response<List<ApiTagDto>>) {
-                Log.d(TAG, "loadHotTags success: code=${response.code()}, size=${response.body()?.size ?: 0}")
-                val tags = response.body().orEmpty().map { it.toUiModel() }
-                val latest = _searchUiState.value ?: TagSearchUiState()
-                _searchUiState.value = latest.copy(
-                    availableTags = if (tags.isEmpty()) latest.availableTags else tags,
-                    recommendedTags = if (tags.isEmpty()) latest.recommendedTags else tags.take(8),
-                    isLoading = false,
-                    errorMessage = null
-                )
-            }
-
-            override fun onFailure(call: Call<List<ApiTagDto>>, t: Throwable) {
-                Log.e(TAG, "loadHotTags failed", t)
-                val latest = _searchUiState.value ?: TagSearchUiState()
-                _searchUiState.value = latest.copy(
-                    availableTags = latest.availableTags,
-                    recommendedTags = emptyList(),
-                    isLoading = false,
-                    errorMessage = "标签服务暂不可用，请稍后重试。"
-                )
-            }
-        })
-    }
-
-    fun toggleTagSelectionOnly(tagId: Long) {
-        val current = _searchUiState.value ?: return
-        val nextSelected = current.selectedTagIds.toMutableList().apply {
-            if (contains(tagId)) remove(tagId) else add(tagId)
-        }
-        _searchUiState.value = current.copy(
-            selectedTagIds = nextSelected,
-            errorMessage = null
-        )
-    }
-
-    fun updateSort(sort: TagSearchSort) {
-        val current = _searchUiState.value ?: return
-        _searchUiState.value = current.copy(sort = sort)
-        if (current.selectedTagIds.isNotEmpty()) {
-            searchByTags(current.selectedTagIds, sort, page = 1)
-        }
-    }
 
     fun loadPoemDetail(workId: Long) {
         repository.getPoemDetail(workId).enqueue(object : Callback<ApiPoemDetailDto> {
@@ -110,98 +42,6 @@ class PoemViewModel(
             }
         })
     }
-
-    fun searchByTags(
-        tagIds: List<Long>,
-        sort: TagSearchSort,
-        page: Int = 1
-    ) {
-        val current = _searchUiState.value ?: TagSearchUiState()
-        _searchUiState.value = current.copy(
-            selectedTagIds = tagIds,
-            sort = sort,
-            currentPage = page,
-            isLoading = true,
-            emptyMessage = null,
-            errorMessage = null,
-            results = emptyList(),
-            recommendedTags = emptyList(),
-            totalCount = 0,
-            totalPages = 0
-        )
-
-        repository.searchByTags(
-            tagIds = tagIds,
-            sort = sort.apiValue,
-            page = page,
-            pageSize = current.pageSize
-        ).enqueue(object : Callback<ApiTagSearchResponse> {
-            override fun onResponse(call: Call<ApiTagSearchResponse>, response: Response<ApiTagSearchResponse>) {
-                Log.d(TAG, "searchByTags success: code=${response.code()}, tagIds=$tagIds, sort=${sort.apiValue}, page=$page")
-                val body = response.body()
-                if (body == null) {
-                    Log.e(TAG, "searchByTags empty body: tagIds=$tagIds, sort=${sort.apiValue}, page=$page")
-                    applySearchError(current, tagIds, sort, page)
-                    return
-                }
-
-                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
-                _searchUiState.value = current.copy(
-                    selectedTagIds = tagIds,
-                    sort = sort,
-                    currentPage = body.page,
-                    pageSize = body.pageSize,
-                    totalCount = body.total,
-                    totalPages = totalPages,
-                    results = body.items.map { it.toUiModel() },
-                    recommendedTags = body.recommendedTags.map { it.toUiModel() },
-                    emptyMessage = body.emptyMessage,
-                    isLoading = false,
-                    errorMessage = null
-                )
-            }
-
-            override fun onFailure(call: Call<ApiTagSearchResponse>, t: Throwable) {
-                Log.e(TAG, "searchByTags failed: tagIds=$tagIds, sort=${sort.apiValue}, page=$page", t)
-                applySearchError(current, tagIds, sort, page)
-            }
-        })
-    }
-
-    private fun applySearchError(
-        current: TagSearchUiState,
-        tagIds: List<Long>,
-        sort: TagSearchSort,
-        page: Int
-    ) {
-        _searchUiState.value = current.copy(
-            selectedTagIds = tagIds,
-            sort = sort,
-            currentPage = page,
-            results = emptyList(),
-            recommendedTags = emptyList(),
-            totalCount = 0,
-            totalPages = 0,
-            emptyMessage = "未找到同时匹配所选标签的诗词",
-            isLoading = false,
-            errorMessage = "搜索服务暂不可用，请稍后重试。"
-        )
-    }
-
-    private fun ApiTagDto.toUiModel(): TagUiModel =
-        TagUiModel(tagId = tagId, tagName = tagName, tagType = tagType, workCount = workCount)
-
-    private fun ApiPoemSearchItemDto.toUiModel(): PoemSummaryUiModel =
-        PoemSummaryUiModel(
-            workId = workId,
-            title = title,
-            author = authorName,
-            dynasty = dynastyName,
-            snippet = contentPreview,
-            matchedTags = matchedTags,
-            hotScore = hotScore,
-            publishTime = publishTime
-        )
 
     private fun ApiPoemDetailDto.toUiModel(): PoemDetailUiModel =
         PoemDetailUiModel(

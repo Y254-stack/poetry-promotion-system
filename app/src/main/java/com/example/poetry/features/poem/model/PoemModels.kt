@@ -6,7 +6,6 @@ data class PoemSummaryUiModel(
     val author: String,
     val dynasty: String,
     val snippet: String,
-    val matchedTags: List<String> = emptyList(),
     val hotScore: Double = 0.0,
     val publishTime: String = ""
 )
@@ -27,30 +26,3 @@ data class AuthorProfileUiModel(
     val dynasty: String,
     val intro: String
 )
-
-data class TagUiModel(
-    val tagId: Long,
-    val tagName: String,
-    val tagType: String,
-    val workCount: Int
-)
-
-data class TagSearchUiState(
-    val selectedTagIds: List<Long> = emptyList(),
-    val availableTags: List<TagUiModel> = emptyList(),
-    val results: List<PoemSummaryUiModel> = emptyList(),
-    val recommendedTags: List<TagUiModel> = emptyList(),
-    val sort: TagSearchSort = TagSearchSort.HOT,
-    val currentPage: Int = 1,
-    val pageSize: Int = 20,
-    val totalCount: Int = 0,
-    val totalPages: Int = 0,
-    val emptyMessage: String? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
-)
-
-enum class TagSearchSort(val apiValue: String) {
-    HOT("hot"),
-    PUBLISH_TIME("publish_time")
-}
