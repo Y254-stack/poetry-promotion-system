@@ -49,7 +49,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupCategoryList() {
         categoryAdapter = CategoryAdapter {
-            findNavController().navigate(R.id.action_home_to_searchEntry)
+            findNavController().navigate(R.id.action_home_to_searchResult)
         }
 
         binding.categoryRecycler.apply {
@@ -71,7 +71,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun bindActions() {
         binding.searchEntryCard.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_searchEntry)
+            findNavController().navigate(R.id.action_home_to_searchResult)
         }
     }
 
