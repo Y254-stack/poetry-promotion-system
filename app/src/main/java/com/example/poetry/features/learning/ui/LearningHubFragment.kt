@@ -23,6 +23,7 @@ class LearningHubFragment : Fragment(R.layout.fragment_learning_hub) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        android.util.Log.e("LearningHub", "========== 进入了趣味学习页面 ==========")
         _binding = FragmentLearningHubBinding.bind(view)
 
         adapter = LearningModeAdapter { findNavController().navigate(it.destinationId) }

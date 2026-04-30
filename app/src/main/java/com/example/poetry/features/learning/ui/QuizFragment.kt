@@ -12,6 +12,8 @@ import com.example.poetry.features.learning.viewmodel.QuizViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
+import kotlin.time.Duration.Companion.seconds
 
 class QuizFragment : Fragment(R.layout.fragment_quiz) {
 
@@ -102,6 +104,17 @@ class QuizFragment : Fragment(R.layout.fragment_quiz) {
         val wrong = viewModel.wrongCount.value ?: 0
         val total = viewModel.totalQuestions
         val accuracy = if (total > 0) (correct * 100 / total) else 0
+
+        val seconds = viewModel.elapsedSeconds.value ?: 0
+
+        val bundle = Bundle().apply {
+            putInt("correctCount", correct)
+            putInt("wrongCount", wrong)
+            putInt("totalQuestions", total)
+            putInt("elapsedSeconds", seconds)
+        }
+
+        findNavController().navigate(R.id.quizResultFragment, bundle)
 
         val message = """
             总题数：$total

@@ -1,6 +1,6 @@
 package com.example.poetry.backend.learning.service;
 
-import com.example.poetry.backend.learning.dto.QuizModels;
+import com.example.poetry.backend.learning.dto.FillBlankModels;
 import com.example.poetry.backend.learning.repository.FillBlankRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class FillBlankService {
         this.fillBlankRepository = fillBlankRepository;
     }
 
-    public QuizModels.FillBlankQuiz generateFillBlankQuiz() {
+    public FillBlankModels.FillBlankQuiz generateFillBlankQuiz() {
         log.info("========== 开始生成随机选词填空题 ==========");
         long totalStart = System.currentTimeMillis();
 
@@ -69,10 +69,10 @@ public class FillBlankService {
         log.info("========== 题目生成完成 ==========");
         log.info("总耗时: {}ms, 句子长度: {}字", (totalEnd - totalStart), cleanSentence.length());
         
-        return new QuizModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates, translation);
+        return new FillBlankModels.FillBlankQuiz(workId, sentenceId, title, author, sentence, candidates, translation);
     }
 
-    public void submitResult(QuizModels.QuizSubmitRequest request) {
+    public void submitResult(FillBlankModels.SubmitRequest request) {
         fillBlankRepository.saveQuizRecord(request);
     }
 }

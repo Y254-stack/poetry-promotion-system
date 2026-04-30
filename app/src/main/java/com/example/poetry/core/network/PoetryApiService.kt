@@ -48,4 +48,5 @@ interface PoetryApiService {
 
     @GET("api/quiz/questions")
     fun getQuizQuestions(@Query("limit") limit: Int): Call<List<QuizQuestion>>
+
 }

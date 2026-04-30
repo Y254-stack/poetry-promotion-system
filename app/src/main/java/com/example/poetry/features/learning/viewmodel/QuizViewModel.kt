@@ -1,7 +1,7 @@
 package com.example.poetry.features.learning.viewmodel
 
 
-
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class QuizViewModel : ViewModel() {
+
+    companion object {
+        private const val TAG = "QuizViewModel"
+    }
 
     private val _questions = mutableListOf<QuizQuestion>()
     val totalQuestions: Int get() = _questions.size
@@ -44,37 +48,54 @@ class QuizViewModel : ViewModel() {
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
-        loadMockQuestions()
+        Log.e(TAG, "========== QuizViewModel 初始化 ==========")
+        loadQuestionsFromBackend()
     }
 
     private fun loadQuestionsFromBackend() {
+        Log.e(TAG, "========== 开始调用后端接口 ==========")
+
         _isLoading.value = true
         viewModelScope.launch {
             try {
+                Log.e(TAG, "发起网络请求...")
+
                 val response = withContext(Dispatchers.IO) {
                     NetworkModule.poetryApiService.getQuizQuestions(20).execute()
                 }
 
+                Log.e(TAG, "HTTP状态码: ${response.code()}")
+                Log.e(TAG, "请求成功: ${response.isSuccessful}")
+
                 if (response.isSuccessful) {
                     val quizList = response.body() ?: emptyList()
-                    _questions.clear()
-                    _questions.addAll(quizList.map { dto ->
-                        QuizQuestion(
-                            id = dto.id?.toInt() ?: 0,
-                            firstLine = dto.firstLine ?: "",
-                            correctAnswer = dto.correctAnswer ?: "",
-                            sourceTitle = dto.sourceTitle,
-                            sourceAuthor = dto.sourceAuthor
-                        )
-                    })
-                    _currentQuestion.value = _questions.firstOrNull()
-                    _progress.value = 1
+                    Log.e(TAG, "返回题目数量: ${quizList.size}")
+
+                    if (quizList.isNotEmpty()) {
+                        _questions.clear()
+                        _questions.addAll(quizList.map { dto ->
+                            QuizQuestion(
+                                id = dto.id,
+                                firstLine = dto.firstLine ?: "",
+                                correctAnswer = dto.correctAnswer ?: "",
+                                sourceTitle = dto.sourceTitle,
+                                sourceAuthor = dto.sourceAuthor
+                            )
+                        })
+                        _currentQuestion.value = _questions.firstOrNull()
+                        _progress.value = 1
+                        Log.e(TAG, "✅ 后端数据加载成功，第一题: ${_questions.firstOrNull()?.firstLine}")
+                    } else {
+                        Log.e(TAG, "⚠️ 后端返回空列表，使用硬编码")
+                        loadMockQuestions()
+                    }
                 } else {
-                    _toastMessage.value = "加载题目失败: ${response.code()}"
+                    Log.e(TAG, "❌ HTTP错误 ${response.code()}: ${response.message()}")
                     loadMockQuestions()
                 }
             } catch (e: Exception) {
-                _toastMessage.value = "网络异常: ${e.message}"
+                Log.e(TAG, "❌ 异常: ${e.javaClass.simpleName} - ${e.message}")
+                e.printStackTrace()
                 loadMockQuestions()
             } finally {
                 _isLoading.value = false
@@ -166,5 +187,15 @@ class QuizViewModel : ViewModel() {
 
     fun toastMessageShown() {
         _toastMessage.value = null
+    }
+
+    fun resetAndRestart() {
+        currentIndex = 0
+        _correctCount.value = 0
+        _wrongCount.value = 0
+        _elapsedSeconds.value = 0
+        _isFinished.value = false
+        _currentQuestion.value = _questions.firstOrNull()
+        _progress.value = 1
     }
 }
