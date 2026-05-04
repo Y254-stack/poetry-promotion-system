@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:layout_margin="16dp"
+    android:background="@drawable/bg_candidate_word_new"
+    android:gravity="center"
+    android:text=""
+    android:textColor="#333333"
+    android:textSize="28sp"
+    android:clickable="true"
+    android:focusable="true" />

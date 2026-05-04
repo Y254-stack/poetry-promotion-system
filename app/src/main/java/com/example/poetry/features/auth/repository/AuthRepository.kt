@@ -1,12 +1,24 @@
 package com.example.poetry.features.auth.repository
 
+import com.example.poetry.core.network.ApiAuthResponse
+import com.example.poetry.core.network.ApiUserProfileResponse
 import com.example.poetry.features.auth.model.AuthTipUiModel
+import retrofit2.Call
 
 interface AuthRepository {
 
-    // TODO: 接入真实登录与注册能力
     fun getLoginTips(): List<AuthTipUiModel>
 
-    // TODO: 接入真实找回密码流程
-    fun requestPasswordReset(account: String)
+    fun login(account: String, password: String): Call<ApiAuthResponse>
+
+    fun register(
+        username: String,
+        nickname: String,
+        email: String,
+        password: String
+    ): Call<ApiAuthResponse>
+
+    fun me(token: String): Call<ApiUserProfileResponse>
+
+    fun changePassword(token: String, currentPassword: String, newPassword: String): Call<ApiAuthResponse>
 }

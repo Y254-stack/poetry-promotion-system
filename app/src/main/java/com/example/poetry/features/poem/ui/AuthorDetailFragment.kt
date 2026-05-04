@@ -44,7 +44,6 @@ class AuthorDetailFragment : Fragment(R.layout.fragment_author_detail) {
             binding.dynastyText.text = it.dynasty
             binding.introText.text = it.intro
         }
-        viewModel.representativeWorks.observe(viewLifecycleOwner) { worksAdapter.submitList(it) }
     }
 
     override fun onDestroyView() {

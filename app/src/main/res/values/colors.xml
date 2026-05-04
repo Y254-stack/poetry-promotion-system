@@ -7,4 +7,23 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- User center palette -->
+    <color name="user_center_primary">#F98C53</color>
+    <color name="user_center_primary_variant">#E07A42</color>
+    <color name="user_center_green">#D2E0AA</color>
+    <color name="user_center_blue">#ABD7FB</color>
+    <color name="user_center_cream">#F9F2EF</color>
+    <color name="user_center_peach">#FCCEB4</color>
+    <color name="user_center_text_secondary">#888888</color>
+    
+    <!-- Updated palette based on design reference -->
+    <color name="background_main">#F9F2EF</color>
+    <color name="text_primary">#5D4037</color>
+    <color name="card_background_white">#FFFFFF</color>
+    <color name="card_background_light">#FEFEFE</color>
+    <color name="button_secondary_bg">#F5F5F5</color>
+    <color name="button_secondary_text">#999999</color>
+    <color name="text_light_gray">#BBBBBB</color>
+    <color name="divider_light">#F0F0F0</color>
 </resources>

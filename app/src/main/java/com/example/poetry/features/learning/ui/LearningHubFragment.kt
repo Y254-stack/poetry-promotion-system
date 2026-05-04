@@ -29,7 +29,7 @@ class LearningHubFragment : Fragment(R.layout.fragment_learning_hub) {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@LearningHubFragment.adapter
-            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(12)))
+            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(14)))
         }
 
         viewModel.modes.observe(viewLifecycleOwner) { adapter.submitList(it) }

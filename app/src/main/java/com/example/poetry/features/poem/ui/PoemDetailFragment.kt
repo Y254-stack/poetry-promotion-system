@@ -52,7 +52,6 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
             binding.annotationText.text = detail.annotation.ifBlank { "暂无注释" }
             binding.appreciationText.text = detail.appreciation.ifBlank { "暂无赏析" }
         }
-        viewModel.representativeWorks.observe(viewLifecycleOwner) { relatedAdapter.submitList(it) }
 
         binding.authorButton.setOnClickListener {
             findNavController().navigate(R.id.action_poemDetail_to_authorDetail)
