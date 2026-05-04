@@ -1,6 +1,9 @@
 package com.example.poetry.features.poem.repository
 
 import com.example.poetry.core.network.ApiPoemDetailDto
+import com.example.poetry.core.network.ApiTagDto
+import com.example.poetry.core.network.ApiTagSearchResponse
+import com.example.poetry.core.network.ApiTitleSearchResponse
 import com.example.poetry.core.network.PoetryApiService
 import retrofit2.Call
 

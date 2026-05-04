@@ -188,8 +188,8 @@ public class TagSearchRepository {
             rs.getString("authorName"),
             rs.getString("dynastyName"),
             rs.getString("contentPreview"),
-            splitTags(rs),
-            rs.getDouble("hotScore"),
+            rs.getString("matchedTags"),
+            rs.getInt("hotScore"),
             rs.getString("publishTime")
         );
     }

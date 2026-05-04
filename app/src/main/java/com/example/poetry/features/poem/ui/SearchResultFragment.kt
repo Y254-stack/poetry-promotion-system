@@ -58,20 +58,24 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                     viewModel.searchByTags(selectedTagIds, TagSearchSort.HOT, page = 1)
                 }
             }
-            SearchType.TITLE -> {
-                binding.sortToggleGroup.isVisible = false
-                binding.searchTypeToggleGroup.isVisible = true
-                binding.searchTypeToggleGroup.check(R.id.searchByTitleButton)
-                binding.searchInputLayout.isVisible = true
-                binding.searchButton.isVisible = true
-                binding.selectedTagChipGroup.isVisible = false
-                binding.searchInput.setText(titleQuery)
-                setupSearchTypeToggle()
-                bindTitleSearchState()
-                if (titleQuery.isNotEmpty()) {
-                    performSearch(titleQuery, 1)
-                }
-            }
+           SearchType.TITLE -> {
+    binding.sortToggleGroup.isVisible = false
+    binding.selectedTagChipGroup.isVisible = false
+    binding.searchInput.setText(titleQuery)
+    setupSearchTypeToggle()
+    bindTitleSearchState()
+    
+    // 在bindTitleSearchState之后确保搜索框可见
+    binding.searchTypeToggleGroup.isVisible = true
+    binding.searchTypeToggleGroup.check(R.id.searchByTitleButton)
+    binding.searchInputLayout.isVisible = true
+    binding.searchButton.isVisible = true
+    
+    if (titleQuery.isNotEmpty()) {
+        performSearch(titleQuery, 1)
+    }
+}
+
         }
     }
 

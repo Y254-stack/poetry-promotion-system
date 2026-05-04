@@ -11,6 +11,46 @@ data class ApiPoemDetailDto(
     val appreciationText: String?
 )
 
+// Tag search models
+data class ApiTagDto(
+    val tagId: Long,
+    val tagName: String,
+    val tagType: String,
+    val workCount: Int
+)
+
+data class ApiPoemSearchItemDto(
+    val workId: Long,
+    val title: String,
+    val authorName: String,
+    val dynastyName: String,
+    val contentPreview: String,
+    val matchedTags: String,
+    val hotScore: Int,
+    val publishTime: String
+)
+
+data class ApiTagSearchResponse(
+    val tagIds: List<Long>,
+    val sort: String,
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val hasMore: Boolean,
+    val items: List<ApiPoemSearchItemDto>,
+    val emptyMessage: String?,
+    val recommendedTags: List<ApiTagDto>
+)
+
+data class ApiTitleSearchResponse(
+    val query: String,
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiPoemSearchItemDto>,
+    val emptyMessage: String?
+)
+
 data class ApiRegisterRequest(
     val username: String,
     val nickname: String,
