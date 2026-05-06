@@ -104,3 +104,19 @@ data class ApiQuizSubmitRequest(
     val answerPayload: String,
     val correctPayload: String
 )
+
+// Favorite models
+data class ApiFavoriteCheckResponse(
+    val isFavorited: Boolean
+)
+
+data class ApiFavoriteActionResponse(
+    val success: Boolean
+)
+
+data class ApiFavoriteListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiPoemSearchItemDto>
+)

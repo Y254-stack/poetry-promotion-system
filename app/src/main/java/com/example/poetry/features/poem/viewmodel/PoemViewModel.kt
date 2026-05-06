@@ -20,13 +20,18 @@ import com.example.poetry.features.poem.model.TagUiModel
 import com.example.poetry.features.poem.model.TitleSearchUiState
 import com.example.poetry.features.poem.repository.PoemRepository
 import com.example.poetry.features.poem.repository.PoemRepositoryImpl
+import com.example.poetry.features.favorite.repository.FavoriteRepository
+import com.example.poetry.features.favorite.repository.FavoriteRepositoryImpl
+import com.example.poetry.core.network.ApiFavoriteCheckResponse
+import com.example.poetry.core.network.ApiFavoriteActionResponse
 import kotlin.math.ceil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class PoemViewModel(
-    private val repository: PoemRepository = PoemRepositoryImpl(NetworkModule.poetryApiService)
+    private val repository: PoemRepository = PoemRepositoryImpl(NetworkModule.poetryApiService),
+    private val favoriteRepository: FavoriteRepository = FavoriteRepositoryImpl(NetworkModule.poetryApiService)
 ) : ViewModel() {
 
     companion object {
@@ -35,6 +40,9 @@ class PoemViewModel(
 
     private val _poemDetail = MutableLiveData(PoemMockData.emptyPoemDetail())
     val poemDetail: LiveData<PoemDetailUiModel> = _poemDetail
+
+    private val _isFavorited = MutableLiveData(false)
+    val isFavorited: LiveData<Boolean> = _isFavorited
 
     private val _searchUiState = MutableLiveData(
         TagSearchUiState(
@@ -407,5 +415,50 @@ class PoemViewModel(
             isLoading = false,
             errorMessage = "搜索服务暂不可用，请稍后重试。"
         )
+    }
+
+    fun checkFavoriteStatus(userId: Long, workId: Long) {
+        favoriteRepository.checkFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteCheckResponse> {
+            override fun onResponse(call: Call<ApiFavoriteCheckResponse>, response: Response<ApiFavoriteCheckResponse>) {
+                Log.d(TAG, "checkFavorite success: userId=$userId, workId=$workId, isFavorited=${response.body()?.isFavorited}")
+                _isFavorited.value = response.body()?.isFavorited ?: false
+            }
+
+            override fun onFailure(call: Call<ApiFavoriteCheckResponse>, t: Throwable) {
+                Log.e(TAG, "checkFavorite failed: userId=$userId, workId=$workId", t)
+                _isFavorited.value = false
+            }
+        })
+    }
+
+    fun toggleFavorite(userId: Long, workId: Long) {
+        val currentStatus = _isFavorited.value ?: false
+        if (currentStatus) {
+            favoriteRepository.removeFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
+                override fun onResponse(call: Call<ApiFavoriteActionResponse>, response: Response<ApiFavoriteActionResponse>) {
+                    Log.d(TAG, "removeFavorite success: userId=$userId, workId=$workId")
+                    if (response.body()?.success == true) {
+                        _isFavorited.value = false
+                    }
+                }
+
+                override fun onFailure(call: Call<ApiFavoriteActionResponse>, t: Throwable) {
+                    Log.e(TAG, "removeFavorite failed: userId=$userId, workId=$workId", t)
+                }
+            })
+        } else {
+            favoriteRepository.addFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
+                override fun onResponse(call: Call<ApiFavoriteActionResponse>, response: Response<ApiFavoriteActionResponse>) {
+                    Log.d(TAG, "addFavorite success: userId=$userId, workId=$workId")
+                    if (response.body()?.success == true) {
+                        _isFavorited.value = true
+                    }
+                }
+
+                override fun onFailure(call: Call<ApiFavoriteActionResponse>, t: Throwable) {
+                    Log.e(TAG, "addFavorite failed: userId=$userId, workId=$workId", t)
+                }
+            })
+        }
     }
 }

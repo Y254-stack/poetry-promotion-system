@@ -78,4 +78,30 @@ interface PoetryApiService {
     fun submitQuizResult(
         @Body request: ApiQuizSubmitRequest
     ): Call<Void>
+
+    // Favorite APIs
+    @GET("api/favorites/check")
+    fun checkFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteCheckResponse>
+
+    @POST("api/favorites")
+    fun addFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @retrofit2.http.DELETE("api/favorites")
+    fun removeFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/favorites")
+    fun getFavoriteList(
+        @Query("userId") userId: Long,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Call<ApiFavoriteListResponse>
 }
