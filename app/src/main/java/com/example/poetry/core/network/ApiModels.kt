@@ -120,3 +120,14 @@ data class ApiFavoriteListResponse(
     val total: Int,
     val items: List<ApiPoemSearchItemDto>
 )
+
+data class ApiDynastyDto(
+    val dynastyId: Long,
+    val dynastyName: String
+)
+
+data class ApiAuthorDto(
+    val authorId: Long,
+    val authorName: String,
+    val dynastyName: String
+)

@@ -104,4 +104,10 @@ interface PoetryApiService {
         @Query("page") page: Int = 1,
         @Query("pageSize") pageSize: Int = 20
     ): Call<ApiFavoriteListResponse>
+
+    @GET("api/categories/dynasties")
+    fun getDynasties(): Call<List<ApiDynastyDto>>
+
+    @GET("api/categories/authors")
+    fun getAuthors(): Call<List<ApiAuthorDto>>
 }

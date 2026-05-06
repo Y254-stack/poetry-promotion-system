@@ -48,8 +48,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupCategoryList() {
-        categoryAdapter = CategoryAdapter {
-            findNavController().navigate(R.id.action_home_to_searchResult)
+        categoryAdapter = CategoryAdapter { category ->
+            findNavController().navigate(
+                R.id.action_home_to_categoryList,
+                androidx.core.os.bundleOf(
+                    "categoryType" to category.type.name
+                )
+            )
         }
 
         binding.categoryRecycler.apply {

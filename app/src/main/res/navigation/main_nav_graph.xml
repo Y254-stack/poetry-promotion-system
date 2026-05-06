@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_home_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
+        <action
+            android:id="@+id/action_home_to_categoryList"
+            app:destination="@id/categoryListFragment" />
     </fragment>
 
     <fragment
@@ -134,6 +137,11 @@
             android:id="@+id/action_searchResult_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.example.poetry.features.home.ui.CategoryListFragment"
+        android:label="分类列表" />
 
     <fragment
         android:id="@+id/learningHubFragment"

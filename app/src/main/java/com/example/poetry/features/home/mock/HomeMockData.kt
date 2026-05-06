@@ -1,6 +1,7 @@
 package com.example.poetry.features.home.mock
 
 import com.example.poetry.features.home.model.CategoryEntryUiModel
+import com.example.poetry.features.home.model.CategoryType
 import com.example.poetry.features.home.model.DailyRecommendationUiModel
 
 object HomeMockData {
@@ -30,11 +31,7 @@ object HomeMockData {
     )
 
     fun categoryEntries(): List<CategoryEntryUiModel> = listOf(
-        CategoryEntryUiModel("唐诗", "适合碎片化阅读"),
-        CategoryEntryUiModel("宋词", "词牌与意境速览"),
-        CategoryEntryUiModel("写景", "四季山水与节气"),
-        CategoryEntryUiModel("送别", "情感主题聚合"),
-        CategoryEntryUiModel("课本常见", "适合学习打卡"),
-        CategoryEntryUiModel("名句卡片", "适合创作分享")
+        CategoryEntryUiModel(CategoryType.DYNASTY, "朝代分类", "按朝代浏览诗词"),
+        CategoryEntryUiModel(CategoryType.AUTHOR, "诗人分类", "按诗人浏览作品")
     )
 }
