@@ -5,7 +5,7 @@ import com.example.poetry.backend.learning.service.FillBlankService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/learning/fill-blank")
+@RequestMapping("/api/learning/quiz")
 public class FillBlankController {
 
     private final FillBlankService fillBlankService;
@@ -14,7 +14,7 @@ public class FillBlankController {
         this.fillBlankService = fillBlankService;
     }
 
-    @GetMapping("/random")
+    @GetMapping("/fill-blank/random")
     public FillBlankModels.FillBlankQuiz getRandomFillBlankQuiz() {
         return fillBlankService.generateFillBlankQuiz();
     }
@@ -23,4 +23,5 @@ public class FillBlankController {
     public void submitQuizResult(@RequestBody FillBlankModels.SubmitRequest request) {
         fillBlankService.submitResult(request);
     }
+
 }

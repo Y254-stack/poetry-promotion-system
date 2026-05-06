@@ -61,6 +61,7 @@ public class FillBlankService {
         }
         log.info("原始句子: {}, 候选词数量: {}", sentence, candidates.size());
         
+        // 打乱顺序
         Collections.shuffle(candidates);
         log.info("打乱后的候选词: {}", candidates);
 
