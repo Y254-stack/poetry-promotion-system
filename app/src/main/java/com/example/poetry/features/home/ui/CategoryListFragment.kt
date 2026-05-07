@@ -79,7 +79,7 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                 loadDynasties()
             }
             CategoryType.AUTHOR -> {
-                binding.titleText.text = "诗人分类"
+                binding.titleText.text = "作者分类"
                 binding.subtitleText.text = "选择一个诗人查看其作品"
                 loadAuthors()
             }
