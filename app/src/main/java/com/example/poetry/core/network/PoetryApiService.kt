@@ -2,11 +2,13 @@ package com.example.poetry.core.network
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Query
+import retrofit2.Response
 import com.example.poetry.features.learning.model.QuizQuestion
 
 interface PoetryApiService {
@@ -114,5 +116,19 @@ interface PoetryApiService {
     fun getComments(
         @Path("postId") postId: Long
     ): Call<List<ApiCommentResponse>>
+
+    //我的创作
+    @GET("api/community/user/posts")
+    suspend fun getUserPosts(
+        @Query("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): ApiPostListResponse
+
+    @DELETE("api/community/post/{postId}")
+    suspend fun deletePost(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): Response<Unit>
 
 }

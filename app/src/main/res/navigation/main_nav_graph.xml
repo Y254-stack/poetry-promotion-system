@@ -86,6 +86,16 @@
         android:name="com.example.poetry.features.user.ui.MyCreationsFragment"
         android:label="我的创作" />
 
+        <!-- 跳转到帖子详情 -->
+        <action
+                android:id="@+id/action_myCreations_to_postDetail"
+                app:destination="@id/postDetailFragment" />
+
+        <!-- 跳转到发帖页面 -->
+        <action
+                android:id="@+id/action_myCreations_to_createPost"
+                app:destination="@id/createPostFragment" />
+
     <fragment
         android:id="@+id/myFavoritesFragment"
         android:name="com.example.poetry.features.user.ui.MyFavoritesFragment"

@@ -60,6 +60,31 @@ public class PostController {
     }
 
     /**
+     * 获取指定用户的帖子列表
+     */
+    @GetMapping("/user/posts")
+    public PostListResponse getUserPosts(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int pageSize
+    ) {
+        return postService.getUserPosts(userId, page, pageSize);
+    }
+
+    /**
+     * 删除帖子
+     */
+    @DeleteMapping("/post/{postId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = extractUserId(authorization);
+        postService.deletePost(postId, userId);
+    }
+
+    /**
      * 发布评论
      */
     @PostMapping("/comment")
