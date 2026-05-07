@@ -16,5 +16,6 @@ data class CategoryEntryUiModel(
 
 enum class CategoryType {
     DYNASTY,
-    AUTHOR
+    AUTHOR,
+    COLLECTION
 }

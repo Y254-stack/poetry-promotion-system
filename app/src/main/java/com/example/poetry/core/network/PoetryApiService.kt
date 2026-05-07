@@ -111,6 +111,9 @@ interface PoetryApiService {
     @GET("api/categories/authors")
     fun getAuthors(): Call<List<ApiAuthorDto>>
 
+    @GET("api/categories/collections")
+    fun getCollections(): Call<List<ApiAuthorDto>>
+
     @GET("api/categories/poems/by-dynasty")
     fun getPoemsByDynasty(
         @Query("dynastyName") dynastyName: String,

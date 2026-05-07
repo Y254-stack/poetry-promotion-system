@@ -60,6 +60,16 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                         )
                     )
                 }
+                CategoryType.COLLECTION -> {
+                    findNavController().navigate(
+                        R.id.searchResultFragment,
+                        bundleOf(
+                            "searchType" to "AUTHOR_ID",
+                            "authorId" to item.id,
+                            "authorName" to item.name
+                        )
+                    )
+                }
             }
         }
 
@@ -82,6 +92,11 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                 binding.titleText.text = "作者分类"
                 binding.subtitleText.text = "选择一个诗人查看其作品"
                 loadAuthors()
+            }
+            CategoryType.COLLECTION -> {
+                binding.titleText.text = "诗集分类"
+                binding.subtitleText.text = "选择一个诗集查看其作品"
+                loadCollections()
             }
         }
     }
@@ -116,6 +131,23 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
             override fun onFailure(call: Call<List<ApiAuthorDto>>, t: Throwable) {
                 binding.progressBar.isVisible = false
                 Log.e("CategoryListFragment", "Failed to load authors", t)
+            }
+        })
+    }
+
+    private fun loadCollections() {
+        NetworkModule.poetryApiService.getCollections().enqueue(object : Callback<List<ApiAuthorDto>> {
+            override fun onResponse(call: Call<List<ApiAuthorDto>>, response: Response<List<ApiAuthorDto>>) {
+                binding.progressBar.isVisible = false
+                val items = response.body()?.map {
+                    CategoryDetailItem(it.authorId, it.authorName, it.dynastyName)
+                } ?: emptyList()
+                adapter.submitList(items)
+            }
+
+            override fun onFailure(call: Call<List<ApiAuthorDto>>, t: Throwable) {
+                binding.progressBar.isVisible = false
+                Log.e("CategoryListFragment", "Failed to load collections", t)
             }
         })
     }

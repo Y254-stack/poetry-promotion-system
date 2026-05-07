@@ -32,6 +32,7 @@ object HomeMockData {
 
     fun categoryEntries(): List<CategoryEntryUiModel> = listOf(
         CategoryEntryUiModel(CategoryType.DYNASTY, "朝代分类", "按朝代浏览诗词"),
-        CategoryEntryUiModel(CategoryType.AUTHOR, "作者分类", "按诗人浏览作品")
+        CategoryEntryUiModel(CategoryType.AUTHOR, "作者分类", "按诗人浏览作品"),
+        CategoryEntryUiModel(CategoryType.COLLECTION, "诗集分类", "按诗集浏览作品")
     )
 }
