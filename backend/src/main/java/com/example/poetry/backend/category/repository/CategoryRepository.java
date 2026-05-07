@@ -19,7 +19,9 @@ public class CategoryRepository {
     }
 
     public List<DynastyDto> getAllDynasties() {
-        String sql = "SELECT dynasty_id, dynasty_name FROM dynasty ORDER BY dynasty_name";
+        String sql = "SELECT ROW_NUMBER() OVER (ORDER BY dynasty_name) as dynasty_id, dynasty_name " +
+                     "FROM (SELECT DISTINCT dynasty_name FROM author WHERE dynasty_name IS NOT NULL) AS dynasties " +
+                     "ORDER BY dynasty_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new DynastyDto(
                         rs.getLong("dynasty_id"),
@@ -29,10 +31,10 @@ public class CategoryRepository {
     }
 
     public List<AuthorDto> getAllAuthors() {
-        String sql = "SELECT a.author_id, a.author_name, d.dynasty_name " +
+        String sql = "SELECT a.author_id, a.canonical_name as author_name, a.dynasty_name " +
                      "FROM author a " +
-                     "LEFT JOIN dynasty d ON a.dynasty_id = d.dynasty_id " +
-                     "ORDER BY a.author_name";
+                     "WHERE a.canonical_name IS NOT NULL " +
+                     "ORDER BY a.canonical_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new AuthorDto(
                         rs.getLong("author_id"),
