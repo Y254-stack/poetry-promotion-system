@@ -4,7 +4,7 @@
     <string name="nav_learning">学习</string>
     <string name="nav_community">社区</string>
     <string name="nav_user">我的</string>
-    <string name="search_hint">搜索诗名、作者、名句</string>
+    <string name="search_hint">搜索诗名、作者</string>
     <string name="action_login">登录</string>
     <string name="action_register">注册</string>
     <string name="action_forgot_password">找回密码</string>

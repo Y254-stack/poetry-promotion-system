@@ -30,7 +30,7 @@ data class AuthorProfileUiModel(
 
 // Search related models
 enum class SearchType {
-    TAG, TITLE
+    TAG, TITLE, DYNASTY, AUTHOR_ID
 }
 
 enum class TagSearchSort(val apiValue: String) {

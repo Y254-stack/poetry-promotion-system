@@ -83,4 +83,52 @@ interface PoetryApiService {
     @GET("api/quiz/questions")
     fun getQuizQuestions(@Query("limit") limit: Int): Call<List<QuizQuestion>>
 
+    // Favorite APIs
+    @GET("api/favorites/check")
+    fun checkFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteCheckResponse>
+
+    @POST("api/favorites")
+    fun addFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @retrofit2.http.DELETE("api/favorites")
+    fun removeFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/favorites")
+    fun getFavoriteList(
+        @Query("userId") userId: Long,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Call<ApiFavoriteListResponse>
+
+    @GET("api/categories/dynasties")
+    fun getDynasties(): Call<List<ApiDynastyDto>>
+
+    @GET("api/categories/authors")
+    fun getAuthors(): Call<List<ApiAuthorDto>>
+
+    @GET("api/categories/collections")
+    fun getCollections(): Call<List<ApiAuthorDto>>
+
+    @GET("api/categories/poems/by-dynasty")
+    fun getPoemsByDynasty(
+        @Query("dynastyName") dynastyName: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
+
+    @GET("api/categories/poems/by-author")
+    fun getPoemsByAuthor(
+        @Query("authorId") authorId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
 }

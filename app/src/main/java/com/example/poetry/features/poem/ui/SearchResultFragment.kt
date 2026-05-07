@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
 import com.example.poetry.core.ui.VerticalSpaceItemDecoration
 import com.example.poetry.core.util.dp
+import com.example.poetry.core.util.SearchHistoryManager
 import com.example.poetry.databinding.FragmentSearchResultBinding
 import com.example.poetry.features.poem.adapter.PoemSummaryAdapter
+import com.example.poetry.features.poem.adapter.SearchHistoryAdapter
 import com.example.poetry.features.poem.model.SearchType
 import com.example.poetry.features.poem.model.TagSearchSort
 import com.example.poetry.features.poem.model.TagUiModel
@@ -26,23 +28,34 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
 
     private val viewModel: PoemViewModel by viewModels()
     private lateinit var adapter: PoemSummaryAdapter
+    private lateinit var historyAdapter: SearchHistoryAdapter
+    private lateinit var searchHistoryManager: SearchHistoryManager
 
     private var searchType: SearchType = SearchType.TAG
     private var selectedTagIds: MutableList<Long> = mutableListOf()
     private var selectedTagNames: MutableList<String> = mutableListOf()
     private var titleQuery: String = ""
+    private var dynastyName: String = ""
+    private var authorId: Long = 0L
+    private var authorName: String = ""
     private var currentSearchSubType: String = "TITLE" // TITLE, AUTHOR, ALL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchResultBinding.bind(view)
 
+        searchHistoryManager = SearchHistoryManager(requireContext())
+
         searchType = SearchType.valueOf(arguments?.getString("searchType") ?: "TAG")
         selectedTagIds = (arguments?.getLongArray("selectedTagIds") ?: longArrayOf()).toMutableList()
         selectedTagNames = (arguments?.getStringArrayList("selectedTagNames") ?: arrayListOf()).toMutableList()
         titleQuery = arguments?.getString("titleQuery") ?: ""
+        dynastyName = arguments?.getString("dynastyName") ?: ""
+        authorId = arguments?.getLong("authorId") ?: 0L
+        authorName = arguments?.getString("authorName") ?: ""
 
         setupResultList()
+        setupSearchHistory()
         setupSortToggle()
         setupPagination()
         setupSearchInput()
@@ -64,17 +77,39 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     binding.searchInput.setText(titleQuery)
     setupSearchTypeToggle()
     bindTitleSearchState()
-    
-    // 在bindTitleSearchState之后确保搜索框可见
+
     binding.searchTypeToggleGroup.isVisible = true
     binding.searchTypeToggleGroup.check(R.id.searchByTitleButton)
     binding.searchInputLayout.isVisible = true
     binding.searchButton.isVisible = true
-    
+    binding.searchInput.hint = "输入诗词标题"
+
     if (titleQuery.isNotEmpty()) {
         performSearch(titleQuery, 1)
     }
 }
+            SearchType.DYNASTY -> {
+                binding.sortToggleGroup.isVisible = false
+                binding.selectedTagChipGroup.isVisible = false
+                binding.searchTypeToggleGroup.isVisible = false
+                binding.searchInputLayout.isVisible = false
+                binding.searchButton.isVisible = false
+                bindTitleSearchState()
+                if (dynastyName.isNotEmpty()) {
+                    viewModel.searchByDynasty(dynastyName, 1)
+                }
+            }
+            SearchType.AUTHOR_ID -> {
+                binding.sortToggleGroup.isVisible = false
+                binding.selectedTagChipGroup.isVisible = false
+                binding.searchTypeToggleGroup.isVisible = false
+                binding.searchInputLayout.isVisible = false
+                binding.searchButton.isVisible = false
+                bindTitleSearchState()
+                if (authorId > 0) {
+                    viewModel.searchByAuthorId(authorId, authorName, 1)
+                }
+            }
 
         }
     }
@@ -91,6 +126,37 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             adapter = this@SearchResultFragment.adapter
             addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(12)))
         }
+    }
+
+    private fun setupSearchHistory() {
+        historyAdapter = SearchHistoryAdapter(
+            onItemClick = { query ->
+                binding.searchInput.setText(query)
+                titleQuery = query
+                performSearch(query, 1)
+            },
+            onDeleteClick = { query ->
+                searchHistoryManager.removeSearchHistory(query)
+                updateSearchHistory()
+            }
+        )
+        binding.historyRecycler.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = historyAdapter
+        }
+
+        binding.clearHistoryButton.setOnClickListener {
+            searchHistoryManager.clearAllHistory()
+            updateSearchHistory()
+        }
+
+        updateSearchHistory()
+    }
+
+    private fun updateSearchHistory() {
+        val history = searchHistoryManager.getSearchHistory()
+        historyAdapter.submitList(history)
+        binding.searchHistoryContainer.isVisible = history.isNotEmpty() && searchType == SearchType.TITLE
     }
 
     private fun setupSortToggle() {
@@ -120,6 +186,18 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                         performSearch(query, state.currentPage - 1)
                     }
                 }
+                SearchType.DYNASTY -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByDynasty(dynastyName, state.currentPage - 1)
+                    }
+                }
+                SearchType.AUTHOR_ID -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByAuthorId(authorId, authorName, state.currentPage - 1)
+                    }
+                }
             }
         }
 
@@ -139,6 +217,18 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                         performSearch(query, state.currentPage + 1)
                     }
                 }
+                SearchType.DYNASTY -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByDynasty(dynastyName, state.currentPage + 1)
+                    }
+                }
+                SearchType.AUTHOR_ID -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByAuthorId(authorId, authorName, state.currentPage + 1)
+                    }
+                }
             }
         }
     }
@@ -148,6 +238,8 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             val query = binding.searchInput.text.toString().trim()
             if (query.isNotEmpty()) {
                 titleQuery = query
+                searchHistoryManager.addSearchHistory(query)
+                updateSearchHistory()
                 performSearch(query, 1)
             }
         }
@@ -237,6 +329,8 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
             binding.emptyStateText.text = state.emptyMessage ?: ""
             binding.recommendTitle.isVisible = false
             binding.recommendedChipGroup.isVisible = false
+
+            binding.searchHistoryContainer.isVisible = !hasResults && searchHistoryManager.getSearchHistory().isNotEmpty()
         }
     }
 

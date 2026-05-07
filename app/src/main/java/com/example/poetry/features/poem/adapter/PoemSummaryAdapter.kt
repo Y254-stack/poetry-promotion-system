@@ -38,8 +38,6 @@ class PoemSummaryAdapter(
             binding.titleText.text = item.title
             binding.authorText.text = "${item.author} · ${item.dynasty}"
             binding.snippetText.text = item.snippet
-            binding.tagText.text = "标签待补充"
-            binding.metaText.text = "热度 ${item.hotScore} · 入库 ${item.publishTime}"
             binding.root.setOnClickListener { onClick(item) }
         }
     }

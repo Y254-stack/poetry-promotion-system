@@ -9,6 +9,13 @@ data class DailyRecommendationUiModel(
 )
 
 data class CategoryEntryUiModel(
+    val type: CategoryType,
     val title: String,
     val subtitle: String
 )
+
+enum class CategoryType {
+    DYNASTY,
+    AUTHOR,
+    COLLECTION
+}
