@@ -72,7 +72,7 @@ public class CategoryRepository {
                         rs.getString("dynasty_name"),
                         rs.getString("content_preview"),
                         null, // matchedTags
-                        0.0,  // hotScore
+                        0,    // hotScore
                         null  // publishTime
                 )
         );
@@ -106,7 +106,7 @@ public class CategoryRepository {
                         rs.getString("dynasty_name"),
                         rs.getString("content_preview"),
                         null, // matchedTags
-                        0.0,  // hotScore
+                        0,    // hotScore
                         null  // publishTime
                 )
         );
