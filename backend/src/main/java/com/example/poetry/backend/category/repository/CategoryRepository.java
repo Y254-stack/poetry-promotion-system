@@ -77,7 +77,14 @@ public class CategoryRepository {
                 )
         );
 
-        return new PoemTitleSearchResponse(page, pageSize, total != null ? total : 0, items);
+        return new PoemTitleSearchResponse(
+                dynastyName,
+                page,
+                pageSize,
+                total != null ? total : 0,
+                items,
+                null
+        );
     }
 
     public PoemTitleSearchResponse getPoemsByAuthorId(Long authorId, int page, int pageSize) {
@@ -111,6 +118,13 @@ public class CategoryRepository {
                 )
         );
 
-        return new PoemTitleSearchResponse(page, pageSize, total != null ? total : 0, items);
+        return new PoemTitleSearchResponse(
+                String.valueOf(authorId),
+                page,
+                pageSize,
+                total != null ? total : 0,
+                items,
+                null
+        );
     }
 }
