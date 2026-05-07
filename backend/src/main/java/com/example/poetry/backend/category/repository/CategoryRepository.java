@@ -90,15 +90,19 @@ public class CategoryRepository {
     public PoemTitleSearchResponse getPoemsByAuthorId(Long authorId, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
 
-        String countSql = "SELECT COUNT(*) FROM v_poetry_work_overview WHERE author_id = :authorId";
+        String countSql = "SELECT COUNT(*) FROM poetry_work w " +
+                         "JOIN author a ON w.author_name_cache = a.canonical_name " +
+                         "WHERE a.author_id = :authorId";
         Map<String, Object> countParams = new HashMap<>();
         countParams.put("authorId", authorId);
         Integer total = jdbcTemplate.queryForObject(countSql, countParams, Integer.class);
 
-        String sql = "SELECT work_id, title, author_name, dynasty_name, content_preview " +
-                     "FROM v_poetry_work_overview " +
-                     "WHERE author_id = :authorId " +
-                     "ORDER BY work_id " +
+        String sql = "SELECT w.work_id, w.title, w.author_name_cache as author_name, w.dynasty_name, " +
+                     "LEFT(w.content_text, 120) as content_preview " +
+                     "FROM poetry_work w " +
+                     "JOIN author a ON w.author_name_cache = a.canonical_name " +
+                     "WHERE a.author_id = :authorId " +
+                     "ORDER BY w.work_id " +
                      "LIMIT :limit OFFSET :offset";
         Map<String, Object> params = new HashMap<>();
         params.put("authorId", authorId);
