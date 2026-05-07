@@ -39,9 +39,9 @@ public class CategoryRepository {
                      "AND a.canonical_name NOT LIKE '《%》' " +
                      "AND a.canonical_name NOT LIKE '<%>' " +
                      "AND a.canonical_name NOT REGEXP '^[<＜《〈].*[>＞》〉]$' " +
-                     "AND a.canonical_name NOT LIKE '%\\n%' " +
-                     "AND a.canonical_name NOT LIKE '%口说%' " +
-                     "AND a.canonical_name NOT LIKE '%舒章%' " +
+                     "AND a.canonical_name NOT REGEXP '.*\\n.*' " +
+                     "AND a.canonical_name NOT REGEXP '.*口.*' " +
+                     "AND a.canonical_name NOT REGEXP '.*舒.*' " +
                      "ORDER BY a.canonical_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new AuthorDto(
