@@ -1,14 +1,16 @@
 package com.example.poetry.core.network
 
+import com.google.gson.annotations.SerializedName
+
 data class ApiPoemDetailDto(
-    val workId: Long,
-    val title: String,
-    val authorName: String,
-    val dynastyName: String,
-    val contentText: String,
-    val translationText: String?,
-    val annotationText: String?,
-    val appreciationText: String?
+    @SerializedName("workId") val workId: Long,
+    @SerializedName("title") val title: String,
+    @SerializedName("authorName") val authorName: String,
+    @SerializedName("dynastyName") val dynastyName: String,
+    @SerializedName("contentText") val contentText: String,
+    @SerializedName("translationText") val translationText: String?,
+    @SerializedName("annotationText") val annotationText: String?,
+    @SerializedName("appreciationText") val appreciationText: String?
 )
 
 // Tag search models
