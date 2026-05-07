@@ -211,7 +211,7 @@ class PoemViewModel(
             author = authorName,
             dynasty = dynastyName,
             snippet = contentPreview,
-            matchedTags = matchedTags,
+            matchedTags = matchedTags ?: "",
             hotScore = hotScore,
             publishTime = publishTime
         )
