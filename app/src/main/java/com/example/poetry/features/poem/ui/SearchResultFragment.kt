@@ -183,6 +183,18 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                         performSearch(titleQuery, state.currentPage - 1)
                     }
                 }
+                SearchType.DYNASTY -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByDynasty(dynastyName, state.currentPage - 1)
+                    }
+                }
+                SearchType.AUTHOR_ID -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage > 1) {
+                        viewModel.searchByAuthorId(authorId, authorName, state.currentPage - 1)
+                    }
+                }
             }
         }
 
@@ -198,6 +210,18 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                     val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
                     if (state.currentPage < state.totalPages) {
                         performSearch(titleQuery, state.currentPage + 1)
+                    }
+                }
+                SearchType.DYNASTY -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByDynasty(dynastyName, state.currentPage + 1)
+                    }
+                }
+                SearchType.AUTHOR_ID -> {
+                    val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
+                    if (state.currentPage < state.totalPages) {
+                        viewModel.searchByAuthorId(authorId, authorName, state.currentPage + 1)
                     }
                 }
             }
