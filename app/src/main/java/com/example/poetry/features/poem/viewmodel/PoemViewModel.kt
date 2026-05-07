@@ -213,7 +213,7 @@ class PoemViewModel(
             snippet = contentPreview,
             matchedTags = matchedTags ?: "",
             hotScore = hotScore,
-            publishTime = publishTime
+            publishTime = publishTime ?: ""
         )
 
     private fun ApiPoemDetailDto.toUiModel(): PoemDetailUiModel =
