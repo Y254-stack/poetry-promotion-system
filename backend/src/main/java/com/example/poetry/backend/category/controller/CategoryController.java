@@ -38,6 +38,11 @@ public class CategoryController {
         return categoryRepository.getAllAuthors();
     }
 
+    @GetMapping("/collections")
+    public List<AuthorDto> getCollections() {
+        return categoryRepository.getAllCollections();
+    }
+
     @GetMapping("/poems/by-dynasty")
     public PoemTitleSearchResponse getPoemsByDynasty(
         @RequestParam String dynastyName,

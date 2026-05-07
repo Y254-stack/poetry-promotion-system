@@ -36,6 +36,22 @@ public class CategoryRepository {
         String sql = "SELECT a.author_id, a.canonical_name as author_name, a.dynasty_name " +
                      "FROM author a " +
                      "WHERE a.canonical_name IS NOT NULL " +
+                     "AND a.canonical_name NOT LIKE '《%》' " +
+                     "ORDER BY a.canonical_name";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new AuthorDto(
+                        rs.getLong("author_id"),
+                        rs.getString("author_name"),
+                        rs.getString("dynasty_name")
+                )
+        );
+    }
+
+    public List<AuthorDto> getAllCollections() {
+        String sql = "SELECT a.author_id, a.canonical_name as author_name, a.dynasty_name " +
+                     "FROM author a " +
+                     "WHERE a.canonical_name IS NOT NULL " +
+                     "AND a.canonical_name LIKE '《%》' " +
                      "ORDER BY a.canonical_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new AuthorDto(
