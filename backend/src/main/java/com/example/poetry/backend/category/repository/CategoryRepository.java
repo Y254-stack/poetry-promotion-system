@@ -37,6 +37,8 @@ public class CategoryRepository {
                      "FROM author a " +
                      "WHERE a.canonical_name IS NOT NULL " +
                      "AND a.canonical_name NOT LIKE '《%》' " +
+                     "AND a.canonical_name NOT LIKE '<%>' " +
+                     "AND a.canonical_name NOT REGEXP '^[<＜《〈].*[>＞》〉]$' " +
                      "ORDER BY a.canonical_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new AuthorDto(
@@ -51,7 +53,9 @@ public class CategoryRepository {
         String sql = "SELECT a.author_id, a.canonical_name as author_name, a.dynasty_name " +
                      "FROM author a " +
                      "WHERE a.canonical_name IS NOT NULL " +
-                     "AND a.canonical_name LIKE '《%》' " +
+                     "AND (a.canonical_name LIKE '《%》' " +
+                     "OR a.canonical_name LIKE '<%>' " +
+                     "OR a.canonical_name REGEXP '^[<＜《〈].*[>＞》〉]$') " +
                      "ORDER BY a.canonical_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new AuthorDto(
