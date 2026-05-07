@@ -110,4 +110,18 @@ interface PoetryApiService {
 
     @GET("api/categories/authors")
     fun getAuthors(): Call<List<ApiAuthorDto>>
+
+    @GET("api/categories/poems/by-dynasty")
+    fun getPoemsByDynasty(
+        @Query("dynastyName") dynastyName: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
+
+    @GET("api/categories/poems/by-author")
+    fun getPoemsByAuthor(
+        @Query("authorId") authorId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
 }

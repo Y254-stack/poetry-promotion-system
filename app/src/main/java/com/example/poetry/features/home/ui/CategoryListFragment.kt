@@ -45,9 +45,8 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                     findNavController().navigate(
                         R.id.searchResultFragment,
                         bundleOf(
-                            "searchType" to "TITLE",
-                            "titleQuery" to "",
-                            "dynastyFilter" to item.id
+                            "searchType" to "DYNASTY",
+                            "dynastyName" to item.name
                         )
                     )
                 }
@@ -55,8 +54,9 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                     findNavController().navigate(
                         R.id.searchResultFragment,
                         bundleOf(
-                            "searchType" to "AUTHOR",
-                            "titleQuery" to item.name
+                            "searchType" to "AUTHOR_ID",
+                            "authorId" to item.id,
+                            "authorName" to item.name
                         )
                     )
                 }

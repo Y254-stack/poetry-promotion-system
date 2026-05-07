@@ -417,6 +417,132 @@ class PoemViewModel(
         )
     }
 
+    fun searchByDynasty(dynastyName: String, page: Int = 1) {
+        val current = _titleSearchUiState.value ?: TitleSearchUiState()
+        _titleSearchUiState.value = current.copy(
+            query = dynastyName,
+            currentPage = page,
+            isLoading = true,
+            errorMessage = null,
+            emptyMessage = null,
+            results = emptyList()
+        )
+
+        NetworkModule.poetryApiService.getPoemsByDynasty(
+            dynastyName = dynastyName,
+            page = page,
+            pageSize = current.pageSize
+        ).enqueue(object : Callback<ApiTitleSearchResponse> {
+            override fun onResponse(call: Call<ApiTitleSearchResponse>, response: Response<ApiTitleSearchResponse>) {
+                Log.d(TAG, "searchByDynasty success: code=${response.code()}, dynastyName=$dynastyName, page=$page")
+                val body = response.body()
+                if (body == null) {
+                    Log.e(TAG, "searchByDynasty empty body: dynastyName=$dynastyName, page=$page")
+                    applyDynastySearchError(current, dynastyName, page)
+                    return
+                }
+
+                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
+                _titleSearchUiState.value = current.copy(
+                    query = dynastyName,
+                    currentPage = body.page,
+                    pageSize = body.pageSize,
+                    totalCount = body.total,
+                    totalPages = totalPages,
+                    results = body.items.map { it.toUiModel() },
+                    emptyMessage = if (body.total == 0) "未找到「$dynastyName」朝代的诗词" else null,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+
+            override fun onFailure(call: Call<ApiTitleSearchResponse>, t: Throwable) {
+                Log.e(TAG, "searchByDynasty failed: dynastyName=$dynastyName, page=$page", t)
+                applyDynastySearchError(current, dynastyName, page)
+            }
+        })
+    }
+
+    private fun applyDynastySearchError(
+        current: TitleSearchUiState,
+        dynastyName: String,
+        page: Int
+    ) {
+        _titleSearchUiState.value = current.copy(
+            query = dynastyName,
+            currentPage = page,
+            results = emptyList(),
+            totalCount = 0,
+            totalPages = 0,
+            emptyMessage = "未找到「$dynastyName」朝代的诗词",
+            isLoading = false,
+            errorMessage = "搜索服务暂不可用，请稍后重试。"
+        )
+    }
+
+    fun searchByAuthorId(authorId: Long, authorName: String, page: Int = 1) {
+        val current = _titleSearchUiState.value ?: TitleSearchUiState()
+        _titleSearchUiState.value = current.copy(
+            query = authorName,
+            currentPage = page,
+            isLoading = true,
+            errorMessage = null,
+            emptyMessage = null,
+            results = emptyList()
+        )
+
+        NetworkModule.poetryApiService.getPoemsByAuthor(
+            authorId = authorId,
+            page = page,
+            pageSize = current.pageSize
+        ).enqueue(object : Callback<ApiTitleSearchResponse> {
+            override fun onResponse(call: Call<ApiTitleSearchResponse>, response: Response<ApiTitleSearchResponse>) {
+                Log.d(TAG, "searchByAuthorId success: code=${response.code()}, authorId=$authorId, page=$page")
+                val body = response.body()
+                if (body == null) {
+                    Log.e(TAG, "searchByAuthorId empty body: authorId=$authorId, page=$page")
+                    applyAuthorIdSearchError(current, authorName, page)
+                    return
+                }
+
+                val totalPages = if (body.total == 0) 0 else ceil(body.total.toDouble() / body.pageSize).toInt()
+                _titleSearchUiState.value = current.copy(
+                    query = authorName,
+                    currentPage = body.page,
+                    pageSize = body.pageSize,
+                    totalCount = body.total,
+                    totalPages = totalPages,
+                    results = body.items.map { it.toUiModel() },
+                    emptyMessage = if (body.total == 0) "未找到「$authorName」的作品" else null,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+
+            override fun onFailure(call: Call<ApiTitleSearchResponse>, t: Throwable) {
+                Log.e(TAG, "searchByAuthorId failed: authorId=$authorId, page=$page", t)
+                applyAuthorIdSearchError(current, authorName, page)
+            }
+        })
+    }
+
+    private fun applyAuthorIdSearchError(
+        current: TitleSearchUiState,
+        authorName: String,
+        page: Int
+    ) {
+        _titleSearchUiState.value = current.copy(
+            query = authorName,
+            currentPage = page,
+            results = emptyList(),
+            totalCount = 0,
+            totalPages = 0,
+            emptyMessage = "未找到「$authorName」的作品",
+            isLoading = false,
+            errorMessage = "搜索服务暂不可用，请稍后重试。"
+        )
+    }
+
     fun checkFavoriteStatus(userId: Long, workId: Long) {
         favoriteRepository.checkFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteCheckResponse> {
             override fun onResponse(call: Call<ApiFavoriteCheckResponse>, response: Response<ApiFavoriteCheckResponse>) {

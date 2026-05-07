@@ -2,6 +2,8 @@ package com.example.poetry.backend.category.repository;
 
 import com.example.poetry.backend.category.dto.AuthorDto;
 import com.example.poetry.backend.category.dto.DynastyDto;
+import com.example.poetry.backend.tagsearch.dto.PoemSearchItemDto;
+import com.example.poetry.backend.tagsearch.dto.PoemTitleSearchResponse;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -42,5 +44,73 @@ public class CategoryRepository {
                         rs.getString("dynasty_name")
                 )
         );
+    }
+
+    public PoemTitleSearchResponse getPoemsByDynasty(String dynastyName, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+
+        String countSql = "SELECT COUNT(*) FROM v_poetry_work_overview WHERE dynasty_name = :dynastyName";
+        Map<String, Object> countParams = new HashMap<>();
+        countParams.put("dynastyName", dynastyName);
+        Integer total = jdbcTemplate.queryForObject(countSql, countParams, Integer.class);
+
+        String sql = "SELECT work_id, title, author_name, dynasty_name, content_preview " +
+                     "FROM v_poetry_work_overview " +
+                     "WHERE dynasty_name = :dynastyName " +
+                     "ORDER BY work_id " +
+                     "LIMIT :limit OFFSET :offset";
+        Map<String, Object> params = new HashMap<>();
+        params.put("dynastyName", dynastyName);
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
+        List<PoemSearchItemDto> items = jdbcTemplate.query(sql, params, (rs, rowNum) ->
+                new PoemSearchItemDto(
+                        rs.getLong("work_id"),
+                        rs.getString("title"),
+                        rs.getString("author_name"),
+                        rs.getString("dynasty_name"),
+                        rs.getString("content_preview"),
+                        null, // matchedTags
+                        0.0,  // hotScore
+                        null  // publishTime
+                )
+        );
+
+        return new PoemTitleSearchResponse(page, pageSize, total != null ? total : 0, items);
+    }
+
+    public PoemTitleSearchResponse getPoemsByAuthorId(Long authorId, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+
+        String countSql = "SELECT COUNT(*) FROM v_poetry_work_overview WHERE author_id = :authorId";
+        Map<String, Object> countParams = new HashMap<>();
+        countParams.put("authorId", authorId);
+        Integer total = jdbcTemplate.queryForObject(countSql, countParams, Integer.class);
+
+        String sql = "SELECT work_id, title, author_name, dynasty_name, content_preview " +
+                     "FROM v_poetry_work_overview " +
+                     "WHERE author_id = :authorId " +
+                     "ORDER BY work_id " +
+                     "LIMIT :limit OFFSET :offset";
+        Map<String, Object> params = new HashMap<>();
+        params.put("authorId", authorId);
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
+        List<PoemSearchItemDto> items = jdbcTemplate.query(sql, params, (rs, rowNum) ->
+                new PoemSearchItemDto(
+                        rs.getLong("work_id"),
+                        rs.getString("title"),
+                        rs.getString("author_name"),
+                        rs.getString("dynasty_name"),
+                        rs.getString("content_preview"),
+                        null, // matchedTags
+                        0.0,  // hotScore
+                        null  // publishTime
+                )
+        );
+
+        return new PoemTitleSearchResponse(page, pageSize, total != null ? total : 0, items);
     }
 }

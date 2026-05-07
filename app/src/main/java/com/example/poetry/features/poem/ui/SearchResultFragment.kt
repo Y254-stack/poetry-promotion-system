@@ -35,6 +35,9 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     private var selectedTagIds: MutableList<Long> = mutableListOf()
     private var selectedTagNames: MutableList<String> = mutableListOf()
     private var titleQuery: String = ""
+    private var dynastyName: String = ""
+    private var authorId: Long = 0L
+    private var authorName: String = ""
     private var currentSearchSubType: String = "TITLE" // TITLE, AUTHOR, ALL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,6 +50,9 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
         selectedTagIds = (arguments?.getLongArray("selectedTagIds") ?: longArrayOf()).toMutableList()
         selectedTagNames = (arguments?.getStringArrayList("selectedTagNames") ?: arrayListOf()).toMutableList()
         titleQuery = arguments?.getString("titleQuery") ?: ""
+        dynastyName = arguments?.getString("dynastyName") ?: ""
+        authorId = arguments?.getLong("authorId") ?: 0L
+        authorName = arguments?.getString("authorName") ?: ""
 
         setupResultList()
         setupSearchHistory()
@@ -71,17 +77,38 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     binding.searchInput.setText(titleQuery)
     setupSearchTypeToggle()
     bindTitleSearchState()
-    
-    // 在bindTitleSearchState之后确保搜索框可见
+
     binding.searchTypeToggleGroup.isVisible = true
     binding.searchTypeToggleGroup.check(R.id.searchByTitleButton)
     binding.searchInputLayout.isVisible = true
     binding.searchButton.isVisible = true
-    
+
     if (titleQuery.isNotEmpty()) {
         performSearch(titleQuery, 1)
     }
 }
+            SearchType.DYNASTY -> {
+                binding.sortToggleGroup.isVisible = false
+                binding.selectedTagChipGroup.isVisible = false
+                binding.searchTypeToggleGroup.isVisible = false
+                binding.searchInputLayout.isVisible = false
+                binding.searchButton.isVisible = false
+                bindTitleSearchState()
+                if (dynastyName.isNotEmpty()) {
+                    viewModel.searchByDynasty(dynastyName, 1)
+                }
+            }
+            SearchType.AUTHOR_ID -> {
+                binding.sortToggleGroup.isVisible = false
+                binding.selectedTagChipGroup.isVisible = false
+                binding.searchTypeToggleGroup.isVisible = false
+                binding.searchInputLayout.isVisible = false
+                binding.searchButton.isVisible = false
+                bindTitleSearchState()
+                if (authorId > 0) {
+                    viewModel.searchByAuthorId(authorId, authorName, 1)
+                }
+            }
 
         }
     }
