@@ -22,7 +22,7 @@ public class CategoryRepository {
 
     public List<DynastyDto> getAllDynasties() {
         String sql = "SELECT ROW_NUMBER() OVER (ORDER BY dynasty_name) as dynasty_id, dynasty_name " +
-                     "FROM (SELECT DISTINCT dynasty_name FROM author WHERE dynasty_name IS NOT NULL) AS dynasties " +
+                     "FROM (SELECT DISTINCT dynasty_name FROM author WHERE dynasty_name IS NOT NULL AND dynasty_name != '元代') AS dynasties " +
                      "ORDER BY dynasty_name";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new DynastyDto(
