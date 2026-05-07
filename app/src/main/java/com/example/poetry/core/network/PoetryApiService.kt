@@ -83,4 +83,36 @@ interface PoetryApiService {
     @GET("api/quiz/questions")
     fun getQuizQuestions(@Query("limit") limit: Int): Call<List<QuizQuestion>>
 
+
+    // ============ 社区模块 API ============
+
+    @POST("api/community/post")
+    suspend fun createPost(
+        @Header("Authorization") authorization: String,
+        @Body request: ApiCreatePostRequest
+    ): ApiPostResponse
+
+    @GET("api/community/posts")
+    suspend fun getPosts(
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): ApiPostListResponse
+
+    @GET("api/community/post/{postId}")
+    suspend fun getPostDetail(
+        @Path("postId") postId: Long
+    ): ApiPostDetailResponse
+
+    //可修改
+    @POST("api/community/comment")
+    fun createComment(
+        @Header("Authorization") authorization: String,
+        @Body request: ApiCreateCommentRequest
+    ): Call<ApiCommentResponse>
+
+    @GET("api/community/comments/{postId}")
+    fun getComments(
+        @Path("postId") postId: Long
+    ): Call<List<ApiCommentResponse>>
+
 }

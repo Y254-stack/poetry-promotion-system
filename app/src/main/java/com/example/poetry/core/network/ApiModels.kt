@@ -104,3 +104,69 @@ data class ApiQuizSubmitRequest(
     val answerPayload: String,
     val correctPayload: String
 )
+
+// ============ 帖子相关 ============
+
+data class ApiCreatePostRequest(
+    val title: String,
+    val contentText: String,
+    val topicTag: String?
+)
+
+data class ApiPostResponse(
+    val postId: Long,
+    val userId: Long,
+    val author: String,
+    val title: String,
+    val preview: String,
+    val topicTag: String,
+    val viewCount: Int,
+    val likeCount: Int,
+    val commentCount: Int,
+    val collectCount: Int,
+    val createdAt: String
+)
+
+data class ApiPostListResponse(
+    val items: List<ApiPostResponse>,
+    val page: Int,
+    val pageSize: Int,
+    val total: Long,
+    val hasMore: Boolean
+)
+
+data class ApiPostDetailResponse(
+    val postId: Long,
+    val userId: Long,
+    val author: String,
+    val title: String,
+    val contentText: String,
+    val topicTag: String,
+    val viewCount: Int,
+    val likeCount: Int,
+    val commentCount: Int,
+    val collectCount: Int,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+// ============ 评论相关 ============（未实现）
+
+data class ApiCreateCommentRequest(
+    val postId: Long,
+    val contentText: String,
+    val parentCommentId: Long? = null,
+    val replyUserId: Long? = null
+)
+
+data class ApiCommentResponse(
+    val commentId: Long,
+    val postId: Long,
+    val userId: Long,
+    val author: String,
+    val contentText: String,
+    val parentCommentId: Long?,
+    val replyUserId: Long?,
+    val replyToAuthor: String?,
+    val createdAt: String
+)
