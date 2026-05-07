@@ -75,6 +75,7 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
     binding.sortToggleGroup.isVisible = false
     binding.selectedTagChipGroup.isVisible = false
     binding.searchInput.setText(titleQuery)
+    binding.searchInput.hint = "输入诗词标题"
     setupSearchTypeToggle()
     bindTitleSearchState()
 
