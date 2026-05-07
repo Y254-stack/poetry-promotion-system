@@ -115,7 +115,9 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                 SearchType.TITLE -> {
                     val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
                     if (state.currentPage > 1) {
-                        performSearch(titleQuery, state.currentPage - 1)
+                        // 使用state中保存的query，而不是titleQuery变量
+                        val query = state.query.ifBlank { titleQuery }
+                        performSearch(query, state.currentPage - 1)
                     }
                 }
             }
@@ -132,7 +134,9 @@ class SearchResultFragment : Fragment(R.layout.fragment_search_result) {
                 SearchType.TITLE -> {
                     val state = viewModel.titleSearchUiState.value ?: return@setOnClickListener
                     if (state.currentPage < state.totalPages) {
-                        performSearch(titleQuery, state.currentPage + 1)
+                        // 使用state中保存的query，而不是titleQuery变量
+                        val query = state.query.ifBlank { titleQuery }
+                        performSearch(query, state.currentPage + 1)
                     }
                 }
             }

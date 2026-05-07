@@ -26,6 +26,8 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPoemDetailBinding.bind(view)
 
+        setupStickyContentCard()
+
         relatedAdapter = PoemSummaryAdapter {
             findNavController().navigate(
                 R.id.poemDetailFragment,
@@ -47,7 +49,12 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
         viewModel.poemDetail.observe(viewLifecycleOwner) { detail ->
             binding.titleText.text = detail.title
             binding.authorButton.text = "${detail.author} · ${detail.dynasty}"
-            binding.contentText.text = detail.content
+
+            // 智能格式化原文
+            val formattedContent = formatPoemContent(detail.content)
+            binding.contentText.text = formattedContent
+            binding.stickyContentText.text = formattedContent
+
             binding.translationText.text = detail.translation.ifBlank { "暂无译文" }
             binding.annotationText.text = detail.annotation.ifBlank { "暂无注释" }
             binding.appreciationText.text = detail.appreciation.ifBlank { "暂无赏析" }
@@ -55,6 +62,46 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
 
         binding.authorButton.setOnClickListener {
             findNavController().navigate(R.id.action_poemDetail_to_authorDetail)
+        }
+    }
+
+    private fun formatPoemContent(content: String): String {
+        // 先按换行符或多个空格分割成段落
+        val paragraphs = content
+            .split(Regex("[\n]+|[ ]{2,}"))  // 按换行符或连续2个以上空格分割
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+
+        // 如果有2个及以上的段落，说明是词/赋，按段落换行
+        return if (paragraphs.size >= 2) {
+            // 词/赋：保留段落结构
+            paragraphs.joinToString("\n\n")
+        } else {
+            // 诗：去掉所有空格和换行，只在句号后换行
+            content
+                .replace("\n", "")
+                .replace(" ", "")
+                .replace("。", "。\n")
+                .trim()
+        }
+    }
+
+    private fun setupStickyContentCard() {
+        binding.mainScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            // 获取原文TextView的位置
+            val contentTextLocation = IntArray(2)
+            binding.contentText.getLocationOnScreen(contentTextLocation)
+            val contentTextTop = contentTextLocation[1]
+
+            // 获取原文TextView的底部位置
+            val contentTextBottom = contentTextTop + binding.contentText.height
+
+            // 如果原文的底部已经滚出屏幕顶部，显示固定窗口
+            if (contentTextBottom < 200) {
+                binding.stickyContentCard.visibility = View.VISIBLE
+            } else {
+                binding.stickyContentCard.visibility = View.GONE
+            }
         }
     }
 
