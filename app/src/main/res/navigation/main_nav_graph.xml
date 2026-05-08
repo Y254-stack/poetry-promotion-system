@@ -110,7 +110,11 @@
     <fragment
         android:id="@+id/userPublicProfileFragment"
         android:name="com.example.poetry.features.user.ui.UserPublicProfileFragment"
-        android:label="用户主页" />
+        android:label="用户主页">
+        <action
+            android:id="@+id/action_userPublicProfile_to_postDetail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/poemDetailFragment"
@@ -191,6 +195,9 @@
         <action
             android:id="@+id/action_community_to_notifications"
             app:destination="@id/notificationsFragment" />
+        <action
+            android:id="@+id/action_community_to_userPublicProfile"
+            app:destination="@id/userPublicProfileFragment" />
     </fragment>
 
     <fragment
@@ -201,10 +208,18 @@
     <fragment
         android:id="@+id/postDetailFragment"
         android:name="com.example.poetry.features.community.ui.PostDetailFragment"
-        android:label="帖子详情" />
+        android:label="帖子详情">
+        <action
+            android:id="@+id/action_postDetail_to_userPublicProfile"
+            app:destination="@id/userPublicProfileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.example.poetry.features.community.ui.NotificationsFragment"
-        android:label="通知" />
+        android:label="通知">
+        <action
+            android:id="@+id/action_notifications_to_postDetail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
 </navigation>

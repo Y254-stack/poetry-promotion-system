@@ -26,4 +26,11 @@
     <color name="button_secondary_text">#999999</color>
     <color name="text_light_gray">#BBBBBB</color>
     <color name="divider_light">#F0F0F0</color>
+    <color name="red">#FF4444</color>
+    
+    <!-- Notification colors -->
+    <color name="blue">#2196F3</color>
+    <color name="gray_light">#E0E0E0</color>
+    <color name="gray_dark">#666666</color>
+    <color name="gray">#999999</color>
 </resources>
