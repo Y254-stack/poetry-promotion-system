@@ -11,6 +11,7 @@ import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.databinding.FragmentCreatePostBinding
 import com.example.poetry.features.community.model.CreatePostData
 import com.example.poetry.features.community.repository.CommunityRepositoryImpl
+import com.example.poetry.features.community.repository.FollowRepositoryImpl
 import com.example.poetry.features.community.viewmodel.CommunityViewModel
 
 class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
@@ -31,7 +32,11 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
             com.example.poetry.core.network.NetworkModule.poetryApiService,
             sessionManager
         )
-        viewModel = CommunityViewModel(repository)
+        val followRepository = FollowRepositoryImpl(
+            com.example.poetry.core.network.NetworkModule.poetryApiService,
+            sessionManager
+        )
+        viewModel = CommunityViewModel(repository, followRepository)
 
         setupObservers()
         setupListeners()

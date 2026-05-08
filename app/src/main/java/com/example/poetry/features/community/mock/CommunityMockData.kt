@@ -51,22 +51,43 @@ object CommunityMockData {
 
     fun notifications(): List<NotificationUiModel> = listOf(
         NotificationUiModel(
-            id = 1L,
-            title = "新的回复",
-            summary = "你的帖子收到了一条新评论。",
-            time = "今天 09:20"
+            notificationId = 1L,
+            userId = 1L,
+            type = "COMMENT",
+            actorId = 2L,
+            actorName = "用户A",
+            postId = 1L,
+            postTitle = "你最喜欢的春日诗句是哪一句？",
+            commentId = null,
+            commentContent = "写得真好！",
+            isRead = false,
+            createdAt = Date()
         ),
         NotificationUiModel(
-            id = 2L,
-            title = "系统推荐",
-            summary = "今日推荐诗词已经为你生成。",
-            time = "今天 08:00"
+            notificationId = 2L,
+            userId = 1L,
+            type = "LIKE",
+            actorId = 3L,
+            actorName = "用户B",
+            postId = 1L,
+            postTitle = "你最喜欢的春日诗句是哪一句？",
+            commentId = null,
+            commentContent = null,
+            isRead = true,
+            createdAt = Date(System.currentTimeMillis() - 3600000)
         ),
         NotificationUiModel(
-            id = 3L,
-            title = "活动提醒",
-            summary = "飞花令挑战赛今晚八点开始。",
-            time = "昨天 19:30"
+            notificationId = 3L,
+            userId = 1L,
+            type = "COLLECT",
+            actorId = 4L,
+            actorName = "用户C",
+            postId = 2L,
+            postTitle = "分享一下你的诗词卡片排版灵感",
+            commentId = null,
+            commentContent = null,
+            isRead = false,
+            createdAt = Date(System.currentTimeMillis() - 86400000)
         )
     )
 }

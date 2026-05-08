@@ -168,5 +168,83 @@ data class ApiCommentResponse(
     val parentCommentId: Long?,
     val replyUserId: Long?,
     val replyToAuthor: String?,
+    val createdAt: String,
+    val likeCount: Int = 0,
+    val isLiked: Boolean = false
+)
+
+data class ApiLikeResponse(
+    val success: Boolean,
+    val isLiked: Boolean,
+    val likeCount: Int,
+    val message: String
+)
+
+data class ApiCollectResponse(
+    val success: Boolean,
+    val isCollected: Boolean,
+    val collectCount: Int,
+    val message: String
+)
+
+// ============ 关注相关 ============
+data class ApiFollowResponse(
+    val success: Boolean,
+    val isFollowing: Boolean,
+    val followingCount: Long,
+    val followerCount: Long,
+    val message: String
+)
+
+data class ApiUserPublicProfile(
+    val userId: Long,
+    val username: String,
+    val nickname: String,
+    val avatarUrl: String?,
+    val bio: String?,
+    val email: String?,
+    val likeCount: Long,
+    val followingCount: Long,
+    val followerCount: Long,
+    val isFollowing: Boolean,
     val createdAt: String
+)
+
+data class ApiFollowingListItem(
+    val userId: Long,
+    val nickname: String,
+    val avatarUrl: String?,
+    val bio: String?
+)
+
+data class ApiFollowingListResponse(
+    val items: List<ApiFollowingListItem>,
+    val page: Int,
+    val pageSize: Int,
+    val total: Long,
+    val hasMore: Boolean
+)
+
+// ============ 通知相关 ============
+data class ApiNotificationResponse(
+    val notificationId: Long,
+    val userId: Long,
+    val type: String,
+    val actorId: Long,
+    val actorName: String,
+    val postId: Long,
+    val postTitle: String,
+    val commentId: Long?,
+    val commentContent: String?,
+    val isRead: Boolean,
+    val createdAt: String
+)
+
+data class ApiNotificationListResponse(
+    val items: List<ApiNotificationResponse>,
+    val page: Int,
+    val pageSize: Int,
+    val total: Long,
+    val hasMore: Boolean,
+    val unreadCount: Long
 )

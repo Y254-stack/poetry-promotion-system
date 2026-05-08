@@ -141,4 +141,47 @@ public class PostRepository {
                 .addValue("now", LocalDateTime.now());
         jdbcTemplate.update(sql, params);
     }
+
+    /**
+     * 减少评论数
+     */
+    public void decrementCommentCount(Long postId) {
+        String sql = "UPDATE community_post SET comment_count = comment_count - 1, updated_at = :now WHERE post_id = :postId AND comment_count > 0";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("postId", postId)
+                .addValue("now", LocalDateTime.now());
+        jdbcTemplate.update(sql, params);
+    }
+
+    /**
+     * 增加点赞数
+     */
+    public void incrementLikeCount(Long postId) {
+        String sql = "UPDATE community_post SET like_count = like_count + 1 WHERE post_id = :postId";
+        jdbcTemplate.update(sql, new MapSqlParameterSource("postId", postId));
+    }
+
+    /**
+     * 减少点赞数
+     */
+    public void decrementLikeCount(Long postId) {
+        String sql = "UPDATE community_post SET like_count = like_count - 1 WHERE post_id = :postId AND like_count > 0";
+        jdbcTemplate.update(sql, new MapSqlParameterSource("postId", postId));
+    }
+
+    /**
+     * 增加收藏数
+     */
+    public void incrementCollectCount(Long postId) {
+        String sql = "UPDATE community_post SET collect_count = collect_count + 1 WHERE post_id = :postId";
+        jdbcTemplate.update(sql, new MapSqlParameterSource("postId", postId));
+    }
+
+    /**
+     * 减少收藏数
+     */
+    public void decrementCollectCount(Long postId) {
+        String sql = "UPDATE community_post SET collect_count = collect_count - 1 WHERE post_id = :postId AND collect_count > 0";
+        jdbcTemplate.update(sql, new MapSqlParameterSource("postId", postId));
+    }
 }

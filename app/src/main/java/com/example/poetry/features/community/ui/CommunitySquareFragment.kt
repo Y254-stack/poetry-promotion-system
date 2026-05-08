@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
@@ -14,9 +13,10 @@ import com.example.poetry.core.ui.VerticalSpaceItemDecoration
 import com.example.poetry.core.util.dp
 import com.example.poetry.databinding.FragmentCommunitySquareBinding
 import com.example.poetry.features.community.adapter.PostAdapter
+import com.example.poetry.features.community.model.FollowActionResult
 import com.example.poetry.features.community.repository.CommunityRepositoryImpl
+import com.example.poetry.features.community.repository.FollowRepositoryImpl
 import com.example.poetry.features.community.viewmodel.CommunityViewModel
-import kotlinx.coroutines.launch
 
 class CommunitySquareFragment : Fragment(R.layout.fragment_community_square) {
 
@@ -30,29 +30,41 @@ class CommunitySquareFragment : Fragment(R.layout.fragment_community_square) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCommunitySquareBinding.bind(view)
 
-        // 初始化 ViewModel
         val sessionManager = SessionManager(requireContext())
-        val repository = CommunityRepositoryImpl(
+        val communityRepository = CommunityRepositoryImpl(
             com.example.poetry.core.network.NetworkModule.poetryApiService,
             sessionManager
         )
-        viewModel = CommunityViewModel(repository)
+        val followRepository = FollowRepositoryImpl(
+            com.example.poetry.core.network.NetworkModule.poetryApiService,
+            sessionManager
+        )
+        viewModel = CommunityViewModel(communityRepository, followRepository)
 
         setupRecyclerView()
         setupObservers()
         setupListeners()
 
-        // 加载数据
         viewModel.loadPosts()
+        viewModel.loadUnreadCount()
     }
 
     private fun setupRecyclerView() {
-        adapter = PostAdapter { post ->
-            val bundle = Bundle().apply {
-                putLong("post_id", post.postId)
+        adapter = PostAdapter(
+            onClick = { post ->
+                val bundle = Bundle().apply {
+                    putLong("post_id", post.postId)
+                }
+                findNavController().navigate(R.id.action_community_to_postDetail, bundle)
+            },
+            onAuthorClick = { userId, authorName ->
+                val bundle = Bundle().apply {
+                    putLong("userId", userId)
+                    putString("displayName", authorName)
+                }
+                findNavController().navigate(R.id.action_community_to_userPublicProfile, bundle)
             }
-            findNavController().navigate(R.id.action_community_to_postDetail, bundle)
-        }
+        )
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -63,29 +75,44 @@ class CommunitySquareFragment : Fragment(R.layout.fragment_community_square) {
 
     private fun setupObservers() {
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
+            if (_binding != null) {
+                adapter.submitList(posts)
+            }
         }
 
         viewModel.isLoadingPosts.observe(viewLifecycleOwner) { isLoading ->
-            // 可以显示 loading，暂时不做处理
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
-            errorMsg?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+            if (_binding != null) {
+                errorMsg?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    viewModel.clearError()
+                }
             }
         }
 
-        // 发帖结果
         viewModel.createPostResult.observe(viewLifecycleOwner) { result ->
-            result?.onSuccess {
-                Toast.makeText(requireContext(), "发布成功", Toast.LENGTH_SHORT).show()
-                binding.recyclerView.smoothScrollToPosition(0)
-            }?.onFailure {
-                Toast.makeText(requireContext(), it.message ?: "发布失败", Toast.LENGTH_SHORT).show()
+            if (_binding != null) {
+                result?.onSuccess {
+                    Toast.makeText(requireContext(), "发布成功", Toast.LENGTH_SHORT).show()
+                    binding.recyclerView.smoothScrollToPosition(0)
+                }?.onFailure {
+                    Toast.makeText(requireContext(), it.message ?: "发布失败", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.clearCreatePostResult()
             }
-            viewModel.clearCreatePostResult()
+        }
+
+        viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
+            if (_binding != null) {
+                if (count > 0) {
+                    binding.unreadBadge.visibility = View.VISIBLE
+                    binding.unreadBadge.text = if (count > 99) "99+" else count.toString()
+                } else {
+                    binding.unreadBadge.visibility = View.GONE
+                }
+            }
         }
     }
 
