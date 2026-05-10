@@ -123,6 +123,57 @@ data class ApiFavoriteListResponse(
     val items: List<ApiPoemSearchItemDto>
 )
 
+data class ApiPostCollectListItemDto(
+    val postId: Long,
+    val title: String?,
+    val topicTag: String?,
+    val contentPreview: String?,
+    val authorNickname: String?,
+    val collectedAt: String?
+)
+
+data class ApiPostCollectListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiPostCollectListItemDto>
+)
+
+data class ApiFollowListItemDto(
+    val userId: Long,
+    val username: String?,
+    val nickname: String?,
+    val followedAt: String?
+)
+
+data class ApiFollowListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiFollowListItemDto>
+)
+
+data class ApiUserPublicProfileResponse(
+    val userId: Long,
+    val username: String?,
+    val nickname: String?
+)
+
+data class ApiUserPublishedPostItemDto(
+    val postId: Long,
+    val title: String?,
+    val topicTag: String?,
+    val contentPreview: String?,
+    val publishedAt: String?
+)
+
+data class ApiUserPublishedPostsResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiUserPublishedPostItemDto>
+)
+
 data class ApiDynastyDto(
     val dynastyId: Long,
     val dynastyName: String

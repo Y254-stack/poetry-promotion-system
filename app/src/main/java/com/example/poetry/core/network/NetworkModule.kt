@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule {
 
-    // 尝试使用 10.0.2.2。如果仍然失败，请在 Logcat 确认错误信息
+    /**
+     * 模拟器访问本机后端请用 10.0.2.2；真机调试请改为电脑局域网 IP（与后端 application.yml 中 address 一致）。
+     */
     private const val BASE_URL = "http://10.0.2.2:8081/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

@@ -106,8 +106,49 @@ interface PoetryApiService {
     fun getFavoriteList(
         @Query("userId") userId: Long,
         @Query("page") page: Int = 1,
-        @Query("pageSize") pageSize: Int = 20
+        @Query("pageSize") pageSize: Int = 20,
+        @Query("query") query: String? = null
     ): Call<ApiFavoriteListResponse>
+
+    @GET("api/favorites/me")
+    fun getMyFavoriteList(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 50,
+        @Query("query") query: String? = null
+    ): Call<ApiFavoriteListResponse>
+
+    @GET("api/favorites/me/check")
+    fun checkMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteCheckResponse>
+
+    @POST("api/favorites/me")
+    fun addMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @retrofit2.http.DELETE("api/favorites/me")
+    fun removeMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/favorites/posts/me")
+    fun getMyPostCollectList(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 50,
+        @Query("query") query: String? = null
+    ): Call<ApiPostCollectListResponse>
+
+    @retrofit2.http.DELETE("api/favorites/posts/me")
+    fun removeMyPostCollect(
+        @Header("Authorization") authorization: String,
+        @Query("postId") postId: Long
+    ): Call<ApiFavoriteActionResponse>
 
     @GET("api/categories/dynasties")
     fun getDynasties(): Call<List<ApiDynastyDto>>
@@ -131,4 +172,29 @@ interface PoetryApiService {
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ): Call<ApiTitleSearchResponse>
+
+    @GET("api/follows/me")
+    fun getMyFollowing(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 50
+    ): Call<ApiFollowListResponse>
+
+    @retrofit2.http.DELETE("api/follows/me")
+    fun unfollowUser(
+        @Header("Authorization") authorization: String,
+        @Query("followedUserId") followedUserId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/users/{userId}/public")
+    fun getUserPublicProfile(
+        @Path("userId") userId: Long
+    ): Call<ApiUserPublicProfileResponse>
+
+    @GET("api/users/{userId}/posts")
+    fun getUserPublishedPosts(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 50
+    ): Call<ApiUserPublishedPostsResponse>
 }

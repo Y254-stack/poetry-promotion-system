@@ -543,46 +543,57 @@ class PoemViewModel(
         )
     }
 
-    fun checkFavoriteStatus(userId: Long, workId: Long) {
-        favoriteRepository.checkFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteCheckResponse> {
+    fun checkFavoriteStatus(authHeader: String?, workId: Long) {
+        if (authHeader.isNullOrBlank()) {
+            _isFavorited.value = false
+            return
+        }
+        favoriteRepository.checkMyFavorite(authHeader, workId).enqueue(object : Callback<ApiFavoriteCheckResponse> {
             override fun onResponse(call: Call<ApiFavoriteCheckResponse>, response: Response<ApiFavoriteCheckResponse>) {
-                Log.d(TAG, "checkFavorite success: userId=$userId, workId=$workId, isFavorited=${response.body()?.isFavorited}")
-                _isFavorited.value = response.body()?.isFavorited ?: false
+                Log.d(TAG, "checkMyFavorite success: workId=$workId, code=${response.code()}")
+                if (response.isSuccessful) {
+                    _isFavorited.value = response.body()?.isFavorited ?: false
+                } else {
+                    _isFavorited.value = false
+                }
             }
 
             override fun onFailure(call: Call<ApiFavoriteCheckResponse>, t: Throwable) {
-                Log.e(TAG, "checkFavorite failed: userId=$userId, workId=$workId", t)
+                Log.e(TAG, "checkMyFavorite failed: workId=$workId", t)
                 _isFavorited.value = false
             }
         })
     }
 
-    fun toggleFavorite(userId: Long, workId: Long) {
+    fun toggleFavorite(authHeader: String?, workId: Long) {
+        if (authHeader.isNullOrBlank()) {
+            return
+        }
         val currentStatus = _isFavorited.value ?: false
         if (currentStatus) {
-            favoriteRepository.removeFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
+            favoriteRepository.removeMyFavorite(authHeader, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
                 override fun onResponse(call: Call<ApiFavoriteActionResponse>, response: Response<ApiFavoriteActionResponse>) {
-                    Log.d(TAG, "removeFavorite success: userId=$userId, workId=$workId")
-                    if (response.body()?.success == true) {
+                    Log.d(TAG, "removeMyFavorite success: workId=$workId, code=${response.code()}")
+                    if (response.isSuccessful && response.body()?.success == true) {
                         _isFavorited.value = false
                     }
                 }
 
                 override fun onFailure(call: Call<ApiFavoriteActionResponse>, t: Throwable) {
-                    Log.e(TAG, "removeFavorite failed: userId=$userId, workId=$workId", t)
+                    Log.e(TAG, "removeMyFavorite failed: workId=$workId", t)
                 }
             })
         } else {
-            favoriteRepository.addFavorite(userId, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
+            favoriteRepository.addMyFavorite(authHeader, workId).enqueue(object : Callback<ApiFavoriteActionResponse> {
                 override fun onResponse(call: Call<ApiFavoriteActionResponse>, response: Response<ApiFavoriteActionResponse>) {
-                    Log.d(TAG, "addFavorite success: userId=$userId, workId=$workId")
-                    if (response.body()?.success == true) {
+                    Log.d(TAG, "addMyFavorite success: workId=$workId, code=${response.code()}")
+                    if (response.isSuccessful && response.body()?.success == true) {
                         _isFavorited.value = true
                     }
                 }
 
                 override fun onFailure(call: Call<ApiFavoriteActionResponse>, t: Throwable) {
-                    Log.e(TAG, "addFavorite failed: userId=$userId, workId=$workId", t)
+                    Log.e(TAG, "addMyFavorite failed: workId=$workId", t)
                 }
             })
         }

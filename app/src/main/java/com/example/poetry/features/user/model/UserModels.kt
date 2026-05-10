@@ -22,8 +22,7 @@ data class ProgressStatUiModel(
 )
 
 data class FollowUiModel(
-    val userId: String,
+    val userId: Long,
     val displayName: String,
-    val subtitle: String,
     val roleBadge: String
 )

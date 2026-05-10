@@ -35,7 +35,6 @@ class FollowListAdapter(
         fun bind(item: FollowUiModel) {
             binding.badgeText.text = item.roleBadge
             binding.titleText.text = item.displayName
-            binding.subtitleText.text = item.subtitle
             binding.contentArea.setOnClickListener { onOpenProfile(item) }
             binding.unfollowButton.setOnClickListener { onUnfollow(item) }
         }

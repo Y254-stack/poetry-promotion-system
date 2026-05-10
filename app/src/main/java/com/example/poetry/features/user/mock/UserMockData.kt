@@ -1,7 +1,6 @@
 package com.example.poetry.features.user.mock
 
 import com.example.poetry.R
-import com.example.poetry.features.user.model.FollowUiModel
 import com.example.poetry.features.user.model.ProgressStatUiModel
 import com.example.poetry.features.user.model.UserCollectionUiModel
 import com.example.poetry.features.user.model.UserQuickActionUiModel
@@ -12,7 +11,7 @@ object UserMockData {
         UserQuickActionUiModel("设置", "昵称、头像、密码与注销账号", R.id.action_user_to_settings),
         UserQuickActionUiModel("学习进度看板", "打卡日历、掌握数量与累积天数", R.id.action_user_to_studyDashboard),
         UserQuickActionUiModel("我的创作", "已发布、草稿与添加/删除", R.id.action_user_to_myCreations),
-        UserQuickActionUiModel("我的收藏", "诗词与作者收藏", R.id.action_user_to_myFavorites),
+        UserQuickActionUiModel("我的收藏", "诗词与帖子收藏", R.id.action_user_to_myFavorites),
         UserQuickActionUiModel("我的关注", "列表、主页与取消关注", R.id.action_user_to_myFollows)
     )
 
@@ -57,8 +56,4 @@ object UserMockData {
         )
     )
 
-    fun initialFollows(): List<FollowUiModel> = listOf(
-        FollowUiModel("u_community", "诗词社团官号", "发布卡片创作与学习活动", "社区"),
-        FollowUiModel("u_reader", "古文讲读者", "作者专题内容更新较频繁", "创作者")
-    )
 }

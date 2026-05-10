@@ -20,9 +20,16 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     private val viewModel: CommunityViewModel by viewModels()
     private lateinit var adapter: CommentAdapter
 
+    private val postId: Long
+        get() = arguments?.getLong("postId", 0L) ?: 0L
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostDetailBinding.bind(view)
+
+        if (postId > 0L) {
+            // 后续接入帖子详情接口时可使用 postId 拉取正文与评论
+        }
 
         adapter = CommentAdapter()
         binding.commentRecycler.apply {

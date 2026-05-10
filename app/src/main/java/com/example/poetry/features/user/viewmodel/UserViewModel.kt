@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.poetry.features.user.mock.UserMockData
-import com.example.poetry.features.user.model.FollowUiModel
 import com.example.poetry.features.user.model.ProgressStatUiModel
 import com.example.poetry.features.user.model.UserCollectionUiModel
 import com.example.poetry.features.user.model.UserQuickActionUiModel
@@ -32,10 +31,6 @@ class UserViewModel : ViewModel() {
     private val _favorites = MutableLiveData(UserMockData.favorites())
     val favorites: LiveData<List<UserCollectionUiModel>> = _favorites
 
-    private val followList = UserMockData.initialFollows().toMutableList()
-    private val _follows = MutableLiveData<List<FollowUiModel>>(followList.toList())
-    val follows: LiveData<List<FollowUiModel>> = _follows
-
     fun deletePublished(item: UserCollectionUiModel) {
         if (published.remove(item)) {
             _publishedCreations.value = published.toList()
@@ -54,8 +49,4 @@ class UserViewModel : ViewModel() {
         _draftCreations.value = drafts.toList()
     }
 
-    fun unfollow(userId: String) {
-        followList.removeAll { it.userId == userId }
-        _follows.value = followList.toList()
-    }
 }
