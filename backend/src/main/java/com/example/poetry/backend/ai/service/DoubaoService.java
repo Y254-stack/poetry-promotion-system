@@ -18,7 +18,7 @@ public class DoubaoService {
     private String apiKey;
 
     private static final String DOUBAO_API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
-    private static final String MODEL = "ep-20250511155555-xxxxx"; // 需要替换成你的实际端点ID
+    private static final String MODEL = "ep-20260511193047-85rld";
 
     private final OkHttpClient httpClient;
     private final ObjectMapper objectMapper;

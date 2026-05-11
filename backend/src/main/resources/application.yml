@@ -25,6 +25,6 @@ security:
 
 anthropic:
   api:
-    key: ${DOUBAO_API_KEY:your-doubao-api-key-here}
+    key: ark-a934a5d9-95bc-4ea5-b923-61cde6e5bbb8-5c329
 
 
