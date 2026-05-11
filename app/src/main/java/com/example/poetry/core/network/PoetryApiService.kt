@@ -2,13 +2,12 @@ package com.example.poetry.core.network
 
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Query
-import retrofit2.Response
+import retrofit2.http.DELETE
 import com.example.poetry.features.learning.model.QuizQuestion
 
 interface PoetryApiService {
@@ -107,28 +106,135 @@ interface PoetryApiService {
 
     //可修改
     @POST("api/community/comment")
-    fun createComment(
+    suspend fun createComment(
         @Header("Authorization") authorization: String,
         @Body request: ApiCreateCommentRequest
-    ): Call<ApiCommentResponse>
+    ): ApiCommentResponse
 
     @GET("api/community/comments/{postId}")
-    fun getComments(
+    suspend fun getComments(
         @Path("postId") postId: Long
-    ): Call<List<ApiCommentResponse>>
+    ): List<ApiCommentResponse>
 
-    //我的创作
-    @GET("api/community/user/posts")
+    @GET("api/community/comments/{postId}/with-likes")
+    suspend fun getCommentsWithLikes(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): List<ApiCommentResponse>
+
+    @POST("api/community/comment/{commentId}/like")
+    suspend fun likeComment(
+        @Header("Authorization") authorization: String,
+        @Path("commentId") commentId: Long
+    ): ApiLikeResponse
+
+    @DELETE("api/community/comment/{commentId}")
+    suspend fun deleteComment(
+        @Header("Authorization") authorization: String,
+        @Path("commentId") commentId: Long
+    )
+
+    // 帖子点赞
+    @POST("api/community/post/{postId}/like")
+    suspend fun likePost(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): ApiLikeResponse
+
+    // 帖子收藏
+    @POST("api/community/post/{postId}/collect")
+    suspend fun collectPost(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): ApiCollectResponse
+
+    // 获取帖子点赞状态
+    @GET("api/community/post/{postId}/is-liked")
+    suspend fun isPostLiked(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): Boolean
+
+    // 获取帖子收藏状态
+    @GET("api/community/post/{postId}/is-collected")
+    suspend fun isPostCollected(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): Boolean
+
+    // ============ 关注相关 API ============
+
+    @POST("api/follow/{targetUserId}")
+    suspend fun followUser(
+        @Header("Authorization") authorization: String,
+        @Path("targetUserId") targetUserId: Long
+    ): ApiFollowResponse
+
+    @GET("api/follow/{targetUserId}/is-following")
+    suspend fun isFollowing(
+        @Header("Authorization") authorization: String,
+        @Path("targetUserId") targetUserId: Long
+    ): Boolean
+
+    @GET("api/follow/following")
+    suspend fun getFollowingList(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): ApiFollowingListResponse
+
+    @GET("api/profile/{userId}")
+    suspend fun getUserProfile(
+        @Header("Authorization") authorization: String?,
+        @Path("userId") userId: Long
+    ): ApiUserPublicProfile
+
+    @GET("api/profile/me")
+    suspend fun getMyProfile(
+        @Header("Authorization") authorization: String
+    ): ApiUserPublicProfile
+
+    @GET("api/profile/{userId}/posts")
     suspend fun getUserPosts(
-        @Query("userId") userId: Long,
+        @Path("userId") userId: Long,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ): ApiPostListResponse
 
-    @DELETE("api/community/post/{postId}")
-    suspend fun deletePost(
+    // ============ 通知相关 API ============
+
+    @GET("api/community/notifications")
+    suspend fun getNotifications(
         @Header("Authorization") authorization: String,
-        @Path("postId") postId: Long
-    ): Response<Unit>
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): ApiNotificationListResponse
+
+    @GET("api/community/notifications/unread-count")
+    suspend fun getUnreadCount(
+        @Header("Authorization") authorization: String
+    ): Map<String, Long>
+
+    @POST("api/community/notification/{notificationId}/read")
+    suspend fun markAsRead(
+        @Header("Authorization") authorization: String,
+        @Path("notificationId") notificationId: Long
+    ): Map<String, Boolean>
+
+    @POST("api/community/notifications/read-all")
+    suspend fun markAllAsRead(
+        @Header("Authorization") authorization: String
+    ): Map<String, Boolean>
+
+    @DELETE("api/community/notification/{notificationId}")
+    suspend fun deleteNotification(
+        @Header("Authorization") authorization: String,
+        @Path("notificationId") notificationId: Long
+    )
+
+    @DELETE("api/community/notifications")
+    suspend fun deleteAllNotifications(
+        @Header("Authorization") authorization: String
+    )
 
 }

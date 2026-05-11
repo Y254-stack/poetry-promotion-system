@@ -1,11 +1,7 @@
 package com.example.poetry.backend.community.controller;
 
-import com.example.poetry.backend.community.dto.CommentCreateRequest;
-import com.example.poetry.backend.community.dto.CommentResponse;
-import com.example.poetry.backend.community.dto.PostCreateRequest;
-import com.example.poetry.backend.community.dto.PostDetailResponse;
-import com.example.poetry.backend.community.dto.PostListResponse;
-import com.example.poetry.backend.community.dto.PostResponse;
+import com.example.poetry.backend.community.dto.CollectResponse;
+import com.example.poetry.backend.community.dto.*;
 import com.example.poetry.backend.community.service.PostService;
 import com.example.poetry.backend.user.security.JwtTokenProvider;
 import jakarta.validation.Valid;
@@ -98,11 +94,126 @@ public class PostController {
     }
 
     /**
-     * 获取帖子的评论列表
+     * 获取帖子的评论列表（不含点赞状态）
      */
     @GetMapping("/comments/{postId}")
     public List<CommentResponse> getComments(@PathVariable Long postId) {
         return postService.getComments(postId);
+    }
+
+    /**
+     * 获取帖子的评论列表（包含当前用户点赞状态）
+     */
+    @GetMapping("/comments/{postId}/with-likes")
+    public List<CommentResponse> getCommentsWithLikes(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = null;
+        try {
+            userId = extractUserId(authorization);
+        } catch (ResponseStatusException e) {
+            // 用户未登录，返回不带点赞状态的列表
+        }
+        return postService.getCommentsWithLikeStatus(postId, userId);
+    }
+
+    /**
+     * 删除评论
+     */
+    @DeleteMapping("/comment/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long commentId
+    ) {
+        Long userId = extractUserId(authorization);
+        postService.deleteComment(userId, commentId);
+    }
+
+    /**
+     * 点赞/取消点赞帖子
+     */
+    @PostMapping("/post/{postId}/like")
+    public LikeResponse likePost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.likePost(userId, postId);
+    }
+
+    /**
+     * 检查帖子是否已点赞
+     */
+    @GetMapping("/post/{postId}/is-liked")
+    public boolean isPostLiked(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.isPostLiked(userId, postId);
+    }
+
+    /**
+     * 点赞/取消点赞评论
+     */
+    @PostMapping("/comment/{commentId}/like")
+    public LikeResponse likeComment(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long commentId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.likeComment(userId, commentId);
+    }
+
+    /**
+     * 检查评论是否已点赞
+     */
+    @GetMapping("/comment/{commentId}/is-liked")
+    public boolean isCommentLiked(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long commentId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.isCommentLiked(userId, commentId);
+    }
+
+    /**
+     * 获取用户喜欢的帖子列表
+     */
+    @GetMapping("/posts/liked")
+    public LikedPostsResponse getLikedPosts(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int pageSize
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.getLikedPosts(userId, page, pageSize);
+    }
+
+    /**
+     * 收藏/取消收藏帖子
+     */
+    @PostMapping("/post/{postId}/collect")
+    public CollectResponse collectPost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.collectPost(userId, postId);
+    }
+
+    /**
+     * 检查帖子是否已收藏
+     */
+    @GetMapping("/post/{postId}/is-collected")
+    public boolean isPostCollected(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable Long postId
+    ) {
+        Long userId = extractUserId(authorization);
+        return postService.isPostCollected(userId, postId);
     }
 
     private Long extractUserId(String authorization) {
