@@ -24,7 +24,11 @@ public class DoubaoService {
     private final ObjectMapper objectMapper;
 
     public DoubaoService() {
-        this.httpClient = new OkHttpClient();
+        this.httpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .build();
         this.objectMapper = new ObjectMapper();
     }
 
