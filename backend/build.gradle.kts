@@ -23,6 +23,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     runtimeOnly("com.mysql:mysql-connector-j")
 
+    // Anthropic Claude SDK
+    implementation("com.anthropic:anthropic-sdk-java:0.1.0")
+
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
