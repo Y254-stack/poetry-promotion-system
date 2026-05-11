@@ -234,4 +234,16 @@ public class PostRepository {
         Long count = jdbcTemplate.queryForObject(sql, params, Long.class);
         return count != null ? count : 0;
     }
+
+    /**
+     * 删除帖子（软删除，将状态设置为 DELETED）
+     */
+    public void deletePost(Long postId, Long userId) {
+        String sql = "UPDATE community_post SET status = 'DELETED', updated_at = :now WHERE post_id = :postId AND user_id = :userId";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("postId", postId)
+                .addValue("userId", userId)
+                .addValue("now", LocalDateTime.now());
+        jdbcTemplate.update(sql, params);
+    }
 }
