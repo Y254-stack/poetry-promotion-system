@@ -1,5 +1,7 @@
 package com.example.poetry.features.user.model
 
+import java.util.Date
+
 data class UserQuickActionUiModel(
     val title: String,
     val subtitle: String,
@@ -25,4 +27,13 @@ data class FollowUiModel(
     val userId: Long,
     val displayName: String,
     val roleBadge: String
+)
+
+
+data class DraftUiModel(
+    val id: Long,
+    val title: String,
+    val content: String,
+    val tag: String?,
+    val updatedAt: Date
 )

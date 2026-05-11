@@ -3,94 +3,147 @@ package com.example.poetry.features.user.ui
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
-import com.example.poetry.core.ui.VerticalSpaceItemDecoration
-import com.example.poetry.core.util.dp
+import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.databinding.FragmentUserPublicProfileBinding
-import com.example.poetry.features.favorite.adapter.FavoritePostAdapter
-import com.example.poetry.features.user.viewmodel.UserPublicProfileViewModel
+import com.example.poetry.features.community.adapter.PostAdapter
+import com.example.poetry.features.community.model.CommunityPostUiModel
+import com.example.poetry.features.community.repository.CommunityRepositoryImpl
+import com.example.poetry.features.community.repository.FollowRepositoryImpl
+import com.example.poetry.features.community.viewmodel.CommunityViewModel
 
 class UserPublicProfileFragment : Fragment(R.layout.fragment_user_public_profile) {
 
     private var _binding: FragmentUserPublicProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: UserPublicProfileViewModel by viewModels()
-    private lateinit var postsAdapter: FavoritePostAdapter
-
-    private val userId: Long
-        get() = arguments?.getLong("userId", 0L) ?: 0L
+    private lateinit var viewModel: CommunityViewModel
+    private lateinit var postAdapter: PostAdapter
+    private var targetUserId: Long = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserPublicProfileBinding.bind(view)
 
-        postsAdapter = FavoritePostAdapter(
-            showRemove = false,
-            onRemove = null,
-            onClick = {
-                findNavController().navigate(
-                    R.id.action_userPublicProfile_to_postDetail,
-                    bundleOf("postId" to it.postId)
-                )
-            }
+        // 获取目标用户ID
+        targetUserId = arguments?.getLong("userId", 0) ?: 0
+        val displayName = arguments?.getString("displayName").orEmpty()
+
+        // 初始化 ViewModel
+        val sessionManager = SessionManager(requireContext())
+        val repository = CommunityRepositoryImpl(
+            com.example.poetry.core.network.NetworkModule.poetryApiService,
+            sessionManager
         )
-        binding.postsRecycler.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = postsAdapter
-            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(10)))
-        }
+        val followRepository = FollowRepositoryImpl(
+            com.example.poetry.core.network.NetworkModule.poetryApiService,
+            sessionManager
+        )
+        viewModel = CommunityViewModel(repository, followRepository)
 
-        viewModel.header.observe(viewLifecycleOwner) { h ->
-            if (h == null) {
-                binding.nameText.text = ""
-                binding.accountText.text = ""
-                binding.avatarInitial.text = ""
-                updatePostsEmpty()
-                return@observe
+        // 初始化帖子列表适配器
+        postAdapter = PostAdapter(
+            onClick = { post ->
+                // 帖子点击跳转到详情页
+                val bundle = Bundle().apply {
+                    putLong("post_id", post.postId)
+                }
+                findNavController().navigate(R.id.action_userPublicProfile_to_postDetail, bundle)
+            },
+            onAuthorClick = { _, _ -> /* 作者点击事件 */ }
+        )
+        binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.postsRecyclerView.adapter = postAdapter
+
+        // 设置初始昵称
+        binding.nicknameText.text = displayName.ifEmpty { "用户" }
+
+        // 关注按钮点击事件
+        binding.followButton.setOnClickListener {
+            // 检查是否关注自己
+            val currentUserId = sessionManager.userId()
+            if (currentUserId == targetUserId) {
+                Toast.makeText(requireContext(), "不能关注自己", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            binding.nameText.text = h.displayName
-            binding.accountText.text = h.accountLine
-            val initial = h.displayName.firstOrNull()?.uppercaseChar()
-                ?: h.accountLine.firstOrNull { it.isLetterOrDigit() }?.uppercaseChar()
-                ?: '?'
-            binding.avatarInitial.text = initial.toString()
-            updatePostsEmpty()
+            viewModel.followUser(targetUserId)
         }
 
-        viewModel.posts.observe(viewLifecycleOwner) {
-            postsAdapter.submitList(it)
-            updatePostsEmpty()
+        // 观察用户资料
+        viewModel.userProfile.observe(viewLifecycleOwner) { profile ->
+            profile?.let {
+                binding.nicknameText.text = it.nickname
+                binding.usernameText.text = "@${it.username}"
+                binding.bioText.text = it.bio ?: "暂无简介"
+                binding.likeCountText.text = it.likeCount.toString()
+                binding.followingCountText.text = it.followingCount.toString()
+                binding.followerCountText.text = it.followerCount.toString()
+                
+                // 设置头像首字母
+                binding.avatarText.text = it.nickname.take(1)
+                
+                updateFollowButton(it.isFollowing)
+            }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.loadingProgress.isVisible = it == true
-            updatePostsEmpty()
+        // 观察用户帖子
+        viewModel.userPosts.observe(viewLifecycleOwner) { posts ->
+            if (posts.isEmpty()) {
+                binding.postsRecyclerView.visibility = View.GONE
+                binding.emptyText.visibility = View.VISIBLE
+            } else {
+                binding.postsRecyclerView.visibility = View.VISIBLE
+                binding.emptyText.visibility = View.GONE
+                postAdapter.submitList(posts)
+            }
         }
 
-        viewModel.loadError.observe(viewLifecycleOwner) { err ->
-            updatePostsEmpty()
-            err?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+        // 观察关注状态变化
+        viewModel.followActionResult.observe(viewLifecycleOwner) { result ->
+            result?.onSuccess { response ->
+                updateFollowButton(response.isFollowing)
+                // 更新粉丝数（当前页面显示的是被关注用户的信息，所以应该更新粉丝数）
+                binding.followerCountText.text = response.followerCount.toString()
+                Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+            }?.onFailure { exception ->
+                val errorMessage = exception.message
+                if (errorMessage?.contains("不能关注自己") == true) {
+                    Toast.makeText(requireContext(), "不能关注自己", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "关注操作失败", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
-        viewModel.loadUser(userId)
+        // 观察错误
+        viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
+            errorMsg?.let {
+                if (it.contains("不能关注自己")) {
+                    Toast.makeText(requireContext(), "不能关注自己", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                }
+                viewModel.clearError()
+            }
+        }
+
+        // 加载用户资料和帖子
+        viewModel.loadUserProfile(targetUserId)
+        viewModel.loadUserPosts(targetUserId)
     }
 
-    private fun updatePostsEmpty() {
-        val posts = viewModel.posts.value.orEmpty()
-        val loading = viewModel.isLoading.value == true
-        val headerOk = viewModel.header.value != null
-        binding.emptyPostsText.isVisible = headerOk && !loading && posts.isEmpty()
-        binding.emptyPostsText.text = if (viewModel.loadError.value != null) {
-            getString(R.string.user_public_posts_load_failed_hint)
+    private fun updateFollowButton(isFollowing: Boolean) {
+        if (isFollowing) {
+            binding.followButton.text = "已关注"
+            binding.followButton.setBackgroundResource(R.drawable.bg_follow_button_filled)
+            binding.followButton.setTextColor(resources.getColor(R.color.white))
         } else {
-            getString(R.string.user_public_posts_empty_hint)
+            binding.followButton.text = "关注"
+            binding.followButton.setBackgroundResource(R.drawable.bg_follow_button)
+            binding.followButton.setTextColor(resources.getColor(R.color.teal_700))
         }
     }
 

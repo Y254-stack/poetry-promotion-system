@@ -14,9 +14,6 @@
         <action
             android:id="@+id/action_home_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
-        <action
-            android:id="@+id/action_home_to_categoryList"
-            app:destination="@id/categoryListFragment" />
     </fragment>
 
     <fragment
@@ -89,9 +86,19 @@
         android:name="com.example.poetry.features.user.ui.MyCreationsFragment"
         android:label="我的创作" />
 
+        <!-- 跳转到帖子详情 -->
+        <action
+                android:id="@+id/action_myCreations_to_postDetail"
+                app:destination="@id/postDetailFragment" />
+
+        <!-- 跳转到发帖页面 -->
+        <action
+                android:id="@+id/action_myCreations_to_createPost"
+                app:destination="@id/createPostFragment" />
+
     <fragment
         android:id="@+id/myFavoritesFragment"
-        android:name="com.example.poetry.features.favorite.ui.FavoriteListFragment"
+        android:name="com.example.poetry.features.user.ui.MyFavoritesFragment"
         android:label="我的收藏">
         <action
             android:id="@+id/action_myFavorites_to_poemDetail"
@@ -99,9 +106,6 @@
         <action
             android:id="@+id/action_myFavorites_to_authorDetail"
             app:destination="@id/authorDetailFragment" />
-        <action
-            android:id="@+id/action_myFavorites_to_postDetail"
-            app:destination="@id/postDetailFragment" />
     </fragment>
 
     <fragment
@@ -117,10 +121,6 @@
         android:id="@+id/userPublicProfileFragment"
         android:name="com.example.poetry.features.user.ui.UserPublicProfileFragment"
         android:label="用户主页">
-        <argument
-            android:name="userId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_userPublicProfile_to_postDetail"
             app:destination="@id/postDetailFragment" />
@@ -148,11 +148,6 @@
             android:id="@+id/action_searchResult_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/categoryListFragment"
-        android:name="com.example.poetry.features.home.ui.CategoryListFragment"
-        android:label="分类列表" />
 
     <fragment
         android:id="@+id/learningHubFragment"
@@ -210,6 +205,9 @@
         <action
             android:id="@+id/action_community_to_notifications"
             app:destination="@id/notificationsFragment" />
+        <action
+            android:id="@+id/action_community_to_userPublicProfile"
+            app:destination="@id/userPublicProfileFragment" />
     </fragment>
 
     <fragment
@@ -221,14 +219,17 @@
         android:id="@+id/postDetailFragment"
         android:name="com.example.poetry.features.community.ui.PostDetailFragment"
         android:label="帖子详情">
-        <argument
-            android:name="postId"
-            app:argType="long"
-            android:defaultValue="0L" />
+        <action
+            android:id="@+id/action_postDetail_to_userPublicProfile"
+            app:destination="@id/userPublicProfileFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.example.poetry.features.community.ui.NotificationsFragment"
-        android:label="通知" />
+        android:label="通知">
+        <action
+            android:id="@+id/action_notifications_to_postDetail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
 </navigation>

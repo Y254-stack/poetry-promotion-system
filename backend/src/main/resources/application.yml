@@ -8,6 +8,10 @@ spring:
     username: root
     password: '123456'
     driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  sql:
+    init:
+      mode: never
 
   jackson:
     default-property-inclusion: non_null
