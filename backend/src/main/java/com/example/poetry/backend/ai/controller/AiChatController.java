@@ -2,7 +2,7 @@ package com.example.poetry.backend.ai.controller;
 
 import com.example.poetry.backend.ai.dto.ChatRequest;
 import com.example.poetry.backend.ai.dto.ChatResponse;
-import com.example.poetry.backend.ai.service.ClaudeService;
+import com.example.poetry.backend.ai.service.DoubaoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -15,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/api/ai")
 public class AiChatController {
 
-    private final ClaudeService claudeService;
+    private final DoubaoService doubaoService;
 
     // Simple in-memory conversation storage (for demo purposes)
     private final Map<String, List<Map<String, String>>> conversations = new ConcurrentHashMap<>();
 
-    public AiChatController(ClaudeService claudeService) {
-        this.claudeService = claudeService;
+    public AiChatController(DoubaoService doubaoService) {
+        this.doubaoService = doubaoService;
     }
 
     @PostMapping("/chat")
@@ -31,8 +31,8 @@ public class AiChatController {
         // Get or create conversation history
         List<Map<String, String>> history = conversations.computeIfAbsent(conversationId, k -> new ArrayList<>());
 
-        // Call Claude API
-        String aiResponse = claudeService.chat(request.message(), history);
+        // Call Doubao API
+        String aiResponse = doubaoService.chat(request.message(), history);
 
         // Update conversation history
         Map<String, String> userMsg = new HashMap<>();

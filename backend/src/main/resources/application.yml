@@ -25,5 +25,6 @@ security:
 
 anthropic:
   api:
-    key: ${ANTHROPIC_API_KEY:your-api-key-here}
+    key: ${DOUBAO_API_KEY:your-doubao-api-key-here}
+
 
