@@ -2,7 +2,7 @@ package com.example.poetry.backend.community.controller;
 
 import com.example.poetry.backend.community.dto.FollowingListResponse;
 import com.example.poetry.backend.community.dto.FollowResponse;
-import com.example.poetry.backend.community.service.FollowService;
+import com.example.poetry.backend.community.service.CommFollowService;
 import com.example.poetry.backend.user.security.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +10,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/follow")
-public class FollowController {
+public class CommFollowController {
 
-    private final FollowService followService;
+    private final CommFollowService commFollowService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public FollowController(FollowService followService, JwtTokenProvider jwtTokenProvider) {
-        this.followService = followService;
+    public CommFollowController(CommFollowService commFollowService, JwtTokenProvider jwtTokenProvider) {
+        this.commFollowService = commFollowService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -29,7 +29,7 @@ public class FollowController {
             @PathVariable Long targetUserId
     ) {
         Long userId = extractUserId(authorization);
-        return followService.followUser(userId, targetUserId);
+        return commFollowService.followUser(userId, targetUserId);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FollowController {
             @PathVariable Long targetUserId
     ) {
         Long userId = extractUserId(authorization);
-        return followService.isFollowing(userId, targetUserId);
+        return commFollowService.isFollowing(userId, targetUserId);
     }
 
     /**
@@ -54,7 +54,7 @@ public class FollowController {
             @RequestParam(defaultValue = "20") int pageSize
     ) {
         Long userId = extractUserId(authorization);
-        return followService.getFollowingList(userId, page, pageSize);
+        return commFollowService.getFollowingList(userId, page, pageSize);
     }
 
     /**
@@ -67,7 +67,7 @@ public class FollowController {
             @RequestParam(defaultValue = "20") int pageSize
     ) {
         Long userId = extractUserId(authorization);
-        return followService.getFollowerList(userId, page, pageSize);
+        return commFollowService.getFollowerList(userId, page, pageSize);
     }
 
     /**
@@ -75,7 +75,7 @@ public class FollowController {
      */
     @GetMapping("/{targetUserId}/following-count")
     public long getFollowingCount(@PathVariable Long targetUserId) {
-        return followService.getFollowingCount(targetUserId);
+        return commFollowService.getFollowingCount(targetUserId);
     }
 
     /**
@@ -83,7 +83,7 @@ public class FollowController {
      */
     @GetMapping("/{targetUserId}/follower-count")
     public long getFollowerCount(@PathVariable Long targetUserId) {
-        return followService.getFollowerCount(targetUserId);
+        return commFollowService.getFollowerCount(targetUserId);
     }
 
     private Long extractUserId(String authorization) {

@@ -3,7 +3,6 @@ package com.example.poetry.backend.community.service;
 import com.example.poetry.backend.community.dto.FollowingListResponse;
 import com.example.poetry.backend.community.dto.FollowResponse;
 import com.example.poetry.backend.community.repository.FollowRepository;
-import com.example.poetry.backend.user.repository.UserAccount;
 import com.example.poetry.backend.user.repository.UserAuthRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,12 +14,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class FollowService {
+public class CommFollowService {
 
     private final FollowRepository followRepository;
     private final UserAuthRepository userAuthRepository;
 
-    public FollowService(FollowRepository followRepository, UserAuthRepository userAuthRepository) {
+    public CommFollowService(FollowRepository followRepository, UserAuthRepository userAuthRepository) {
         this.followRepository = followRepository;
         this.userAuthRepository = userAuthRepository;
     }
@@ -40,23 +39,23 @@ public class FollowService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "目标用户不存在"));
 
         boolean wasFollowing = followRepository.isFollowing(userId, targetUserId);
-        System.out.println("DEBUG: FollowService - followUser: userId=" + userId + ", targetUserId=" + targetUserId + ", wasFollowing=" + wasFollowing);
+        System.out.println("DEBUG: CommFollowService - followUser: userId=" + userId + ", targetUserId=" + targetUserId + ", wasFollowing=" + wasFollowing);
 
         if (wasFollowing) {
             // 取消关注
             boolean result = followRepository.unfollowUser(userId, targetUserId);
-            System.out.println("DEBUG: FollowService - unfollowUser result: " + result);
+            System.out.println("DEBUG: CommFollowService - unfollowUser result: " + result);
             long followingCount = followRepository.getFollowingCount(userId);
             long followerCount = followRepository.getFollowerCount(targetUserId);
-            System.out.println("DEBUG: FollowService - after unfollow: followingCount=" + followingCount + ", followerCount=" + followerCount);
+            System.out.println("DEBUG: CommFollowService - after unfollow: followingCount=" + followingCount + ", followerCount=" + followerCount);
             return new FollowResponse(true, false, followingCount, followerCount, "已取消关注");
         } else {
             // 关注
             boolean result = followRepository.followUser(userId, targetUserId);
-            System.out.println("DEBUG: FollowService - followUser result: " + result);
+            System.out.println("DEBUG: CommFollowService - followUser result: " + result);
             long followingCount = followRepository.getFollowingCount(userId);
             long followerCount = followRepository.getFollowerCount(targetUserId);
-            System.out.println("DEBUG: FollowService - after follow: followingCount=" + followingCount + ", followerCount=" + followerCount);
+            System.out.println("DEBUG: CommFollowService - after follow: followingCount=" + followingCount + ", followerCount=" + followerCount);
             return new FollowResponse(true, true, followingCount, followerCount, "关注成功");
         }
     }
