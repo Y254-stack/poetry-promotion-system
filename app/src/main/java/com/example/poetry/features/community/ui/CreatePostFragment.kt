@@ -12,9 +12,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.poetry.R
 import com.example.poetry.core.auth.SessionManager
+import com.example.poetry.core.network.NetworkModule
 import com.example.poetry.databinding.FragmentCreatePostBinding
 import com.example.poetry.features.community.model.CreatePostData
 import com.example.poetry.features.community.repository.CommunityRepositoryImpl
+import com.example.poetry.features.community.repository.FollowRepositoryImpl
 import com.example.poetry.features.community.viewmodel.CommunityViewModel
 import com.example.poetry.features.user.model.DraftUiModel
 import com.example.poetry.features.user.viewmodel.UserViewModel
@@ -49,7 +51,12 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
             com.example.poetry.core.network.NetworkModule.poetryApiService,
             sessionManager
         )
-        communityViewModel = CommunityViewModel(repository)
+        val followRepository = FollowRepositoryImpl(
+            NetworkModule.poetryApiService,
+            sessionManager
+        )
+        communityViewModel = CommunityViewModel(repository, followRepository)
+
         userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
 
         setupObservers()

@@ -109,39 +109,6 @@ public class PostService {
     }
 
     /**
-     * 获取指定用户的帖子列表
-     */
-    public PostListResponse getUserPosts(Long userId, int page, int pageSize) {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 20;
-        if (pageSize > 100) pageSize = 100;
-
-        int offset = (page - 1) * pageSize;
-        List<PostResponse> items = postRepository.getUserPosts(userId, offset, pageSize);
-        long total = postRepository.getUserPostCount(userId);
-        boolean hasMore = (long) offset + pageSize < total;
-
-        return new PostListResponse(items, page, pageSize, total, hasMore);
-    }
-
-    /**
-     * 删除帖子
-     */
-    @Transactional
-    public void deletePost(Long postId, Long userId) {
-        // 验证帖子是否存在且属于当前用户
-        PostDetailResponse post = postRepository.getPostDetail(postId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "帖子不存在"));
-
-        if (!post.userId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权删除此帖子");
-        }
-
-        postRepository.deletePost(postId, userId);
-    }
-
-
-    /**
      * 发布评论（支持一级评论和回复）
      */
     @Transactional
@@ -189,7 +156,6 @@ public class PostService {
         notificationService.createNotification(post.userId(), "COMMENT", userId, request.postId(), commentId);
 
         return newComment;
-
     }
 
     /**
@@ -213,7 +179,7 @@ public class PostService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "帖子不存在"));
 
         List<CommentResponse> comments = commentRepository.getCommentsByPostId(postId);
-        
+
         // 设置每个评论的点赞状态
         return comments.stream()
                 .map(comment -> new CommentResponse(
@@ -299,10 +265,10 @@ public class PostService {
             // 点赞
             likeRepository.likePost(userId, postId);
             postRepository.incrementLikeCount(postId);
-            
+
             // 发送通知给帖子作者
             notificationService.createNotification(post.userId(), "LIKE", userId, postId, null);
-            
+
             return new LikeResponse(true, true, post.likeCount() + 1, "点赞成功");
         }
     }
@@ -382,10 +348,10 @@ public class PostService {
             // 收藏
             collectRepository.collectPost(userId, postId);
             postRepository.incrementCollectCount(postId);
-            
+
             // 发送通知给帖子作者
             notificationService.createNotification(post.userId(), "COLLECT", userId, postId, null);
-            
+
             return new CollectResponse(true, true, post.collectCount() + 1, "收藏成功");
         }
     }
