@@ -39,6 +39,10 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNavigation.setupWithNavController(navController)
 
+        binding.aiFab.setOnClickListener {
+            navController.navigate(R.id.aiChatFragment)
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val topLevelDestinations = setOf(
                 R.id.homeFragment,
@@ -49,6 +53,10 @@ class MainActivity : AppCompatActivity() {
             binding.bottomNavigation.visibility =
                 if (destination.id in topLevelDestinations) android.view.View.VISIBLE
                 else android.view.View.GONE
+
+            binding.aiFab.visibility =
+                if (destination.id == R.id.aiChatFragment) android.view.View.GONE
+                else android.view.View.VISIBLE
         }
     }
 

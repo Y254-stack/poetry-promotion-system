@@ -32,4 +32,16 @@
         app:itemTextColor="@color/teal_700"
         app:menu="@menu/bottom_nav_menu" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/aiFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="80dp"
+        android:contentDescription="AI助手"
+        android:src="@android:drawable/ic_dialog_info"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/teal_700" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

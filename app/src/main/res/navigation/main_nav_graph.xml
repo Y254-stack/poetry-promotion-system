@@ -215,4 +215,9 @@
         android:id="@+id/notificationsFragment"
         android:name="com.example.poetry.features.community.ui.NotificationsFragment"
         android:label="通知" />
+
+    <fragment
+        android:id="@+id/aiChatFragment"
+        android:name="com.example.poetry.features.ai.AiChatFragment"
+        android:label="AI 诗词助手" />
 </navigation>
