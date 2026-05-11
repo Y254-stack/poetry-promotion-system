@@ -362,4 +362,50 @@ public class PostService {
     public boolean isPostCollected(Long userId, Long postId) {
         return collectRepository.isCollected(userId, postId);
     }
+
+    /**
+     * 获取指定用户的帖子列表
+     */
+    public PostListResponse getUserPosts(Long userId, int page, int pageSize) {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+        if (pageSize > 100) pageSize = 100;
+
+        int offset = (page - 1) * pageSize;
+        List<PostResponse> items = postRepository.getUserPosts(userId, offset, pageSize);
+        long total = postRepository.getUserPostCount(userId);
+        boolean hasMore = (long) offset + pageSize < total;
+
+        return new PostListResponse(items, page, pageSize, total, hasMore);
+    }
+
+    /**
+     * 物理删除帖子
+     */
+    @Transactional
+    public void deletePost(Long postId, Long userId) {
+        // 验证帖子是否存在
+        PostDetailResponse post = postRepository.getPostDetail(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "帖子不存在"));
+
+        // 验证用户是否为帖子作者
+        if (!post.userId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权删除该帖子");
+        }
+
+        // 先删除相关的点赞记录
+        String deleteLikesSql = "DELETE FROM community_post_like WHERE post_id = :postId";
+        jdbcTemplate.update(deleteLikesSql, new MapSqlParameterSource("postId", postId));
+
+        // 删除相关的收藏记录
+        String deleteCollectsSql = "DELETE FROM community_post_collect WHERE post_id = :postId";
+        jdbcTemplate.update(deleteCollectsSql, new MapSqlParameterSource("postId", postId));
+
+        // 删除帖子下的所有评论
+        String deleteCommentsSql = "DELETE FROM community_comment WHERE post_id = :postId";
+        jdbcTemplate.update(deleteCommentsSql, new MapSqlParameterSource("postId", postId));
+
+        // 最后删除帖子
+        postRepository.deletePost(postId);
+    }
 }

@@ -184,4 +184,63 @@ public class PostRepository {
         String sql = "UPDATE community_post SET collect_count = collect_count - 1 WHERE post_id = :postId AND collect_count > 0";
         jdbcTemplate.update(sql, new MapSqlParameterSource("postId", postId));
     }
+
+    /**
+     * 获取用户的帖子列表（分页）
+     */
+    public List<PostResponse> getUserPosts(Long userId, int offset, int pageSize) {
+        String sql = """
+        SELECT p.post_id, p.user_id, p.title, p.content_text, p.topic_tag,
+               p.view_count, p.like_count, p.comment_count, p.collect_count, p.created_at,
+               COALESCE(u.nickname, u.username) as author
+        FROM community_post p
+        LEFT JOIN app_user u ON p.user_id = u.user_id
+        WHERE p.user_id = :userId AND p.status = 'ACTIVE'
+        ORDER BY p.created_at DESC
+        LIMIT :offset, :pageSize
+        """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("offset", offset)
+                .addValue("pageSize", pageSize);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> {
+            String contentText = rs.getString("content_text");
+            String preview = contentText != null && contentText.length() > 50
+                    ? contentText.substring(0, 50) + "..."
+                    : contentText;
+            return new PostResponse(
+                    rs.getLong("post_id"),
+                    rs.getLong("user_id"),
+                    rs.getString("author"),
+                    rs.getString("title"),
+                    preview,
+                    rs.getString("topic_tag"),
+                    rs.getInt("view_count"),
+                    rs.getInt("like_count"),
+                    rs.getInt("comment_count"),
+                    rs.getInt("collect_count"),
+                    rs.getTimestamp("created_at").toLocalDateTime()
+            );
+        });
+    }
+
+    /**
+     * 获取用户的帖子总数
+     */
+    public long getUserPostCount(Long userId) {
+        String sql = "SELECT COUNT(*) FROM community_post WHERE user_id = :userId AND status = 'ACTIVE'";
+        MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
+        Long count = jdbcTemplate.queryForObject(sql, params, Long.class);
+        return count != null ? count : 0;
+    }
+
+    /**
+     * 物理删除帖子
+     */
+    public void deletePost(Long postId) {
+        String sql = "DELETE FROM community_post WHERE post_id = :postId";
+        MapSqlParameterSource params = new MapSqlParameterSource("postId", postId);
+        jdbcTemplate.update(sql, params);
+    }
 }

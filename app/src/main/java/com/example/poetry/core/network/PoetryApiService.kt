@@ -9,6 +9,8 @@ import retrofit2.http.Body
 import retrofit2.http.Query
 import retrofit2.http.DELETE
 import com.example.poetry.features.learning.model.QuizQuestion
+import retrofit2.Response
+
 
 interface PoetryApiService {
 
@@ -236,5 +238,16 @@ interface PoetryApiService {
     suspend fun deleteAllNotifications(
         @Header("Authorization") authorization: String
     )
+
+    /**
+     * 删除帖子
+     * @param authorization Bearer Token
+     * @param postId 帖子ID
+     */
+    @DELETE("/api/community/post/{postId}")
+    suspend fun deletePost(
+        @Header("Authorization") authorization: String,
+        @Path("postId") postId: Long
+    ): Response<Unit>
 
 }
