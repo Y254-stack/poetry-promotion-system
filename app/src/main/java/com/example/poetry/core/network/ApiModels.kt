@@ -105,6 +105,65 @@ data class ApiQuizSubmitRequest(
     val correctPayload: String
 )
 
+// Favorite models
+data class ApiFavoriteCheckResponse(
+    val isFavorited: Boolean
+)
+
+data class ApiFavoriteActionResponse(
+    val success: Boolean
+)
+
+data class ApiFavoriteListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiPoemSearchItemDto>
+)
+
+data class ApiPostCollectListItemDto(
+    val postId: Long,
+    val title: String?,
+    val topicTag: String?,
+    val contentPreview: String?,
+    val authorNickname: String?,
+    val collectedAt: String?
+)
+
+data class ApiPostCollectListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiPostCollectListItemDto>
+)
+
+// 搜索筛选：朝代 / 作者
+data class ApiDynastyDto(
+    val dynastyId: Long,
+    val dynastyName: String
+)
+
+data class ApiAuthorDto(
+    val authorId: Long,
+    val authorName: String,
+    val dynastyName: String
+)
+
+// Retrofit「我的关注」列表（与 suspend 版 ApiFollowingList* 并存）
+data class ApiFollowListItemDto(
+    val userId: Long,
+    val username: String?,
+    val nickname: String?,
+    val followedAt: String?
+)
+
+data class ApiFollowListResponse(
+    val page: Int,
+    val pageSize: Int,
+    val total: Int,
+    val items: List<ApiFollowListItemDto>
+)
+
 // ============ 帖子相关 ============
 
 data class ApiCreatePostRequest(
