@@ -152,7 +152,7 @@ class UserRepositoryImpl(
     private val followList = UserMockData.initialFollows().toMutableList()
     override fun getFollows(): List<FollowUiModel> = followList.toList()
     override fun unfollow(userId: String) {
-        followList.removeAll { it.userId == userId }
+        followList.removeAll { it.userId.toString() == userId }
     }
 
     private fun parseDate(dateStr: String): Date {

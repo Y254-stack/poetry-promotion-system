@@ -1,5 +1,7 @@
 package com.example.poetry.core.network
 
+import com.google.gson.annotations.SerializedName
+
 data class ApiPoemDetailDto(
     val workId: Long,
     val title: String,
@@ -257,8 +259,8 @@ data class ApiFollowResponse(
 
 data class ApiUserPublicProfile(
     val userId: Long,
-    val username: String,
-    val nickname: String,
+    val username: String?,
+    val nickname: String?,
     val avatarUrl: String?,
     val bio: String?,
     val email: String?,
@@ -269,6 +271,8 @@ data class ApiUserPublicProfile(
     val createdAt: String
 )
 
+typealias ApiUserPublicProfileResponse = ApiUserPublicProfile
+
 data class ApiFollowingListItem(
     val userId: Long,
     val nickname: String,
@@ -278,6 +282,23 @@ data class ApiFollowingListItem(
 
 data class ApiFollowingListResponse(
     val items: List<ApiFollowingListItem>,
+    val page: Int,
+    val pageSize: Int,
+    val total: Long,
+    val hasMore: Boolean
+)
+
+/** 与后端 [com.example.poetry.backend.community.dto.UserPostsResponse] / PostResponse 对齐 */
+data class ApiUserPublishedPostItemDto(
+    val postId: Long,
+    val title: String?,
+    val topicTag: String?,
+    @SerializedName("preview") val contentPreview: String?,
+    @SerializedName("createdAt") val publishedAt: String?
+)
+
+data class ApiUserPublishedPostsResponse(
+    val items: List<ApiUserPublishedPostItemDto>,
     val page: Int,
     val pageSize: Int,
     val total: Long,

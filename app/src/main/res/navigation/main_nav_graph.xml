@@ -14,7 +14,15 @@
         <action
             android:id="@+id/action_home_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
+        <action
+            android:id="@+id/action_home_to_categoryList"
+            app:destination="@id/categoryListFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.example.poetry.features.home.ui.CategoryListFragment"
+        android:label="分类浏览" />
 
     <fragment
         android:id="@+id/loginFragment"
@@ -84,28 +92,25 @@
     <fragment
         android:id="@+id/myCreationsFragment"
         android:name="com.example.poetry.features.user.ui.MyCreationsFragment"
-        android:label="我的创作" />
-
-        <!-- 跳转到帖子详情 -->
+        android:label="我的创作">
         <action
-                android:id="@+id/action_myCreations_to_postDetail"
-                app:destination="@id/postDetailFragment" />
-
-        <!-- 跳转到发帖页面 -->
+            android:id="@+id/action_myCreations_to_postDetail"
+            app:destination="@id/postDetailFragment" />
         <action
-                android:id="@+id/action_myCreations_to_createPost"
-                app:destination="@id/createPostFragment" />
+            android:id="@+id/action_myCreations_to_createPost"
+            app:destination="@id/createPostFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/myFavoritesFragment"
-        android:name="com.example.poetry.features.user.ui.MyFavoritesFragment"
+        android:name="com.example.poetry.features.favorite.ui.FavoriteListFragment"
         android:label="我的收藏">
         <action
             android:id="@+id/action_myFavorites_to_poemDetail"
             app:destination="@id/poemDetailFragment" />
         <action
-            android:id="@+id/action_myFavorites_to_authorDetail"
-            app:destination="@id/authorDetailFragment" />
+            android:id="@+id/action_myFavorites_to_postDetail"
+            app:destination="@id/postDetailFragment" />
     </fragment>
 
     <fragment
