@@ -86,6 +86,128 @@ interface PoetryApiService {
     @GET("api/quiz/questions")
     fun getQuizQuestions(@Query("limit") limit: Int): Call<List<QuizQuestion>>
 
+    // ============ 诗词收藏 / 帖子收藏（Retrofit）============
+
+    @GET("api/favorites/check")
+    fun checkFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteCheckResponse>
+
+    @POST("api/favorites")
+    fun addFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @DELETE("api/favorites")
+    fun removeFavorite(
+        @Query("userId") userId: Long,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/favorites")
+    fun getFavoriteList(
+        @Query("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
+        @Query("query") query: String?
+    ): Call<ApiFavoriteListResponse>
+
+    @GET("api/favorites/me")
+    fun getMyFavoriteList(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
+        @Query("query") query: String?
+    ): Call<ApiFavoriteListResponse>
+
+    @GET("api/favorites/me/check")
+    fun checkMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteCheckResponse>
+
+    @POST("api/favorites/me")
+    fun addMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @DELETE("api/favorites/me")
+    fun removeMyFavorite(
+        @Header("Authorization") authorization: String,
+        @Query("workId") workId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    @GET("api/favorites/posts/me")
+    fun getMyPostCollectList(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
+        @Query("query") query: String?
+    ): Call<ApiPostCollectListResponse>
+
+    @DELETE("api/favorites/posts/me")
+    fun removeMyPostCollect(
+        @Header("Authorization") authorization: String,
+        @Query("postId") postId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    // ============ 我的关注（Retrofit，/api/follows）============
+
+    @GET("api/follows/me")
+    fun getMyFollowing(
+        @Header("Authorization") authorization: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiFollowListResponse>
+
+    @DELETE("api/follows/me")
+    fun unfollowUser(
+        @Header("Authorization") authorization: String,
+        @Query("followedUserId") followedUserId: Long
+    ): Call<ApiFavoriteActionResponse>
+
+    // ============ 公开用户主页（Retrofit）============
+
+    @GET("api/profile/{userId}")
+    fun getUserPublicProfile(
+        @Header("Authorization") authorization: String?,
+        @Path("userId") userId: Long
+    ): Call<ApiUserPublicProfileResponse>
+
+    @GET("api/profile/{userId}/posts")
+    fun getUserPublishedPosts(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiUserPublishedPostsResponse>
+
+    // ============ 首页分类（Retrofit）============
+
+    @GET("api/categories/dynasties")
+    fun getDynasties(): Call<List<ApiDynastyDto>>
+
+    @GET("api/categories/authors")
+    fun getAuthors(): Call<List<ApiAuthorDto>>
+
+    @GET("api/categories/collections")
+    fun getCollections(): Call<List<ApiAuthorDto>>
+
+    @GET("api/categories/poems/by-dynasty")
+    fun getPoemsByDynasty(
+        @Query("dynastyName") dynastyName: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
+
+    @GET("api/categories/poems/by-author")
+    fun getPoemsByAuthor(
+        @Query("authorId") authorId: Long,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Call<ApiTitleSearchResponse>
 
     // ============ 社区模块 API ============
 

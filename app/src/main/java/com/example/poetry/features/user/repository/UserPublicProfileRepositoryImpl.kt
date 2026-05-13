@@ -10,7 +10,7 @@ class UserPublicProfileRepositoryImpl(
 ) : UserPublicProfileRepository {
 
     override fun getPublicProfile(userId: Long): Call<ApiUserPublicProfileResponse> {
-        return apiService.getUserPublicProfile(userId)
+        return apiService.getUserPublicProfile(null, userId)
     }
 
     override fun getPublishedPosts(userId: Long, page: Int, pageSize: Int): Call<ApiUserPublishedPostsResponse> {

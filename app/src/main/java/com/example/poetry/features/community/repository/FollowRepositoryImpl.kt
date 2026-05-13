@@ -91,8 +91,8 @@ class FollowRepositoryImpl(
             Result.success(
                 UserPublicProfileUiModel(
                     userId = response.userId,
-                    username = response.username,
-                    nickname = response.nickname,
+                    username = response.username.orEmpty(),
+                    nickname = response.nickname.orEmpty(),
                     avatarUrl = response.avatarUrl,
                     bio = response.bio,
                     email = response.email,
@@ -118,8 +118,8 @@ class FollowRepositoryImpl(
             Result.success(
                 UserPublicProfileUiModel(
                     userId = response.userId,
-                    username = response.username,
-                    nickname = response.nickname,
+                    username = response.username.orEmpty(),
+                    nickname = response.nickname.orEmpty(),
                     avatarUrl = response.avatarUrl,
                     bio = response.bio,
                     email = response.email,

@@ -70,7 +70,7 @@ class FavoriteListFragment : Fragment(R.layout.fragment_favorite_list) {
             onClick = {
                 findNavController().navigate(
                     R.id.action_myFavorites_to_postDetail,
-                    bundleOf("postId" to it.postId)
+                    bundleOf("post_id" to it.postId)
                 )
             }
         )

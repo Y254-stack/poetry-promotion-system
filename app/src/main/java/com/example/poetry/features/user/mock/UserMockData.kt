@@ -1,6 +1,7 @@
 package com.example.poetry.features.user.mock
 
 import com.example.poetry.R
+import com.example.poetry.features.user.model.FollowUiModel
 import com.example.poetry.features.user.model.ProgressStatUiModel
 import com.example.poetry.features.user.model.UserCollectionUiModel
 import com.example.poetry.features.user.model.UserQuickActionUiModel
@@ -37,6 +38,11 @@ object UserMockData {
     fun draftCreations(): List<UserCollectionUiModel> = listOf(
         UserCollectionUiModel("春夜喜雨卡片", "诗词卡片草稿，等待发布", "草稿"),
         UserCollectionUiModel("未命名草稿", "上次编辑于昨天", "草稿")
+    )
+
+    fun initialFollows(): List<FollowUiModel> = listOf(
+        FollowUiModel(userId = 10001L, displayName = "示例诗友", roleBadge = "用户"),
+        FollowUiModel(userId = 10002L, displayName = "古风小号", roleBadge = "用户")
     )
 
     fun favorites(): List<UserCollectionUiModel> = listOf(
