@@ -1,32 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <!-- 子评论缩进空间 -->
+    <View
+        android:id="@+id/vIndent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tvCommentAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/circle_avatar_bg"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="评" />
+
+    <TextView
+        android:id="@+id/tvCommentAuthor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btnReply"
+        app:layout_constraintStart_toEndOf="@+id/tvCommentAvatar"
+        app:layout_constraintTop_toTopOf="@+id/tvCommentAvatar"
+        tools:text="评论者昵称" />
+
+    <TextView
+        android:id="@+id/tvCommentContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:lineSpacingExtra="2dp"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvCommentAuthor"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentAuthor"
+        tools:text="这是一条评论内容。" />
+
+    <TextView
+        android:id="@+id/tvCommentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/text_light_gray"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCommentAuthor"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
+        tools:text="2小时前" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/llCommentActions"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCommentTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvCommentTime">
 
         <TextView
-            android:id="@+id/authorText"
+            android:id="@+id/btnReply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/contentText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
-        <TextView
-            android:id="@+id/timeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#666666"
+            android:padding="4dp"
+            android:text="回复"
+            android:textColor="@color/user_center_primary"
             android:textSize="12sp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/divider_light" />
+
+        <LinearLayout
+            android:id="@+id/btnLike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/ivLike"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_like_outline" />
+
+            <TextView
+                android:id="@+id/tvLikeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/text_light_gray"
+                android:textSize="12sp"
+                tools:text="0" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dividerDelete"
+            android:layout_width="1dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/divider_light" />
+
+        <TextView
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="删除"
+            android:textColor="@color/red"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/divider_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvCommentAuthor"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

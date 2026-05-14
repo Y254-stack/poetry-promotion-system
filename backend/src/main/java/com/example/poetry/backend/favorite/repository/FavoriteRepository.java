@@ -50,16 +50,31 @@ public class FavoriteRepository {
     }
 
     public int countFavorites(Long userId) {
+        return countFavorites(userId, null);
+    }
+
+    public int countFavorites(Long userId, String searchQuery) {
+        boolean hasQuery = searchQuery != null && !searchQuery.isBlank();
         String sql = """
-            SELECT COUNT(*) FROM user_favorite_poem
-            WHERE user_id = :userId
-            """;
+            SELECT COUNT(*) FROM user_favorite_poem ufp
+            JOIN poetry_work w ON w.work_id = ufp.work_id
+            WHERE ufp.user_id = :userId
+            """ + favoriteSearchFilter(hasQuery);
+
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
+        if (hasQuery) {
+            params.addValue("likePattern", buildLikePattern(searchQuery.trim()));
+        }
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count == null ? 0 : count;
     }
 
     public List<PoemSearchItemDto> getFavoriteList(Long userId, int page, int pageSize) {
+        return getFavoriteList(userId, page, pageSize, null);
+    }
+
+    public List<PoemSearchItemDto> getFavoriteList(Long userId, int page, int pageSize, String searchQuery) {
+        boolean hasQuery = searchQuery != null && !searchQuery.isBlank();
         String sql = """
             SELECT
                 w.work_id AS workId,
@@ -79,6 +94,7 @@ public class FavoriteRepository {
             FROM user_favorite_poem ufp
             JOIN poetry_work w ON w.work_id = ufp.work_id
             WHERE ufp.user_id = :userId
+            """ + favoriteSearchFilter(hasQuery) + """
             ORDER BY ufp.created_at DESC
             LIMIT :limit OFFSET :offset
             """;
@@ -87,6 +103,9 @@ public class FavoriteRepository {
             .addValue("userId", userId)
             .addValue("limit", pageSize)
             .addValue("offset", Math.max(page - 1, 0) * pageSize);
+        if (hasQuery) {
+            params.addValue("likePattern", buildLikePattern(searchQuery.trim()));
+        }
 
         return jdbcTemplate.query(sql, params, (rs, rowNum) -> new PoemSearchItemDto(
             rs.getLong("workId"),
@@ -98,5 +117,31 @@ public class FavoriteRepository {
             rs.getInt("hotScore"),
             rs.getString("publishTime")
         ));
+    }
+
+    private static String favoriteSearchFilter(boolean hasQuery) {
+        if (!hasQuery) {
+            return "";
+        }
+        return """
+             AND (
+                w.title LIKE :likePattern ESCAPE '\\\\' OR
+                COALESCE(w.author_name_cache, '') LIKE :likePattern ESCAPE '\\\\' OR
+                COALESCE(w.dynasty_name, '') LIKE :likePattern ESCAPE '\\\\' OR
+                COALESCE(w.content_text, '') LIKE :likePattern ESCAPE '\\\\'
+            )
+            """;
+    }
+
+    private static String buildLikePattern(String raw) {
+        StringBuilder escaped = new StringBuilder();
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            if (c == '\\' || c == '%' || c == '_') {
+                escaped.append('\\');
+            }
+            escaped.append(c);
+        }
+        return "%" + escaped + "%";
     }
 }

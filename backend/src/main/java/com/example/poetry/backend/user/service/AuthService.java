@@ -63,6 +63,17 @@ public class AuthService {
         return new UserProfileResponse(user.userId(), user.username(), user.nickname(), user.email());
     }
 
+    /**
+     * 从 Authorization 解析当前用户 ID，并校验账号仍存在。
+     */
+    public long requireUserId(String authHeader) {
+        String token = extractBearerToken(authHeader);
+        long userId = jwtTokenProvider.parseUserId(token);
+        repository.findByUserId(userId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "用户不存在或登录已失效"));
+        return userId;
+    }
+
     public AuthResponse changePassword(String authHeader, ChangePasswordRequest request) {
         String token = extractBearerToken(authHeader);
         Long userId = jwtTokenProvider.parseUserId(token);

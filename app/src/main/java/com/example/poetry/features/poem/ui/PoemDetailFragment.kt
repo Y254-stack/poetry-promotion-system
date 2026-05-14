@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
+import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.core.ui.VerticalSpaceItemDecoration
 import com.example.poetry.core.util.dp
 import com.example.poetry.databinding.FragmentPoemDetailBinding
@@ -46,7 +47,8 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
         val workId = arguments?.getLong("workId", 0L) ?: 0L
         if (workId > 0) {
             viewModel.loadPoemDetail(workId)
-            viewModel.checkFavoriteStatus(1L, workId)
+            val auth = SessionManager(requireContext()).bearerAuthorization()
+            viewModel.checkFavoriteStatus(auth, workId)
         }
 
         viewModel.poemDetail.observe(viewLifecycleOwner) { detail ->
@@ -68,19 +70,31 @@ class PoemDetailFragment : Fragment(R.layout.fragment_poem_detail) {
         }
 
         binding.favoriteButton.setOnClickListener {
-            if (workId > 0) {
-                val currentStatus = viewModel.isFavorited.value ?: false
-                viewModel.toggleFavorite(1L, workId)
-                Toast.makeText(
-                    requireContext(),
-                    if (currentStatus) "已取消收藏" else "已收藏",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if (workId <= 0) return@setOnClickListener
+            val auth = SessionManager(requireContext()).bearerAuthorization()
+            if (auth.isNullOrBlank()) {
+                Toast.makeText(requireContext(), "请先登录后再收藏", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+            val currentStatus = viewModel.isFavorited.value ?: false
+            viewModel.toggleFavorite(auth, workId)
+            Toast.makeText(
+                requireContext(),
+                if (currentStatus) "已取消收藏" else "已收藏",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         binding.authorButton.setOnClickListener {
             findNavController().navigate(R.id.action_poemDetail_to_authorDetail)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val workId = arguments?.getLong("workId", 0L) ?: 0L
+        if (workId > 0) {
+            viewModel.checkFavoriteStatus(SessionManager(requireContext()).bearerAuthorization(), workId)
         }
     }
 

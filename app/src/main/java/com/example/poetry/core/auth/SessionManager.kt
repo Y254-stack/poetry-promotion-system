@@ -29,6 +29,12 @@ class SessionManager(context: Context) {
 
     fun isLoggedIn(): Boolean = !token().isNullOrBlank()
 
+    /** Retrofit / Spring: Authorization: Bearer <token> */
+    fun bearerAuthorization(): String? {
+        val t = token()?.trim().orEmpty()
+        return if (t.isEmpty()) null else "Bearer $t"
+    }
+
     companion object {
         private const val KEY_TOKEN = "token"
         private const val KEY_USER_ID = "user_id"
