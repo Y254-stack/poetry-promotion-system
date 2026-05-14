@@ -372,4 +372,16 @@ interface PoetryApiService {
         @Path("postId") postId: Long
     ): Response<Unit>
 
+    /**
+     * 飞花令的接口
+     */
+    @POST("api/feihua/judge")
+    suspend fun judgeFeihua(
+        @Body request: FeihuaRequest
+    ): JudgeResponse
+
+    @POST("api/feihua/ai-turn")
+    suspend fun aiTurn(
+        @Body request: FeihuaRequest
+    ): AiLineResponse
 }
