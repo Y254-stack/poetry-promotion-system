@@ -209,6 +209,12 @@ interface PoetryApiService {
         @Query("pageSize") pageSize: Int
     ): Call<ApiTitleSearchResponse>
 
+    // AI Chat APIs
+    @POST("api/ai/chat")
+    fun sendChatMessage(
+        @Body request: ApiChatRequest
+    ): Call<ApiChatResponse>
+
     // ============ 社区模块 API ============
 
     @POST("api/community/post")

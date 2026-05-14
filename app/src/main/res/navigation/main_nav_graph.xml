@@ -245,4 +245,9 @@
             android:id="@+id/action_notifications_to_postDetail"
             app:destination="@id/postDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/aiChatFragment"
+        android:name="com.example.poetry.features.ai.AiChatFragment"
+        android:label="AI 诗词助手" />
 </navigation>
