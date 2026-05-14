@@ -390,4 +390,20 @@ interface PoetryApiService {
     suspend fun aiTurn(
         @Body request: FeihuaRequest
     ): AiLineResponse
+
+    // ============ 诗词接龙 API ============
+    @POST("api/chain/start")
+    suspend fun startChain(
+        @Body request: ChainRequest
+    ): ChainResponse
+
+    @POST("api/chain/judge")
+    suspend fun judgeChain(
+        @Body request: ChainRequest
+    ): ChainResponse
+
+    @POST("api/chain/ai-turn")
+    suspend fun chainAiTurn(
+        @Body request: ChainRequest
+    ): ChainResponse
 }
