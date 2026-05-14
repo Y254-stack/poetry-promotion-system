@@ -23,13 +23,14 @@ class LearningHubFragment : Fragment(R.layout.fragment_learning_hub) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        android.util.Log.e("LearningHub", "========== 进入了趣味学习页面 ==========")
         _binding = FragmentLearningHubBinding.bind(view)
 
         adapter = LearningModeAdapter { findNavController().navigate(it.destinationId) }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@LearningHubFragment.adapter
-            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(12)))
+            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(14)))
         }
 
         viewModel.modes.observe(viewLifecycleOwner) { adapter.submitList(it) }

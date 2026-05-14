@@ -1,12 +1,15 @@
 package com.example.poetry.features.poem.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.poetry.databinding.ItemPoemSummaryBinding
 import com.example.poetry.features.poem.model.PoemSummaryUiModel
 
 class PoemSummaryAdapter(
+    private val showRemoveFavorite: Boolean = false,
+    private val onRemoveFavorite: ((PoemSummaryUiModel) -> Unit)? = null,
     private val onClick: (PoemSummaryUiModel) -> Unit
 ) : RecyclerView.Adapter<PoemSummaryAdapter.PoemSummaryViewHolder>() {
 
@@ -39,6 +42,16 @@ class PoemSummaryAdapter(
             binding.authorText.text = "${item.author} · ${item.dynasty}"
             binding.snippetText.text = item.snippet
             binding.root.setOnClickListener { onClick(item) }
+
+            if (showRemoveFavorite && onRemoveFavorite != null) {
+                binding.removeFavoriteButton.visibility = View.VISIBLE
+                binding.removeFavoriteButton.setOnClickListener {
+                    onRemoveFavorite.invoke(item)
+                }
+            } else {
+                binding.removeFavoriteButton.visibility = View.GONE
+                binding.removeFavoriteButton.setOnClickListener(null)
+            }
         }
     }
 }

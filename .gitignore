@@ -1,5 +1,6 @@
 *.iml
 .gradle
+/.idea/
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -15,3 +16,6 @@
 local.properties
 
 repo_data/
+backend/target/
+backend/*.log
+sql/gushiwen.sql

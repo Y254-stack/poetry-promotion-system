@@ -1,17 +1,39 @@
 package com.example.poetry.features.poem.repository
 
-import com.example.poetry.features.poem.model.AuthorProfileUiModel
-import com.example.poetry.features.poem.model.PoemDetailUiModel
-import com.example.poetry.features.poem.model.PoemSummaryUiModel
+import com.example.poetry.core.network.ApiPoemDetailDto
+import com.example.poetry.core.network.ApiTagDto
+import com.example.poetry.core.network.ApiTagSearchResponse
+import com.example.poetry.core.network.ApiTitleSearchResponse
+import retrofit2.Call
 
 interface PoemRepository {
 
-    // TODO: 接入真实诗词详情
-    fun getPoemDetail(): PoemDetailUiModel
+    fun getHotTags(limit: Int = 20): Call<List<ApiTagDto>>
 
-    // TODO: 接入真实搜索
-    fun search(keyword: String): List<PoemSummaryUiModel>
+    fun searchByTags(
+        tagIds: List<Long>,
+        sort: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTagSearchResponse>
 
-    // TODO: 接入真实作者信息
-    fun getAuthorProfile(): AuthorProfileUiModel
+    fun searchByTitle(
+        query: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTitleSearchResponse>
+
+    fun searchByAuthor(
+        query: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTitleSearchResponse>
+
+    fun searchByAll(
+        query: String,
+        page: Int = 1,
+        pageSize: Int = 20
+    ): Call<ApiTitleSearchResponse>
+
+    fun getPoemDetail(workId: Long): Call<ApiPoemDetailDto>
 }

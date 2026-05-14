@@ -36,7 +36,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupRecommendationList() {
         recommendationAdapter = DailyRecommendationAdapter {
-            // TODO: 这里接入真实诗词详情路由参数
             findNavController().navigate(R.id.action_home_to_poemDetail)
         }
 
@@ -49,9 +48,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupCategoryList() {
-        categoryAdapter = CategoryAdapter {
-            // TODO: 这里接入真实分类检索逻辑
-            findNavController().navigate(R.id.action_home_to_searchResult)
+        categoryAdapter = CategoryAdapter { category ->
+            findNavController().navigate(
+                R.id.action_home_to_categoryList,
+                androidx.core.os.bundleOf(
+                    "categoryType" to category.type.name
+                )
+            )
         }
 
         binding.categoryRecycler.apply {
@@ -72,11 +75,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun bindActions() {
-        binding.searchEntryCard.setOnClickListener {
-            // TODO: 这里接入真实搜索输入与提交逻辑
-            findNavController().navigate(R.id.action_home_to_searchResult)
-        }
+    binding.searchEntryCard.setOnClickListener {
+        findNavController().navigate(
+            R.id.action_home_to_searchResult,
+            androidx.core.os.bundleOf(
+                "searchType" to "TITLE",
+                "titleQuery" to ""
+            )
+        )
     }
+}
+
 
     override fun onDestroyView() {
         super.onDestroyView()
