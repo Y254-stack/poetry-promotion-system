@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.poetry.databinding.ItemChatMessageUserBinding
 import com.example.poetry.databinding.ItemChatMessageAiBinding
+import io.noties.markwon.Markwon
 
 class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(ChatDiffCallback()) {
 
@@ -55,8 +56,10 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(ChatDiffCa
     class AiMessageViewHolder(
         private val binding: ItemChatMessageAiBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+        private val markwon = Markwon.create(binding.root.context)
+
         fun bind(message: ChatMessage) {
-            binding.messageText.text = message.content
+            markwon.setMarkdown(binding.messageText, message.content)
         }
     }
 

@@ -20,16 +20,9 @@ class AiChatFragment : Fragment(R.layout.fragment_ai_chat) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAiChatBinding.bind(view)
 
-        setupToolbar()
         setupRecyclerView()
         setupInputArea()
         observeViewModel()
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
-        }
     }
 
     private fun setupRecyclerView() {

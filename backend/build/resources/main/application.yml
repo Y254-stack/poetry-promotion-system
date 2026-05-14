@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/poetry_clean?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: '123456'
+    password: '20060222'
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jackson:
@@ -22,3 +22,9 @@ security:
     # Must be long enough for HMAC-SHA (>= 32 bytes). Base64 also supported.
     secret: "poetry-dev-secret-please-change-32bytes-minimum-2026-04-27"
     expiration-seconds: 604800
+
+anthropic:
+  api:
+    key: ark-a934a5d9-95bc-4ea5-b923-61cde6e5bbb8-5c329
+
+

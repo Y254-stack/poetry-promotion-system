@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.poetry.core.network.ApiChatRequest
 import com.example.poetry.core.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class AiChatViewModel : ViewModel() {
@@ -39,7 +41,10 @@ class AiChatViewModel : ViewModel() {
                     conversationId = conversationId
                 )
 
-                val response = RetrofitClient.apiService.sendChatMessage(request).execute()
+                // 在 IO 线程执行网络请求
+                val response = withContext(Dispatchers.IO) {
+                    RetrofitClient.apiService.sendChatMessage(request).execute()
+                }
 
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!

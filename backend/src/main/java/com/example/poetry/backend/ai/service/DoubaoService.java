@@ -34,6 +34,9 @@ public class DoubaoService {
 
     public String chat(String userMessage, List<Map<String, String>> conversationHistory) {
         try {
+            System.out.println("=== 开始调用豆包 API ===");
+            System.out.println("用户消息: " + userMessage);
+
             // Build messages array
             List<Map<String, String>> messages = new ArrayList<>();
 
@@ -58,20 +61,34 @@ public class DoubaoService {
             requestBody.put("messages", messages);
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
+            System.out.println("请求体: " + jsonBody);
+
+            // 使用 UTF-8 编码创建请求体
+            RequestBody body = RequestBody.create(
+                jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                MediaType.parse("application/json; charset=utf-8")
+            );
 
             Request request = new Request.Builder()
                     .url(DOUBAO_API_URL)
-                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Content-Type", "application/json; charset=utf-8")
                     .addHeader("Authorization", "Bearer " + apiKey)
-                    .post(RequestBody.create(jsonBody, MediaType.parse("application/json")))
+                    .post(body)
                     .build();
 
+            System.out.println("发送请求到: " + DOUBAO_API_URL);
+
             try (Response response = httpClient.newCall(request).execute()) {
+                System.out.println("收到响应，状态码: " + response.code());
+
                 if (!response.isSuccessful()) {
-                    throw new IOException("豆包 API 调用失败: " + response.code() + " - " + response.message());
+                    String errorBody = response.body() != null ? response.body().string() : "无响应体";
+                    System.err.println("豆包 API 错误: " + errorBody);
+                    throw new IOException("豆包 API 调用失败: " + response.code() + " - " + response.message() + ", 详情: " + errorBody);
                 }
 
                 String responseBody = response.body().string();
+                System.out.println("豆包 API 响应: " + responseBody);
                 Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
 
                 List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
