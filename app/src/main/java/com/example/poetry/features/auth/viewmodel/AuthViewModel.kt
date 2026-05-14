@@ -53,23 +53,9 @@ class AuthViewModel(
                         _errorMessage.value = "登录失败，服务返回空响应"
                     }
                 } else {
-                    // 尝试从错误响应中获取具体错误信息
                     val errorBody = response.errorBody()?.string()
-                    _errorMessage.value = when (response.code()) {
-                        401 -> "账号或密码错误"
-                        409 -> "用户名或邮箱已存在"
-                        400 -> "请求参数错误"
-                        500 -> "服务器内部错误，请稍后重试"
-                        else -> errorBody?.let { 
-                            // 尝试解析 Spring Boot 标准错误格式
-                            try {
-                                val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-                                regex.find(it)?.groupValues?.get(1) ?: "登录失败：${response.code()}"
-                            } catch (e: Exception) {
-                                "登录失败：${response.code()}"
-                            }
-                        } ?: "登录失败：${response.code()}"
-                    }
+                    val fallback = "登录失败（${response.code()}）"
+                    _errorMessage.value = parseServerMessage(errorBody, fallback)
                 }
             }
 
@@ -80,8 +66,19 @@ class AuthViewModel(
         })
     }
 
-    fun register(username: String, nickname: String, email: String, password: String, confirm: String) {
+    fun register(
+        username: String,
+        nickname: String,
+        email: String,
+        password: String,
+        confirm: String,
+        agreedToTerms: Boolean
+    ) {
         _errorMessage.value = null
+        if (!agreedToTerms) {
+            _errorMessage.value = "请先阅读并同意《用户协议》和《隐私政策》"
+            return
+        }
         if (username.isBlank()) {
             _errorMessage.value = "请输入账号"
             return
@@ -108,48 +105,40 @@ class AuthViewModel(
         }
 
         _isLoading.value = true
-        repository.register(username = username.trim(), nickname = nickname.trim(), email = email.trim(), password = password)
-            .enqueue(object : Callback<ApiAuthResponse> {
-                override fun onResponse(call: Call<ApiAuthResponse>, response: Response<ApiAuthResponse>) {
-                    _isLoading.value = false
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (body != null) {
-                            _authResult.value = body
-                            _errorMessage.value = null
-                        } else {
-                            _errorMessage.value = "注册失败，服务返回空响应"
-                        }
+        repository.register(
+            username = username.trim(),
+            nickname = nickname.trim(),
+            email = email.trim(),
+            password = password,
+            agreedToTerms = true
+        ).enqueue(object : Callback<ApiAuthResponse> {
+            override fun onResponse(call: Call<ApiAuthResponse>, response: Response<ApiAuthResponse>) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        _authResult.value = body
+                        _errorMessage.value = null
                     } else {
-                        // 尝试从错误响应中获取具体错误信息
-                        val errorBody = response.errorBody()?.string()
-                        _errorMessage.value = when (response.code()) {
-                            409 -> "用户名或邮箱已存在"
-                            400 -> "请求参数错误"
-                            500 -> "服务器内部错误，请稍后重试"
-                            else -> errorBody?.let { 
-                                // 尝试解析 Spring Boot 标准错误格式
-                                try {
-                                    val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-                                    regex.find(it)?.groupValues?.get(1) ?: "注册失败：${response.code()}"
-                                } catch (e: Exception) {
-                                    "注册失败：${response.code()}"
-                                }
-                            } ?: "注册失败：${response.code()}"
-                        }
+                        _errorMessage.value = "注册失败，服务返回空响应"
                     }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val fallback = "注册失败（${response.code()}）"
+                    _errorMessage.value = parseServerMessage(errorBody, fallback)
                 }
+            }
 
-                override fun onFailure(call: Call<ApiAuthResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _errorMessage.value = t.message ?: "网络或服务不可用，请稍后重试。"
-                }
-            })
+            override fun onFailure(call: Call<ApiAuthResponse>, t: Throwable) {
+                _isLoading.value = false
+                _errorMessage.value = t.message ?: "网络或服务不可用，请稍后重试。"
+            }
+        })
     }
 
     fun changePassword(token: String, currentPassword: String, newPassword: String, confirmPassword: String) {
         _errorMessage.value = null
-        
+
         if (currentPassword.isBlank()) {
             _errorMessage.value = "请输入当前密码"
             return
@@ -181,19 +170,8 @@ class AuthViewModel(
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    _errorMessage.value = when (response.code()) {
-                        401 -> "当前密码错误"
-                        400 -> "密码格式不正确"
-                        500 -> "服务器内部错误，请稍后重试"
-                        else -> errorBody?.let { 
-                            try {
-                                val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-                                regex.find(it)?.groupValues?.get(1) ?: "密码修改失败：${response.code()}"
-                            } catch (e: Exception) {
-                                "密码修改失败：${response.code()}"
-                            }
-                        } ?: "密码修改失败：${response.code()}"
-                    }
+                    val fallback = "密码修改失败（${response.code()}）"
+                    _errorMessage.value = parseServerMessage(errorBody, fallback)
                 }
             }
 
@@ -202,5 +180,15 @@ class AuthViewModel(
                 _errorMessage.value = t.message ?: "网络或服务不可用，请稍后重试。"
             }
         })
+    }
+
+    private fun parseServerMessage(errorBody: String?, fallback: String): String {
+        if (errorBody.isNullOrBlank()) return fallback
+        return try {
+            val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
+            regex.find(errorBody)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() } ?: fallback
+        } catch (_: Exception) {
+            fallback
+        }
     }
 }

@@ -24,14 +24,16 @@ class AuthRepositoryImpl(
         username: String,
         nickname: String,
         email: String,
-        password: String
+        password: String,
+        agreedToTerms: Boolean
     ): Call<ApiAuthResponse> {
         return apiService.register(
             ApiRegisterRequest(
                 username = username,
                 nickname = nickname,
                 email = email,
-                password = password
+                password = password,
+                agreedToTerms = agreedToTerms
             )
         )
     }

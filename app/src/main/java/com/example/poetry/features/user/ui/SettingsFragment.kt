@@ -56,9 +56,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
 
         binding.logoutButton.setOnClickListener {
-            SessionManager(requireContext()).clearSession()
+            SessionManager(requireContext()).clearActiveSession()
             Toast.makeText(requireContext(), "已退出登录", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
+        }
+
+        binding.accountManageButton.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_accountManage)
         }
 
         binding.deleteAccountButton.setOnClickListener {
@@ -66,7 +70,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 .setTitle(R.string.settings_delete_account)
                 .setMessage("注销后将清除本地会话，后端流程接入前仅为演示。")
                 .setPositiveButton("确认注销") { _, _ ->
-                    SessionManager(requireContext()).clearSession()
+                    SessionManager(requireContext()).clearEverything()
                     Toast.makeText(requireContext(), "已清除本地登录状态", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }

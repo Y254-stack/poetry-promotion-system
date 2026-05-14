@@ -9,7 +9,7 @@ import com.example.poetry.features.user.model.UserQuickActionUiModel
 object UserMockData {
 
     fun quickActions(): List<UserQuickActionUiModel> = listOf(
-        UserQuickActionUiModel("设置", "昵称、头像、密码与注销账号", R.id.action_user_to_settings),
+        UserQuickActionUiModel("设置", "昵称、头像、密码、多账号与注销", R.id.action_user_to_settings),
         UserQuickActionUiModel("学习进度看板", "打卡日历、掌握数量与累积天数", R.id.action_user_to_studyDashboard),
         UserQuickActionUiModel("我的创作", "已发布、草稿与添加/删除", R.id.action_user_to_myCreations),
         UserQuickActionUiModel("我的收藏", "诗词与帖子收藏", R.id.action_user_to_myFavorites),

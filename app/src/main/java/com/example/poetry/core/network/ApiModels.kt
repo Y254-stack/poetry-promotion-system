@@ -57,7 +57,8 @@ data class ApiRegisterRequest(
     val username: String,
     val nickname: String,
     val email: String,
-    val password: String
+    val password: String,
+    val agreedToTerms: Boolean
 )
 
 data class ApiLoginRequest(
