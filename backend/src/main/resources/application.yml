@@ -26,8 +26,3 @@ security:
     # Must be long enough for HMAC-SHA (>= 32 bytes). Base64 also supported.
     secret: "poetry-dev-secret-please-change-32bytes-minimum-2026-04-27"
     expiration-seconds: 604800
-
-deepseek:
-  api:
-    key: sk-761aebfab47741daaf174c6377200349
-    url: https://api.deepseek.com
