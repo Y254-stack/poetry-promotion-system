@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.poetry.R
+import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.core.network.ApiFillBlankQuizDto
 import com.example.poetry.core.network.ApiQuizSubmitRequest
 import com.example.poetry.core.network.NetworkModule
@@ -310,11 +311,16 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
     private fun submitResult(isCorrect: Boolean) {
         val duration = ((System.currentTimeMillis() - startTime) / 1000).toInt()
         val quiz = currentQuiz ?: return
-        
+        val userId = SessionManager(requireContext()).userId()
+        if (userId <= 0L) {
+            Log.w("FillBlank", "Skip quiz record sync: user not logged in")
+            return
+        }
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val request = ApiQuizSubmitRequest(
-                    userId = 1, 
+                    userId = userId,
                     workId = quiz.workId,
                     sentenceId = quiz.sentenceId,
                     quizType = "fill_blank",
