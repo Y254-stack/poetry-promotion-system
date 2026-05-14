@@ -1,7 +1,10 @@
 package com.example.poetry.backend.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
@@ -16,6 +19,10 @@ public record RegisterRequest(
     String email,
     @NotBlank(message = "密码不能为空")
     @Size(min = 6, max = 64, message = "密码长度需在 6-64 之间")
-    String password
+    String password,
+    @JsonProperty("agreedToTerms")
+    @NotNull(message = "请先阅读并同意《用户协议》和《隐私政策》")
+    @AssertTrue(message = "请先阅读并同意《用户协议》和《隐私政策》")
+    Boolean agreedToTerms
 ) {
 }
