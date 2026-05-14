@@ -1,6 +1,8 @@
 package com.example.poetry.features.user.ui
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -55,10 +57,19 @@ class MyFollowsFragment : Fragment(R.layout.fragment_my_follows) {
             findNavController().navigate(R.id.communitySquareFragment)
         }
 
-        viewModel.followList.observe(viewLifecycleOwner) {
+        binding.searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setSearchQuery(s?.toString().orEmpty())
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
+
+        viewModel.filteredFollowList.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             updateEmptyState()
         }
+        viewModel.sourceFollowList.observe(viewLifecycleOwner) { updateEmptyState() }
         viewModel.isLoading.observe(viewLifecycleOwner) { updateEmptyState() }
         viewModel.loadError.observe(viewLifecycleOwner) { err ->
             updateEmptyState()
@@ -75,24 +86,29 @@ class MyFollowsFragment : Fragment(R.layout.fragment_my_follows) {
     private fun updateEmptyState() {
         val session = SessionManager(requireContext())
         val loggedIn = session.isLoggedIn()
-        val rows = viewModel.followList.value.orEmpty()
+        val allRows = viewModel.sourceFollowList.value.orEmpty()
+        val displayedRows = viewModel.filteredFollowList.value.orEmpty()
+        val searchTrim = binding.searchInput.text?.toString()?.trim().orEmpty()
         val loading = viewModel.isLoading.value == true
         val err = viewModel.loadError.value
 
         binding.loadingProgress.isVisible = loading
+        binding.searchInputLayout.isVisible = loggedIn
 
-        val showList = rows.isNotEmpty()
+        val showList = displayedRows.isNotEmpty()
         binding.recyclerView.isVisible = showList
         binding.emptyState.isVisible = !showList
 
         binding.emptyGoLoginButton.isVisible = !loggedIn
-        binding.emptyBrowseCommunityButton.isVisible = loggedIn && err == null
+        binding.emptyBrowseCommunityButton.isVisible = loggedIn && err == null && allRows.isEmpty()
 
         binding.emptyText.text = when {
             loading -> "加载中…"
             !loggedIn -> "请先登录后查看已关注的用户"
             err != null -> "无法加载关注列表"
-            else -> "暂无关注，去内容广场发现感兴趣的用户吧"
+            allRows.isEmpty() -> "还没有关注任何人，去发现你喜欢的创作者吧"
+            searchTrim.isNotEmpty() && displayedRows.isEmpty() -> "未找到匹配的关注用户"
+            else -> ""
         }
     }
 

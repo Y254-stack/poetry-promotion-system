@@ -1,5 +1,9 @@
 package com.example.poetry.backend.user.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -61,7 +65,8 @@ public class UserAuthRepository {
 
     public Optional<UserAccount> findByAccount(String account) {
         String sql = """
-            SELECT user_id, username, password_hash, nickname, email
+            SELECT user_id, username, password_hash, nickname, email,
+                   login_locked_until, failed_login_count, failed_login_window_start
             FROM app_user
             WHERE username = :account OR email = :account
             LIMIT 1
@@ -69,20 +74,15 @@ public class UserAuthRepository {
         List<UserAccount> rows = jdbcTemplate.query(
             sql,
             new MapSqlParameterSource("account", account),
-            (rs, rowNum) -> new UserAccount(
-                rs.getLong("user_id"),
-                rs.getString("username"),
-                rs.getString("password_hash"),
-                rs.getString("nickname"),
-                rs.getString("email")
-            )
+            this::mapRow
         );
         return rows.stream().findFirst();
     }
 
     public Optional<UserAccount> findByUserId(Long userId) {
         String sql = """
-            SELECT user_id, username, password_hash, nickname, email
+            SELECT user_id, username, password_hash, nickname, email,
+                   login_locked_until, failed_login_count, failed_login_window_start
             FROM app_user
             WHERE user_id = :userId
             LIMIT 1
@@ -90,13 +90,7 @@ public class UserAuthRepository {
         List<UserAccount> rows = jdbcTemplate.query(
             sql,
             new MapSqlParameterSource("userId", userId),
-            (rs, rowNum) -> new UserAccount(
-                rs.getLong("user_id"),
-                rs.getString("username"),
-                rs.getString("password_hash"),
-                rs.getString("nickname"),
-                rs.getString("email")
-            )
+            this::mapRow
         );
         return rows.stream().findFirst();
     }
@@ -107,5 +101,43 @@ public class UserAuthRepository {
             .addValue("passwordHash", newPasswordHash)
             .addValue("userId", userId);
         jdbcTemplate.update(sql, params);
+    }
+
+    public void updateLoginSecurity(
+        long userId,
+        LocalDateTime loginLockedUntil,
+        int failedLoginCount,
+        LocalDateTime failedLoginWindowStart
+    ) {
+        String sql = """
+            UPDATE app_user SET
+                login_locked_until = :loginLockedUntil,
+                failed_login_count = :failedLoginCount,
+                failed_login_window_start = :failedLoginWindowStart
+            WHERE user_id = :userId
+            """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("userId", userId)
+            .addValue("loginLockedUntil", loginLockedUntil)
+            .addValue("failedLoginCount", failedLoginCount)
+            .addValue("failedLoginWindowStart", failedLoginWindowStart);
+        jdbcTemplate.update(sql, params);
+    }
+
+    private UserAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new UserAccount(
+            rs.getLong("user_id"),
+            rs.getString("username"),
+            rs.getString("password_hash"),
+            rs.getString("nickname"),
+            rs.getString("email"),
+            toLocalDateTime(rs.getTimestamp("login_locked_until")),
+            rs.getInt("failed_login_count"),
+            toLocalDateTime(rs.getTimestamp("failed_login_window_start"))
+        );
+    }
+
+    private static LocalDateTime toLocalDateTime(Timestamp ts) {
+        return ts == null ? null : ts.toLocalDateTime();
     }
 }

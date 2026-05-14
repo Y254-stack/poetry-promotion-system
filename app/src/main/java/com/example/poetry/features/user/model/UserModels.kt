@@ -25,8 +25,13 @@ data class ProgressStatUiModel(
 
 data class FollowUiModel(
     val userId: Long,
+    /** 用于展示的主名称（优先昵称） */
     val displayName: String,
-    val roleBadge: String
+    val nickname: String,
+    val username: String,
+    val roleBadge: String,
+    /** 关注时间，用于排序（毫秒） */
+    val followedAtMillis: Long
 )
 
 

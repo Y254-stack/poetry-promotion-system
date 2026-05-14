@@ -15,7 +15,8 @@ interface AuthRepository {
         username: String,
         nickname: String,
         email: String,
-        password: String
+        password: String,
+        agreedToTerms: Boolean
     ): Call<ApiAuthResponse>
 
     fun me(token: String): Call<ApiUserProfileResponse>

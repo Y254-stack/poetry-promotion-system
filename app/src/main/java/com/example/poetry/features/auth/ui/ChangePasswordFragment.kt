@@ -32,9 +32,9 @@ class ChangePasswordFragment : Fragment(R.layout.fragment_change_password) {
 
         viewModel.authResult.observe(viewLifecycleOwner) { result ->
             result?.let {
-                Toast.makeText(requireContext(), "密码修改成功，请重新登录", Toast.LENGTH_LONG).show()
-                // 清除登录状态
-                com.example.poetry.core.auth.SessionManager(requireContext()).clearSession()
+                val session = com.example.poetry.core.auth.SessionManager(requireContext())
+                session.saveSession(it.token, it.userId, it.username, it.nickname)
+                Toast.makeText(requireContext(), "密码修改成功", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             }
         }

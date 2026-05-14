@@ -2,6 +2,7 @@ package com.example.poetry.features.user.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.poetry.databinding.ItemUserFollowBinding
 import com.example.poetry.features.user.model.FollowUiModel
@@ -35,7 +36,20 @@ class FollowListAdapter(
         fun bind(item: FollowUiModel) {
             binding.badgeText.text = item.roleBadge
             binding.titleText.text = item.displayName
-            binding.contentArea.setOnClickListener { onOpenProfile(item) }
+            val initial = item.displayName.trim().firstOrNull()
+            binding.avatarText.text = when {
+                initial == null -> "?"
+                initial.code in 0x4E00..0x9FFF -> initial.toString()
+                else -> initial.uppercaseChar().toString()
+            }
+            if (item.nickname.isNotBlank() && item.username.isNotBlank()) {
+                binding.subtitleText.isVisible = true
+                binding.subtitleText.text = "@${item.username}"
+            } else {
+                binding.subtitleText.isVisible = false
+            }
+            binding.avatarText.setOnClickListener { onOpenProfile(item) }
+            binding.titleText.setOnClickListener { onOpenProfile(item) }
             binding.unfollowButton.setOnClickListener { onUnfollow(item) }
         }
     }
