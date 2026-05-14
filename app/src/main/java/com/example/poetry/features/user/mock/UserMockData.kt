@@ -41,8 +41,22 @@ object UserMockData {
     )
 
     fun initialFollows(): List<FollowUiModel> = listOf(
-        FollowUiModel(userId = 10001L, displayName = "示例诗友", roleBadge = "用户"),
-        FollowUiModel(userId = 10002L, displayName = "古风小号", roleBadge = "用户")
+        FollowUiModel(
+            userId = 10001L,
+            displayName = "示例诗友",
+            nickname = "示例诗友",
+            username = "demo_poet_1",
+            roleBadge = "用户",
+            followedAtMillis = System.currentTimeMillis()
+        ),
+        FollowUiModel(
+            userId = 10002L,
+            displayName = "古风小号",
+            nickname = "古风小号",
+            username = "gufeng_02",
+            roleBadge = "用户",
+            followedAtMillis = System.currentTimeMillis() - 86_400_000L
+        )
     )
 
     fun favorites(): List<UserCollectionUiModel> = listOf(
