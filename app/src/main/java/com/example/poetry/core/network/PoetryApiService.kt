@@ -8,8 +8,11 @@ import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Query
 import retrofit2.http.DELETE
-import com.example.poetry.features.learning.model.QuizQuestion
+import okhttp3.MultipartBody
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.Response
+import com.example.poetry.features.learning.model.QuizQuestion
 
 
 interface PoetryApiService {
@@ -202,6 +205,13 @@ interface PoetryApiService {
         @Query("pageSize") pageSize: Int
     ): Call<ApiUserPublishedPostsResponse>
 
+    @Multipart
+    @POST("api/profile/me/avatar")
+    fun uploadMyAvatar(
+        @Header("Authorization") authorization: String,
+        @Part file: MultipartBody.Part
+    ): Call<ApiAvatarUploadResponse>
+
     // ============ 首页分类（Retrofit）============
 
     @GET("api/categories/dynasties")
@@ -341,6 +351,13 @@ interface PoetryApiService {
     suspend fun getMyProfile(
         @Header("Authorization") authorization: String
     ): ApiUserPublicProfile
+
+    @Multipart
+    @POST("api/profile/me/avatar")
+    suspend fun uploadMyAvatarSuspend(
+        @Header("Authorization") authorization: String,
+        @Part file: MultipartBody.Part
+    ): ApiAvatarUploadResponse
 
     @GET("api/profile/{userId}/posts")
     suspend fun getUserPosts(

@@ -8,6 +8,7 @@ public record UserAccount(
     String passwordHash,
     String nickname,
     String email,
+    String avatarUrl,
     LocalDateTime loginLockedUntil,
     int failedLoginCount,
     LocalDateTime failedLoginWindowStart

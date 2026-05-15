@@ -22,6 +22,7 @@
     <string name="user_center_guest_title">游客状态</string>
     <string name="user_center_guest_desc">登录后可查看学习进度、收藏与关注等内容。</string>
     <string name="user_center_go_login">去登录 / 注册</string>
+    <string name="user_center_avatar">用户头像</string>
     <string name="user_center_actions_title">功能入口</string>
     <string name="stat_learned">已学习</string>
     <string name="stat_check_in_days">打卡天数</string>

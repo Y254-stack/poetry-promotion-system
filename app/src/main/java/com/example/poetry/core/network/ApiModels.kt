@@ -96,19 +96,25 @@ data class ApiAuthResponse(
     val token: String,
     val userId: Long,
     val username: String,
-    val nickname: String
+    val nickname: String,
+    val avatarUrl: String? = null
 )
 
 data class ApiUserProfileResponse(
     val userId: Long,
     val username: String,
     val nickname: String,
-    val email: String
+    val email: String,
+    val avatarUrl: String? = null
 )
 
 data class ApiChangePasswordRequest(
     val currentPassword: String,
     val newPassword: String
+)
+
+data class ApiAvatarUploadResponse(
+    val avatarUrl: String
 )
 
 // Learning module models

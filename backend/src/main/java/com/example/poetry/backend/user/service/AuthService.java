@@ -54,7 +54,7 @@ public class AuthService {
             request.email().trim()
         );
         String token = jwtTokenProvider.generateToken(userId, request.username(), request.nickname());
-        return new AuthResponse(token, userId, request.username(), request.nickname());
+        return new AuthResponse(token, userId, request.username(), request.nickname(), null);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -85,7 +85,7 @@ public class AuthService {
         repository.updateLoginSecurity(user.userId(), null, 0, null);
         loginBruteForceGuard.clearFailures(guardKey);
         String token = jwtTokenProvider.generateToken(user.userId(), user.username(), user.nickname());
-        return new AuthResponse(token, user.userId(), user.username(), user.nickname());
+        return new AuthResponse(token, user.userId(), user.username(), user.nickname(), user.avatarUrl());
     }
 
     private void onWrongPassword(UserAccount user) {
@@ -128,7 +128,7 @@ public class AuthService {
         Long userId = jwtTokenProvider.parseUserId(token);
         UserAccount user = repository.findByUserId(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "用户不存在或登录已失效"));
-        return new UserProfileResponse(user.userId(), user.username(), user.nickname(), user.email());
+        return new UserProfileResponse(user.userId(), user.username(), user.nickname(), user.email(), user.avatarUrl());
     }
 
     /**
@@ -157,7 +157,7 @@ public class AuthService {
 
         // 密码修改后生成新token
         String newToken = jwtTokenProvider.generateToken(user.userId(), user.username(), user.nickname());
-        return new AuthResponse(newToken, user.userId(), user.username(), user.nickname());
+        return new AuthResponse(newToken, user.userId(), user.username(), user.nickname(), user.avatarUrl());
     }
 
     private String extractBearerToken(String authHeader) {

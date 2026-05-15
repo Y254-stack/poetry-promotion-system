@@ -91,4 +91,25 @@ public class UserProfileRepository {
         Long count = jdbcTemplate.queryForObject(sql, params, Long.class);
         return count != null ? count : 0;
     }
+
+    public Optional<String> getAvatarUrl(long userId) {
+        String sql = "SELECT avatar_url FROM app_user WHERE user_id = :userId LIMIT 1";
+        MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
+        List<String> rows = jdbcTemplate.query(
+            sql,
+            params,
+            (rs, rowNum) -> rs.getString("avatar_url")
+        );
+        return rows.stream()
+            .filter(url -> url != null && !url.isBlank())
+            .findFirst();
+    }
+
+    public void updateAvatarUrl(long userId, String avatarUrl) {
+        String sql = "UPDATE app_user SET avatar_url = :avatarUrl WHERE user_id = :userId";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("avatarUrl", avatarUrl)
+            .addValue("userId", userId);
+        jdbcTemplate.update(sql, params);
+    }
 }
