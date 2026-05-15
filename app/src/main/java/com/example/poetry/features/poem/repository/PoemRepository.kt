@@ -1,6 +1,8 @@
 package com.example.poetry.features.poem.repository
 
+import com.example.poetry.core.network.ApiAuthorDetailDto
 import com.example.poetry.core.network.ApiPoemDetailDto
+import com.example.poetry.core.network.ApiRelatedWorkResponse
 import com.example.poetry.core.network.ApiTagDto
 import com.example.poetry.core.network.ApiTagSearchResponse
 import com.example.poetry.core.network.ApiTitleSearchResponse
@@ -36,4 +38,8 @@ interface PoemRepository {
     ): Call<ApiTitleSearchResponse>
 
     fun getPoemDetail(workId: Long): Call<ApiPoemDetailDto>
+
+    fun getAuthorDetail(authorId: Long, limit: Int = 12): Call<ApiAuthorDetailDto>
+
+    fun getRelatedWorks(workId: Long, limit: Int = 6): Call<ApiRelatedWorkResponse>
 }

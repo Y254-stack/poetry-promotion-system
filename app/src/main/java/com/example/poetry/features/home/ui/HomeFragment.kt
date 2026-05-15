@@ -2,6 +2,8 @@ package com.example.poetry.features.home.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -35,9 +37,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupRecommendationList() {
-        recommendationAdapter = DailyRecommendationAdapter {
-            findNavController().navigate(R.id.action_home_to_poemDetail)
-        }
+        recommendationAdapter = DailyRecommendationAdapter(
+            onCardClick = {
+                findNavController().navigate(
+                    R.id.poemDetailFragment,
+                    bundleOf("workId" to it.workId)
+                )
+            },
+            onAuthorClick = {
+                if (it.authorId > 0L) {
+                    findNavController().navigate(
+                        R.id.authorDetailFragment,
+                        bundleOf(
+                            "authorId" to it.authorId,
+                            "authorName" to it.author,
+                            "dynastyName" to it.dynasty
+                        )
+                    )
+                }
+            }
+        )
 
         binding.recommendRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -51,41 +70,58 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         categoryAdapter = CategoryAdapter { category ->
             findNavController().navigate(
                 R.id.action_home_to_categoryList,
-                androidx.core.os.bundleOf(
-                    "categoryType" to category.type.name
-                )
+                bundleOf("categoryType" to category.type.name)
             )
         }
 
         binding.categoryRecycler.apply {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = categoryAdapter
             isNestedScrollingEnabled = false
         }
     }
 
     private fun bindData() {
-        viewModel.dailyRecommendations.observe(viewLifecycleOwner) {
-            recommendationAdapter.submitList(it)
+        viewModel.dailyRecommendationSection.observe(viewLifecycleOwner) { section ->
+            binding.recommendThemeText.text = section.themeName
+            binding.recommendThemeText.isVisible = section.themeName.isNotBlank()
+
+            binding.recommendIntroText.text = section.introText
+            binding.recommendIntroText.isVisible = section.introText.isNotBlank()
+
+            binding.recommendDateText.text = section.recommendDate
+            binding.recommendDateText.isVisible = section.recommendDate.isNotBlank()
+
+            binding.recommendProgressBar.isVisible = section.isLoading
+            binding.recommendErrorText.isVisible = !section.errorMessage.isNullOrBlank()
+            binding.recommendErrorText.text = section.errorMessage.orEmpty()
+
+            recommendationAdapter.submitList(section.items)
+            binding.emptyRecommendText.isVisible = !section.isLoading &&
+                section.errorMessage.isNullOrBlank() &&
+                section.items.isEmpty()
         }
+
         viewModel.categories.observe(viewLifecycleOwner) {
             categoryAdapter.submitList(it)
         }
     }
 
     private fun bindActions() {
-    binding.searchEntryCard.setOnClickListener {
-        findNavController().navigate(
-            R.id.action_home_to_searchResult,
-            androidx.core.os.bundleOf(
-                "searchType" to "TITLE",
-                "titleQuery" to ""
+        binding.searchEntryCard.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_home_to_searchResult,
+                bundleOf(
+                    "searchType" to "TITLE",
+                    "titleQuery" to ""
+                )
             )
-        )
-    }
-}
+        }
 
+        binding.refreshRecommendButton.setOnClickListener {
+            viewModel.refreshDailyRecommendations()
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

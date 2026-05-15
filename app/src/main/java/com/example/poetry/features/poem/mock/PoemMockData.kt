@@ -7,6 +7,7 @@ object PoemMockData {
 
     fun emptyPoemDetail(): PoemDetailUiModel = PoemDetailUiModel(
         workId = 0L,
+        authorId = 0L,
         title = "",
         author = "",
         dynasty = "",
@@ -17,8 +18,10 @@ object PoemMockData {
     )
 
     fun emptyAuthorProfile(): AuthorProfileUiModel = AuthorProfileUiModel(
+        authorId = 0L,
         name = "",
         dynasty = "",
-        intro = ""
+        intro = "",
+        workCount = 0
     )
 }

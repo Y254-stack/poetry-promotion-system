@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ApiPoemDetailDto(
     val workId: Long,
+    val authorId: Long?,
     val title: String,
     val authorName: String,
     val dynastyName: String,
@@ -51,6 +52,31 @@ data class ApiTitleSearchResponse(
     val total: Int,
     val items: List<ApiPoemSearchItemDto>,
     val emptyMessage: String?
+)
+
+data class ApiDailyRecommendationItemDto(
+    val workId: Long,
+    val authorId: Long?,
+    val title: String,
+    val authorName: String,
+    val dynastyName: String,
+    val reasonType: String?,
+    val reasonText: String?
+)
+
+data class ApiDailyRecommendationResponse(
+    val recommendDate: String,
+    val themeName: String,
+    val introText: String?,
+    val offset: Int,
+    val totalDays: Int,
+    val items: List<ApiDailyRecommendationItemDto>
+)
+
+data class ApiRelatedWorkResponse(
+    val workId: Long,
+    val limit: Int,
+    val items: List<ApiPoemSearchItemDto>
 )
 
 data class ApiRegisterRequest(
@@ -152,6 +178,15 @@ data class ApiAuthorDto(
     val dynastyName: String
 )
 
+data class ApiAuthorDetailDto(
+    val authorId: Long,
+    val authorName: String,
+    val dynastyName: String,
+    val introText: String?,
+    val workCount: Int,
+    val works: List<ApiPoemSearchItemDto>
+)
+
 // Retrofit「我的关注」列表（与 suspend 版 ApiFollowingList* 并存）
 data class ApiFollowListItemDto(
     val userId: Long,
@@ -172,7 +207,9 @@ data class ApiFollowListResponse(
 data class ApiCreatePostRequest(
     val title: String,
     val contentText: String,
-    val topicTag: String?
+    val topicTag: String?,
+    val relatedWorkId: Long? = null,
+    val relatedAuthorId: Long? = null
 )
 
 data class ApiPostResponse(

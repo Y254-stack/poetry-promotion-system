@@ -19,12 +19,12 @@ interface PoetryApiService {
         @Query("limit") limit: Int = 20
     ): Call<List<ApiTagDto>>
 
-    @GET("api/search/tags")
+    @GET("api/poems/search/by-tags")
     fun searchByTags(
-        @Query("tag_ids") tagIds: String,
+        @Query("tagIds") tagIds: String,
         @Query("sort") sort: String,
         @Query("page") page: Int,
-        @Query("page_size") pageSize: Int
+        @Query("pageSize") pageSize: Int
     ): Call<ApiTagSearchResponse>
 
     @GET("api/search/title")
@@ -52,6 +52,24 @@ interface PoetryApiService {
     fun getPoemDetail(
         @Path("workId") workId: Long
     ): Call<ApiPoemDetailDto>
+
+    @GET("api/authors/{authorId}")
+    fun getAuthorDetail(
+        @Path("authorId") authorId: Long,
+        @Query("limit") limit: Int = 12
+    ): Call<ApiAuthorDetailDto>
+
+    @GET("api/recommendations/daily")
+    fun getDailyRecommendations(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") limit: Int = 5
+    ): Call<ApiDailyRecommendationResponse>
+
+    @GET("api/recommendations/related")
+    fun getRelatedWorks(
+        @Query("workId") workId: Long,
+        @Query("limit") limit: Int = 6
+    ): Call<ApiRelatedWorkResponse>
 
     @POST("api/auth/register")
     fun register(

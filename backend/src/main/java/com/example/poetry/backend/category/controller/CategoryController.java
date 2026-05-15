@@ -4,7 +4,6 @@ import com.example.poetry.backend.category.dto.AuthorDto;
 import com.example.poetry.backend.category.dto.DynastyDto;
 import com.example.poetry.backend.category.repository.CategoryRepository;
 import com.example.poetry.backend.tagsearch.dto.PoemTitleSearchResponse;
-import com.example.poetry.backend.tagsearch.service.TagSearchService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;
@@ -21,11 +20,9 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
-    private final TagSearchService tagSearchService;
 
-    public CategoryController(CategoryRepository categoryRepository, TagSearchService tagSearchService) {
+    public CategoryController(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
-        this.tagSearchService = tagSearchService;
     }
 
     @GetMapping("/dynasties")

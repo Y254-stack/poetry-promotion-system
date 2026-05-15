@@ -22,16 +22,31 @@ public class PostRepository {
     /**
      * 创建帖子
      */
-    public long createPost(Long userId, String title, String contentText, String topicTag) {
+    public long createPost(
+        Long userId,
+        String title,
+        String contentText,
+        String topicTag,
+        Long relatedWorkId,
+        Long relatedAuthorId
+    ) {
         String sql = """
-            INSERT INTO community_post (user_id, post_type, title, content_text, topic_tag, status, created_at, updated_at)
-            VALUES (:userId, 'NORMAL', :title, :contentText, :topicTag, 'ACTIVE', :now, :now)
+            INSERT INTO community_post (
+                user_id, post_type, title, content_text, topic_tag,
+                related_work_id, related_author_id, status, created_at, updated_at
+            )
+            VALUES (
+                :userId, 'NORMAL', :title, :contentText, :topicTag,
+                :relatedWorkId, :relatedAuthorId, 'ACTIVE', :now, :now
+            )
             """;
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
                 .addValue("title", title)
                 .addValue("contentText", contentText)
                 .addValue("topicTag", topicTag != null ? topicTag : "")
+                .addValue("relatedWorkId", relatedWorkId)
+                .addValue("relatedAuthorId", relatedAuthorId)
                 .addValue("now", LocalDateTime.now());
 
         jdbcTemplate.update(sql, params);

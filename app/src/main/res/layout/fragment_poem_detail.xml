@@ -4,16 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 固定在顶部的原文窗口（初始隐藏） -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/stickyContentCard"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:elevation="8dp"
         android:visibility="gone"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="4dp"
         app:cardBackgroundColor="#F5F5F5"
-        android:elevation="8dp">
+        app:cardCornerRadius="0dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,12 +22,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="原文"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="#333333"
                 android:padding="12dp"
-                android:paddingBottom="4dp" />
+                android:paddingBottom="4dp"
+                android:text="原文"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -39,17 +38,16 @@
                     android:id="@+id/stickyContentText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:lineSpacingExtra="8dp"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
                     android:paddingBottom="12dp"
-                    android:lineSpacingExtra="8dp"
-                    android:textSize="16sp"
-                    android:textColor="#333333" />
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 主滚动内容 -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
@@ -94,7 +92,14 @@
                 android:paddingEnd="0dp"
                 android:textColor="@color/teal_700" />
 
-            <!-- 原文区域 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/createAppreciationButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="进行诗词赏析创作" />
+
             <TextView
                 android:id="@+id/contentText"
                 android:layout_width="match_parent"

@@ -52,11 +52,11 @@ class CategoryListFragment : Fragment(R.layout.fragment_category_list) {
                 }
                 CategoryType.AUTHOR -> {
                     findNavController().navigate(
-                        R.id.searchResultFragment,
+                        R.id.authorDetailFragment,
                         bundleOf(
-                            "searchType" to "AUTHOR_ID",
                             "authorId" to item.id,
-                            "authorName" to item.name
+                            "authorName" to item.name,
+                            "dynastyName" to item.info
                         )
                     )
                 }
