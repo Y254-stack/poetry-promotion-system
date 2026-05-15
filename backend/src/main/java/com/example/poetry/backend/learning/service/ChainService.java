@@ -64,32 +64,81 @@ public class ChainService {
             return new ChainResponse(false, "🔄 这句诗已经说过了", null, null, null);
         }
 
+        // 本地检查首字是否正确（核心接龙规则）
+        String firstChar = getFirstChar(userLine);
+        if (!firstChar.equals(lastChar)) {
+            return new ChainResponse(false, "⚠️ 诗句首字「" + firstChar + "」不是「" + lastChar + "」", null, null, null);
+        }
+
+        // 调用AI验证是否为真实诗句
         String prompt = String.format("""
-            你是诗词接龙裁判。
-            规则：下一句诗的第一个字必须与上一句诗的最后一个字相同。
-            
-            上一句尾字：「%s」
+            请判断以下内容是否为真实存在的古诗词原句：
             用户输入：「%s」
-            已使用的诗句：%s
-            
-            请判断用户输入是否符合规则：
-            1. 必须是真实存在的古诗词原句
-            2. 第一个字必须是「%s」
             
             只输出一行JSON，不要有任何其他内容：
-            {"valid":false,"correctStart":false,"isPoem":false,"message":"xxx"}
+            {"isPoem":false,"message":"xxx"}
             
             message填写规则：
-            - 不是真实诗句：写「❌ 输入内容不是古诗词原句」
-            - 首字不对：写「⚠️ 诗句首字不是「%s」」
-            - 重复：写「🔄 这句诗已经说过了」
-            - 正确：写「✅ 正确」
-            """, lastChar, userLine, String.join("、", usedLines), lastChar, lastChar);
+            - 是真实古诗词原句：写「✅ 正确」
+            - 不是真实古诗词原句：写「❌ 输入内容不是古诗词原句」
+            """, userLine);
 
         String response = callDeepSeek(prompt);
         System.out.println("DeepSeek 判断返回: " + response);
 
-        return parseJudgeResponse(response, userLine, lastChar);
+        return parseJudgeResponseSimple(response, userLine);
+    }
+    
+    private String getFirstChar(String line) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+        // 去掉开头的标点符号，获取第一个汉字
+        String cleanLine = line.replaceAll("^[，。！？；：、\\s]+", "");
+        if (cleanLine.isEmpty()) {
+            return "";
+        }
+        return String.valueOf(cleanLine.charAt(0));
+    }
+    
+    private ChainResponse parseJudgeResponseSimple(String response, String userLine) {
+        try {
+            String cleanResponse = response.trim();
+            if (cleanResponse.startsWith("```json")) {
+                cleanResponse = cleanResponse.substring(7);
+            }
+            if (cleanResponse.startsWith("```")) {
+                cleanResponse = cleanResponse.substring(3);
+            }
+            if (cleanResponse.endsWith("```")) {
+                cleanResponse = cleanResponse.substring(0, cleanResponse.length() - 3);
+            }
+            cleanResponse = cleanResponse.trim();
+
+            System.out.println("清理后的JSON: " + cleanResponse);
+
+            JsonNode json = objectMapper.readTree(cleanResponse);
+
+            boolean isPoem = json.has("isPoem") && json.path("isPoem").asBoolean();
+            String message = json.has("message") ? json.path("message").asText() : "";
+            
+            if (message.isEmpty()) {
+                message = isPoem ? "✅ 正确！" : "❌ \"" + userLine + "\" 不是古诗词原句";
+            }
+
+            if (isPoem) {
+                String nextChar = getLastChar(userLine);
+                return new ChainResponse(true, message, nextChar, null, null);
+            } else {
+                return new ChainResponse(false, message, null, null, null);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果AI解析失败，暂时认为是有效的诗句（容错处理）
+            String nextChar = getLastChar(userLine);
+            return new ChainResponse(true, "✅ 正确！", nextChar, null, null);
+        }
     }
 
     public ChainResponse aiTurn(String lastChar, List<String> usedLines) {
