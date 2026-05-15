@@ -3,6 +3,10 @@ server:
   address: 0.0.0.0  # 核心修改：允许所有外部连接（包括模拟器）
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
   datasource:
     url: jdbc:mysql://localhost:3306/poetry_clean?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
@@ -21,8 +25,25 @@ logging:
     root: info
     com.example.poetry.backend: debug
 
+app:
+  avatar:
+    # 头像文件存储目录（相对路径相对于进程工作目录）
+    upload-dir: ./data/uploads
+    # 可选：若填写，上传接口返回的 avatarUrl 为完整 URL（否则返回 /uploads/... 相对路径，由客户端拼接主机）
+    public-base-url: ""
+
 security:
   jwt:
     # Must be long enough for HMAC-SHA (>= 32 bytes). Base64 also supported.
     secret: "poetry-dev-secret-please-change-32bytes-minimum-2026-04-27"
     expiration-seconds: 604800
+
+deepseek:
+  api:
+    key: sk-761aebfab47741daaf174c6377200349
+    url: https://api.deepseek.com
+
+
+anthropic:
+  api:
+    key: ark-a934a5d9-95bc-4ea5-b923-61cde6e5bbb8-5c329

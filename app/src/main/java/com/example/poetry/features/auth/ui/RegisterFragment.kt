@@ -42,7 +42,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         viewModel.authResult.observe(viewLifecycleOwner) { auth ->
             auth?.let {
                 val session = com.example.poetry.core.auth.SessionManager(requireContext())
-                session.saveSession(it.token, it.userId, it.username, it.nickname)
+                session.saveSession(it.token, it.userId, it.username, it.nickname, null)
                 val nav = findNavController()
                 // 栈一般为：个人中心 → 登录 → 注册； inclusive 弹出登录与注册，回到个人中心
                 val poppedToUserCenter = nav.popBackStack(R.id.loginFragment, true)

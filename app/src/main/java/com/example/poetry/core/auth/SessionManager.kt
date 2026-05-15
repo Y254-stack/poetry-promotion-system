@@ -8,21 +8,33 @@ data class SavedLoginAccount(
     val userId: Long,
     val username: String,
     val nickname: String,
-    val token: String
+    val token: String,
+    val avatarUrl: String? = null
 )
 
 class SessionManager(context: Context) {
 
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    fun saveSession(token: String, userId: Long, username: String, nickname: String) {
-        prefs.edit()
+    fun saveSession(
+        token: String,
+        userId: Long,
+        username: String,
+        nickname: String,
+        avatarUrl: String?
+    ) {
+        val editor = prefs.edit()
             .putString(KEY_TOKEN, token)
             .putLong(KEY_USER_ID, userId)
             .putString(KEY_USERNAME, username)
             .putString(KEY_NICKNAME, nickname)
-            .apply()
-        upsertSavedAccount(SavedLoginAccount(userId, username, nickname, token))
+        if (avatarUrl != null) {
+            editor.putString(KEY_AVATAR_URL, avatarUrl)
+        } else {
+            editor.remove(KEY_AVATAR_URL)
+        }
+        editor.apply()
+        upsertSavedAccount(SavedLoginAccount(userId, username, nickname, token, avatarUrl))
     }
 
     fun clearActiveSession() {
@@ -31,6 +43,7 @@ class SessionManager(context: Context) {
             .putLong(KEY_USER_ID, 0L)
             .remove(KEY_USERNAME)
             .remove(KEY_NICKNAME)
+            .remove(KEY_AVATAR_URL)
             .apply()
     }
 
@@ -44,6 +57,8 @@ class SessionManager(context: Context) {
     fun nickname(): String? = prefs.getString(KEY_NICKNAME, null)
 
     fun username(): String? = prefs.getString(KEY_USERNAME, null)
+
+    fun avatarUrl(): String? = prefs.getString(KEY_AVATAR_URL, null)
 
     fun userId(): Long = prefs.getLong(KEY_USER_ID, 0L)
 
@@ -68,7 +83,8 @@ class SessionManager(context: Context) {
                         userId = id,
                         username = o.optString("username", ""),
                         nickname = o.optString("nickname", ""),
-                        token = tok
+                        token = tok,
+                        avatarUrl = o.optString("avatarUrl", "").ifBlank { null }
                     )
                 )
             }
@@ -78,12 +94,17 @@ class SessionManager(context: Context) {
 
     fun switchToAccount(userId: Long): Boolean {
         val acc = listSavedLoginAccounts().find { it.userId == userId } ?: return false
-        prefs.edit()
+        val editor = prefs.edit()
             .putString(KEY_TOKEN, acc.token)
             .putLong(KEY_USER_ID, acc.userId)
             .putString(KEY_USERNAME, acc.username)
             .putString(KEY_NICKNAME, acc.nickname)
-            .apply()
+        if (acc.avatarUrl != null) {
+            editor.putString(KEY_AVATAR_URL, acc.avatarUrl)
+        } else {
+            editor.remove(KEY_AVATAR_URL)
+        }
+        editor.apply()
         return true
     }
 
@@ -126,6 +147,9 @@ class SessionManager(context: Context) {
         put("username", username)
         put("nickname", nickname)
         put("token", token)
+        if (!avatarUrl.isNullOrBlank()) {
+            put("avatarUrl", avatarUrl)
+        }
     }
 
     private fun readSavedJsonArray(): JSONArray {
@@ -143,6 +167,7 @@ class SessionManager(context: Context) {
         private const val KEY_USER_ID = "user_id"
         private const val KEY_USERNAME = "username"
         private const val KEY_NICKNAME = "nickname"
+        private const val KEY_AVATAR_URL = "avatar_url"
         private const val KEY_SAVED_ACCOUNTS = "saved_login_accounts_json"
     }
 }

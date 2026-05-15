@@ -48,7 +48,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         viewModel.authResult.observe(viewLifecycleOwner) { auth ->
             auth?.let {
                 val session = com.example.poetry.core.auth.SessionManager(requireContext())
-                session.saveSession(it.token, it.userId, it.username, it.nickname)
+                session.saveSession(it.token, it.userId, it.username, it.nickname, it.avatarUrl)
                 Toast.makeText(requireContext(), getString(R.string.toast_login_success), Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             }

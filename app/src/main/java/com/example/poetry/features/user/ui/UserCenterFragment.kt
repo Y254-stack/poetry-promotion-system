@@ -3,6 +3,9 @@ package com.example.poetry.features.user.ui
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.poetry.core.network.BackendUrl
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -73,6 +76,19 @@ class UserCenterFragment : Fragment(R.layout.fragment_user_center) {
                 ?: account.firstOrNull()?.uppercaseChar()
                 ?: '?'
             binding.avatarInitial.text = initial.toString()
+            val avatarAbs = BackendUrl.toAbsolute(session.avatarUrl())
+            if (avatarAbs != null) {
+                binding.avatarImage.isVisible = true
+                binding.avatarInitial.isVisible = false
+                binding.avatarImage.load(avatarAbs) {
+                    transformations(CircleCropTransformation())
+                    crossfade(true)
+                }
+            } else {
+                binding.avatarImage.isVisible = false
+                binding.avatarImage.setImageDrawable(null)
+                binding.avatarInitial.isVisible = true
+            }
         }
     }
 

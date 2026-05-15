@@ -13,6 +13,9 @@ object NetworkModule {
      */
     private const val BASE_URL = "http://10.0.2.2:8081/"
 
+    /** 不含末尾 `/`，用于拼接头像等相对路径。 */
+    fun apiOrigin(): String = BASE_URL.trimEnd('/')
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         // 设置为 BODY 级别以在 Logcat 查看完整的请求和返回内容
         level = HttpLoggingInterceptor.Level.BODY

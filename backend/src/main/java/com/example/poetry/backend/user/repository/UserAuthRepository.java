@@ -65,7 +65,7 @@ public class UserAuthRepository {
 
     public Optional<UserAccount> findByAccount(String account) {
         String sql = """
-            SELECT user_id, username, password_hash, nickname, email,
+            SELECT user_id, username, password_hash, nickname, email, avatar_url,
                    login_locked_until, failed_login_count, failed_login_window_start
             FROM app_user
             WHERE username = :account OR email = :account
@@ -81,7 +81,7 @@ public class UserAuthRepository {
 
     public Optional<UserAccount> findByUserId(Long userId) {
         String sql = """
-            SELECT user_id, username, password_hash, nickname, email,
+            SELECT user_id, username, password_hash, nickname, email, avatar_url,
                    login_locked_until, failed_login_count, failed_login_window_start
             FROM app_user
             WHERE user_id = :userId
@@ -131,6 +131,7 @@ public class UserAuthRepository {
             rs.getString("password_hash"),
             rs.getString("nickname"),
             rs.getString("email"),
+            rs.getString("avatar_url"),
             toLocalDateTime(rs.getTimestamp("login_locked_until")),
             rs.getInt("failed_login_count"),
             toLocalDateTime(rs.getTimestamp("failed_login_window_start"))

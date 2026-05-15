@@ -4,6 +4,7 @@ public record AuthResponse(
     String token,
     Long userId,
     String username,
-    String nickname
+    String nickname,
+    String avatarUrl
 ) {
 }
