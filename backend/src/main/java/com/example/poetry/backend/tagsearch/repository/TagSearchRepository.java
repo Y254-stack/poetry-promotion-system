@@ -3,10 +3,6 @@ package com.example.poetry.backend.tagsearch.repository;
 import com.example.poetry.backend.tagsearch.dto.PoemDetailDto;
 import com.example.poetry.backend.tagsearch.dto.PoemSearchItemDto;
 import com.example.poetry.backend.tagsearch.dto.TagDto;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -145,6 +141,7 @@ public class TagSearchRepository {
         String sql = """
             SELECT
                 work_id AS workId,
+                author_id AS authorId,
                 title,
                 author_name_cache AS authorName,
                 dynasty_name AS dynastyName,
@@ -160,6 +157,7 @@ public class TagSearchRepository {
             new MapSqlParameterSource("workId", workId),
             (rs, rowNum) -> new PoemDetailDto(
                 rs.getLong("workId"),
+                rs.getObject("authorId", Long.class),
                 rs.getString("title"),
                 rs.getString("authorName"),
                 rs.getString("dynastyName"),
@@ -192,17 +190,6 @@ public class TagSearchRepository {
             rs.getInt("hotScore"),
             rs.getString("publishTime")
         );
-    }
-
-    private List<String> splitTags(ResultSet rs) throws SQLException {
-        String raw = rs.getString("matchedTags");
-        if (raw == null || raw.isBlank()) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(raw.split(","))
-            .map(String::trim)
-            .filter(value -> !value.isBlank())
-            .toList();
     }
 
     public int countByTitle(String query) {

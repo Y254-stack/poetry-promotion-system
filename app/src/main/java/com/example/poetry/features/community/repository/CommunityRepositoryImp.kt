@@ -31,7 +31,9 @@ class CommunityRepositoryImpl(
             val request = ApiCreatePostRequest(
                 title = data.title,
                 contentText = data.content,
-                topicTag = data.tag.ifEmpty { null }
+                topicTag = data.tag.ifEmpty { null },
+                relatedWorkId = data.relatedWorkId,
+                relatedAuthorId = data.relatedAuthorId
             )
 
             val post = apiService.createPost("Bearer $token", request)

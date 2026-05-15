@@ -4,12 +4,18 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.poetry.core.network.ApiAuthorDetailDto
+import com.example.poetry.core.network.ApiFavoriteActionResponse
+import com.example.poetry.core.network.ApiFavoriteCheckResponse
 import com.example.poetry.core.network.ApiPoemDetailDto
 import com.example.poetry.core.network.ApiPoemSearchItemDto
+import com.example.poetry.core.network.ApiRelatedWorkResponse
 import com.example.poetry.core.network.ApiTagDto
 import com.example.poetry.core.network.ApiTagSearchResponse
 import com.example.poetry.core.network.ApiTitleSearchResponse
 import com.example.poetry.core.network.NetworkModule
+import com.example.poetry.features.favorite.repository.FavoriteRepository
+import com.example.poetry.features.favorite.repository.FavoriteRepositoryImpl
 import com.example.poetry.features.poem.mock.PoemMockData
 import com.example.poetry.features.poem.model.AuthorProfileUiModel
 import com.example.poetry.features.poem.model.PoemDetailUiModel
@@ -20,10 +26,6 @@ import com.example.poetry.features.poem.model.TagUiModel
 import com.example.poetry.features.poem.model.TitleSearchUiState
 import com.example.poetry.features.poem.repository.PoemRepository
 import com.example.poetry.features.poem.repository.PoemRepositoryImpl
-import com.example.poetry.features.favorite.repository.FavoriteRepository
-import com.example.poetry.features.favorite.repository.FavoriteRepositoryImpl
-import com.example.poetry.core.network.ApiFavoriteCheckResponse
-import com.example.poetry.core.network.ApiFavoriteActionResponse
 import kotlin.math.ceil
 import retrofit2.Call
 import retrofit2.Callback
@@ -62,6 +64,15 @@ class PoemViewModel(
     private val _representativeWorks = MutableLiveData<List<PoemSummaryUiModel>>(emptyList())
     val representativeWorks: LiveData<List<PoemSummaryUiModel>> = _representativeWorks
 
+    private val _relatedWorks = MutableLiveData<List<PoemSummaryUiModel>>(emptyList())
+    val relatedWorks: LiveData<List<PoemSummaryUiModel>> = _relatedWorks
+
+    private val _authorDetailLoading = MutableLiveData(false)
+    val authorDetailLoading: LiveData<Boolean> = _authorDetailLoading
+
+    private val _authorDetailErrorMessage = MutableLiveData<String?>(null)
+    val authorDetailErrorMessage: LiveData<String?> = _authorDetailErrorMessage
+
     fun loadHotTags() {
         val current = _searchUiState.value ?: TagSearchUiState()
         _searchUiState.value = current.copy(isLoading = true, errorMessage = null)
@@ -98,6 +109,25 @@ class PoemViewModel(
         }
         _searchUiState.value = current.copy(
             selectedTagIds = nextSelected,
+            errorMessage = null
+        )
+    }
+
+    fun resetTagSearch() {
+        val current = _searchUiState.value ?: TagSearchUiState()
+        _searchUiState.value = current.copy(
+            selectedTagIds = emptyList(),
+            currentPage = 1,
+            totalCount = 0,
+            totalPages = 0,
+            results = emptyList(),
+            recommendedTags = if (current.availableTags.isNotEmpty()) {
+                current.availableTags.take(12)
+            } else {
+                current.recommendedTags
+            },
+            emptyMessage = null,
+            isLoading = false,
             errorMessage = null
         )
     }
@@ -219,6 +249,7 @@ class PoemViewModel(
     private fun ApiPoemDetailDto.toUiModel(): PoemDetailUiModel =
         PoemDetailUiModel(
             workId = workId,
+            authorId = authorId ?: 0L,
             title = title,
             author = authorName,
             dynasty = dynastyName,
@@ -227,6 +258,66 @@ class PoemViewModel(
             annotation = annotationText.orEmpty(),
             appreciation = appreciationText.orEmpty()
         )
+
+    private fun ApiAuthorDetailDto.toAuthorProfileUiModel(): AuthorProfileUiModel =
+        AuthorProfileUiModel(
+            authorId = authorId,
+            name = authorName,
+            dynasty = dynastyName,
+            intro = introText.orEmpty(),
+            workCount = workCount
+        )
+
+    fun loadAuthorDetail(authorId: Long, workLimit: Int = 12) {
+        _authorDetailLoading.value = true
+        _authorDetailErrorMessage.value = null
+
+        repository.getAuthorDetail(authorId, workLimit).enqueue(object : Callback<ApiAuthorDetailDto> {
+            override fun onResponse(call: Call<ApiAuthorDetailDto>, response: Response<ApiAuthorDetailDto>) {
+                Log.d(TAG, "loadAuthorDetail success: code=${response.code()}, authorId=$authorId")
+                val body = response.body()
+                if (!response.isSuccessful || body == null) {
+                    applyAuthorDetailError(authorId)
+                    return
+                }
+
+                _authorProfile.value = body.toAuthorProfileUiModel()
+                _representativeWorks.value = body.works.map { it.toUiModel() }
+                _authorDetailLoading.value = false
+                _authorDetailErrorMessage.value = null
+            }
+
+            override fun onFailure(call: Call<ApiAuthorDetailDto>, t: Throwable) {
+                Log.e(TAG, "loadAuthorDetail failed: authorId=$authorId", t)
+                applyAuthorDetailError(authorId)
+            }
+        })
+    }
+
+    private fun applyAuthorDetailError(authorId: Long) {
+        _authorProfile.value = PoemMockData.emptyAuthorProfile().copy(authorId = authorId)
+        _representativeWorks.value = emptyList()
+        _authorDetailLoading.value = false
+        _authorDetailErrorMessage.value = "\u4f5c\u8005\u8be6\u60c5\u6682\u65f6\u65e0\u6cd5\u52a0\u8f7d\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5"
+    }
+
+    fun loadRelatedWorks(workId: Long, limit: Int = 6) {
+        repository.getRelatedWorks(workId, limit).enqueue(object : Callback<ApiRelatedWorkResponse> {
+            override fun onResponse(
+                call: Call<ApiRelatedWorkResponse>,
+                response: Response<ApiRelatedWorkResponse>
+            ) {
+                Log.d(TAG, "loadRelatedWorks success: code=${response.code()}, workId=$workId")
+                val body = response.body()
+                _relatedWorks.value = body?.items?.map { it.toUiModel() }.orEmpty()
+            }
+
+            override fun onFailure(call: Call<ApiRelatedWorkResponse>, t: Throwable) {
+                Log.e(TAG, "loadRelatedWorks failed: workId=$workId", t)
+                _relatedWorks.value = emptyList()
+            }
+        })
+    }
 
     fun searchByTitle(query: String, page: Int = 1) {
         val current = _titleSearchUiState.value ?: TitleSearchUiState()

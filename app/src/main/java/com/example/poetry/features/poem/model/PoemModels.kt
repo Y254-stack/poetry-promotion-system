@@ -13,6 +13,7 @@ data class PoemSummaryUiModel(
 
 data class PoemDetailUiModel(
     val workId: Long = 0L,
+    val authorId: Long = 0L,
     val title: String,
     val author: String,
     val dynasty: String,
@@ -23,9 +24,11 @@ data class PoemDetailUiModel(
 )
 
 data class AuthorProfileUiModel(
+    val authorId: Long = 0L,
     val name: String,
     val dynasty: String,
-    val intro: String
+    val intro: String,
+    val workCount: Int = 0
 )
 
 // Search related models

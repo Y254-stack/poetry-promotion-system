@@ -60,7 +60,9 @@ public class PostService {
                 userId,
                 request.title(),
                 request.contentText(),
-                request.topicTag()
+                request.topicTag(),
+                request.relatedWorkId(),
+                request.relatedAuthorId()
         );
 
         // 返回创建的帖子信息

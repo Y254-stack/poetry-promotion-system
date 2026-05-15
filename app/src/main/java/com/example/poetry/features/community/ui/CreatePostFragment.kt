@@ -30,7 +30,10 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
     private lateinit var communityViewModel: CommunityViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var navController: NavController
+
     private var draftId: Long = 0L
+    private var relatedWorkId: Long? = null
+    private var relatedAuthorId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,72 +50,80 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
         navController = findNavController()
 
         val sessionManager = SessionManager(requireContext())
-        val repository = CommunityRepositoryImpl(
-            com.example.poetry.core.network.NetworkModule.poetryApiService,
-            sessionManager
-        )
-        val followRepository = FollowRepositoryImpl(
-            NetworkModule.poetryApiService,
-            sessionManager
-        )
+        val repository = CommunityRepositoryImpl(NetworkModule.poetryApiService, sessionManager)
+        val followRepository = FollowRepositoryImpl(NetworkModule.poetryApiService, sessionManager)
         communityViewModel = CommunityViewModel(repository, followRepository)
-
         userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
 
         setupObservers()
-        loadDraftIfNeeded()
+        loadInitialContent()
 
-        // 取消按钮
         binding.cancelButton.setOnClickListener {
             handleCancel()
         }
 
-        // 发布按钮
         binding.publishButton.setOnClickListener {
             publishPost()
         }
     }
 
     private fun handleCancel() {
-        val title = binding.titleInput.text?.toString()?.trim() ?: ""
-        val content = binding.contentInput.text?.toString()?.trim() ?: ""
-        val tag = binding.tagInput.text?.toString()?.trim() ?: ""
+        val title = binding.titleInput.text?.toString()?.trim().orEmpty()
+        val content = binding.contentInput.text?.toString()?.trim().orEmpty()
+        val tag = binding.tagInput.text?.toString()?.trim().orEmpty()
 
-        val hasContent = title.isNotEmpty() || content.isNotEmpty() || tag.isNotEmpty()
-
-        if (hasContent) {
-            AlertDialog.Builder(requireContext())
-                .setTitle("保存草稿")
-                .setMessage("是否将当前内容保存为草稿？")
-                .setPositiveButton("保存") { _, _ ->
-                    saveDraft()
-                    navController.navigateUp()
-                }
-                .setNegativeButton("不保存") { _, _ ->
-                    navController.navigateUp()
-                }
-                .setNeutralButton("取消", null)
-                .show()
-        } else {
+        if (title.isEmpty() && content.isEmpty() && tag.isEmpty()) {
             navController.navigateUp()
+            return
         }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("保存草稿")
+            .setMessage("是否将当前内容保存为草稿？")
+            .setPositiveButton("保存") { _, _ ->
+                saveDraft()
+                navController.navigateUp()
+            }
+            .setNegativeButton("不保存") { _, _ ->
+                navController.navigateUp()
+            }
+            .setNeutralButton("取消", null)
+            .show()
     }
 
-    private fun loadDraftIfNeeded() {
-        arguments?.let {
-            draftId = it.getLong("draft_id", 0L)
+    private fun loadInitialContent() {
+        arguments?.let { args ->
+            draftId = args.getLong("draft_id", 0L)
+            relatedWorkId = args.getLong("source_work_id", 0L).takeIf { it > 0L }
+            relatedAuthorId = args.getLong("source_author_id", 0L).takeIf { it > 0L }
+
             if (draftId > 0L) {
-                binding.titleInput.setText(it.getString("draft_title", ""))
-                binding.contentInput.setText(it.getString("draft_content", ""))
-                binding.tagInput.setText(it.getString("draft_tag", ""))
+                binding.titleInput.setText(args.getString("draft_title", ""))
+                binding.contentInput.setText(args.getString("draft_content", ""))
+                binding.tagInput.setText(args.getString("draft_tag", ""))
+                return
+            }
+
+            val prefillTitle = args.getString("prefill_title").orEmpty()
+            val prefillContent = args.getString("prefill_content").orEmpty()
+            val prefillTag = args.getString("prefill_tag").orEmpty()
+
+            if (binding.titleInput.text.isNullOrBlank()) {
+                binding.titleInput.setText(prefillTitle)
+            }
+            if (binding.contentInput.text.isNullOrBlank()) {
+                binding.contentInput.setText(prefillContent)
+            }
+            if (binding.tagInput.text.isNullOrBlank()) {
+                binding.tagInput.setText(prefillTag)
             }
         }
     }
 
     private fun saveDraft() {
-        val title = binding.titleInput.text?.toString()?.trim() ?: ""
-        val content = binding.contentInput.text?.toString()?.trim() ?: ""
-        val tag = binding.tagInput.text?.toString()?.trim() ?: ""
+        val title = binding.titleInput.text?.toString()?.trim().orEmpty()
+        val content = binding.contentInput.text?.toString()?.trim().orEmpty()
+        val tag = binding.tagInput.text?.toString()?.trim().orEmpty()
 
         if (title.isEmpty() && content.isEmpty() && tag.isEmpty()) {
             return
@@ -130,9 +141,9 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
     }
 
     private fun publishPost() {
-        val title = binding.titleInput.text?.toString()?.trim() ?: ""
-        val content = binding.contentInput.text?.toString()?.trim() ?: ""
-        val tag = binding.tagInput.text?.toString()?.trim() ?: ""
+        val title = binding.titleInput.text?.toString()?.trim().orEmpty()
+        val content = binding.contentInput.text?.toString()?.trim().orEmpty()
+        val tag = binding.tagInput.text?.toString()?.trim().orEmpty()
 
         if (title.isEmpty()) {
             Toast.makeText(requireContext(), "请输入标题", Toast.LENGTH_SHORT).show()
@@ -150,21 +161,31 @@ class CreatePostFragment : Fragment(R.layout.fragment_create_post) {
             return
         }
 
-        val postData = CreatePostData(title, content, tag)
+        val postData = CreatePostData(
+            title = title,
+            content = content,
+            tag = tag,
+            relatedWorkId = relatedWorkId,
+            relatedAuthorId = relatedAuthorId
+        )
         communityViewModel.createPost(postData)
     }
 
     private fun setupObservers() {
         communityViewModel.createPostResult.observe(viewLifecycleOwner) { result ->
             result?.let {
-                result.onSuccess { post ->
+                result.onSuccess {
                     Toast.makeText(requireContext(), "发布成功", Toast.LENGTH_SHORT).show()
                     if (draftId > 0L) {
                         userViewModel.deleteDraft(draftId)
                     }
                     navController.navigateUp()
                 }.onFailure { exception ->
-                    Toast.makeText(requireContext(), "发布失败：${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "发布失败：${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 communityViewModel.clearCreatePostResult()
             }

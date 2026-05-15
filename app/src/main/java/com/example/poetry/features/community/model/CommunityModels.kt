@@ -81,7 +81,9 @@ data class NotificationListUiModel(
 data class CreatePostData(
     val title: String,
     val content: String,
-    val tag: String
+    val tag: String,
+    val relatedWorkId: Long? = null,
+    val relatedAuthorId: Long? = null
 )
 
 // 关注操作结果（包含目标用户ID）

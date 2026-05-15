@@ -2,6 +2,7 @@ package com.example.poetry.backend.tagsearch.dto;
 
 public record PoemDetailDto(
     Long workId,
+    Long authorId,
     String title,
     String authorName,
     String dynastyName,

@@ -7,7 +7,8 @@ import com.example.poetry.databinding.ItemHomeRecommendationBinding
 import com.example.poetry.features.home.model.DailyRecommendationUiModel
 
 class DailyRecommendationAdapter(
-    private val onClick: (DailyRecommendationUiModel) -> Unit
+    private val onCardClick: (DailyRecommendationUiModel) -> Unit,
+    private val onAuthorClick: (DailyRecommendationUiModel) -> Unit
 ) : RecyclerView.Adapter<DailyRecommendationAdapter.RecommendationViewHolder>() {
 
     private val items = mutableListOf<DailyRecommendationUiModel>()
@@ -38,11 +39,14 @@ class DailyRecommendationAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: DailyRecommendationUiModel) {
-            binding.titleText.text = item.title
-            binding.authorText.text = item.author
-            binding.summaryText.text = item.summary
             binding.tagText.text = item.tag
-            binding.root.setOnClickListener { onClick(item) }
+            binding.titleText.text = item.title
+            binding.authorMetaText.text = "${item.author} \u00B7 ${item.dynasty}"
+            binding.summaryText.text = item.summary
+            binding.authorAvatarText.text = item.author.take(1).ifBlank { "?" }
+
+            binding.root.setOnClickListener { onCardClick(item) }
+            binding.authorRow.setOnClickListener { onAuthorClick(item) }
         }
     }
 }

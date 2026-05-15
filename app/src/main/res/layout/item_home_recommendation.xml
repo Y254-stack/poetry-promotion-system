@@ -29,12 +29,30 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/authorText"
+        <LinearLayout
+            android:id="@+id/authorRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="#666666" />
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/authorAvatarText"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@android:drawable/btn_default_small"
+                android:gravity="center"
+                android:textColor="@color/teal_700"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/authorMetaText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="#666666" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/summaryText"

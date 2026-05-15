@@ -42,6 +42,25 @@ public class TagSearchController {
         @RequestParam(defaultValue = "1") @Min(1) int page,
         @RequestParam(defaultValue = "20") @Min(1) @Max(50) int pageSize
     ) {
+        return searchByTagsInternal(tagIds, sort, page, pageSize);
+    }
+
+    @GetMapping("/search/tags")
+    public PoemTagSearchResponse searchByTagsCompat(
+        @RequestParam(name = "tag_ids") String tagIds,
+        @RequestParam(defaultValue = "hot") String sort,
+        @RequestParam(defaultValue = "1") @Min(1) int page,
+        @RequestParam(name = "page_size", defaultValue = "20") @Min(1) @Max(50) int pageSize
+    ) {
+        return searchByTagsInternal(tagIds, sort, page, pageSize);
+    }
+
+    private PoemTagSearchResponse searchByTagsInternal(
+        String tagIds,
+        String sort,
+        int page,
+        int pageSize
+    ) {
         List<Long> parsedTagIds = parseTagIds(tagIds);
         if (parsedTagIds.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tagIds cannot be empty");
