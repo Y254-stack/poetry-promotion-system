@@ -227,6 +227,12 @@ interface PoetryApiService {
         @Query("pageSize") pageSize: Int
     ): Call<ApiTitleSearchResponse>
 
+    // AI Chat APIs
+    @POST("api/ai/chat")
+    fun sendChatMessage(
+        @Body request: ApiChatRequest
+    ): Call<ApiChatResponse>
+
     // ============ 社区模块 API ============
 
     @POST("api/community/post")
@@ -390,4 +396,32 @@ interface PoetryApiService {
         @Path("postId") postId: Long
     ): Response<Unit>
 
+    /**
+     * 飞花令的接口
+     */
+    @POST("api/feihua/judge")
+    suspend fun judgeFeihua(
+        @Body request: FeihuaRequest
+    ): JudgeResponse
+
+    @POST("api/feihua/ai-turn")
+    suspend fun aiTurn(
+        @Body request: FeihuaRequest
+    ): AiLineResponse
+
+    // ============ 诗词接龙 API ============
+    @POST("api/chain/start")
+    suspend fun startChain(
+        @Body request: ChainRequest
+    ): ChainResponse
+
+    @POST("api/chain/judge")
+    suspend fun judgeChain(
+        @Body request: ChainRequest
+    ): ChainResponse
+
+    @POST("api/chain/ai-turn")
+    suspend fun chainAiTurn(
+        @Body request: ChainRequest
+    ): ChainResponse
 }

@@ -77,7 +77,15 @@
         <action
             android:id="@+id/action_settings_to_changePassword"
             app:destination="@id/changePasswordFragment" />
+        <action
+            android:id="@+id/action_settings_to_accountManage"
+            app:destination="@id/accountManageFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/accountManageFragment"
+        android:name="com.example.poetry.features.user.ui.AccountManageFragment"
+        android:label="@string/account_manage_title" />
 
     <fragment
         android:id="@+id/changePasswordFragment"
@@ -237,4 +245,9 @@
             android:id="@+id/action_notifications_to_postDetail"
             app:destination="@id/postDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/aiChatFragment"
+        android:name="com.example.poetry.features.ai.AiChatFragment"
+        android:label="AI 诗词助手" />
 </navigation>
