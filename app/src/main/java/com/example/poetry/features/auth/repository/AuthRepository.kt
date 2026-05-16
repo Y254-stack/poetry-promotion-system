@@ -22,4 +22,9 @@ interface AuthRepository {
     fun me(token: String): Call<ApiUserProfileResponse>
 
     fun changePassword(token: String, currentPassword: String, newPassword: String): Call<ApiAuthResponse>
+
+    suspend fun sendVerificationCode(email: String): com.example.poetry.core.network.ApiForgotPasswordSendCodeResponse
+
+    suspend fun resetPassword(email: String, verificationCode: String, newPassword: String): com.example.poetry.core.network.ApiAuthResponse
+
 }

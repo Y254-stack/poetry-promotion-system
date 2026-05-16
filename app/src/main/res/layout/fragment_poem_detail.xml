@@ -2,15 +2,16 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_paper_wash">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/stickyContentCard"
+        style="@style/Widget.Poetry.Card.Soft"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="160dp"
         android:elevation="8dp"
         android:visibility="gone"
-        app:cardBackgroundColor="#F5F5F5"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp">
 
@@ -22,10 +23,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
+                android:padding="14dp"
                 android:paddingBottom="4dp"
-                android:text="原文"
-                android:textColor="#333333"
+                android:fontFamily="serif"
+                android:text="作品原文"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -39,10 +41,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="8dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="12dp"
-                    android:textColor="#333333"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="14dp"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
@@ -57,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -69,7 +71,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@+id/favoriteButton"
-                    android:textSize="28sp"
+                    android:fontFamily="serif"
+                    android:textColor="@color/text_primary"
+                    android:textSize="30sp"
                     android:textStyle="bold" />
 
                 <ImageButton
@@ -80,35 +84,37 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="收藏"
                     android:src="@android:drawable/star_big_off"
-                    android:tint="@color/teal_700" />
+                    android:tint="@color/accent_ochre" />
             </RelativeLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/authorButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.Poetry.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:textColor="@color/teal_700" />
+                android:paddingEnd="0dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/createAppreciationButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Poetry.Button.Outlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:text="进行诗词赏析创作" />
 
             <TextView
                 android:id="@+id/contentText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:lineSpacingExtra="10dp"
-                android:textSize="18sp" />
+                android:layout_marginTop="20dp"
+                android:fontFamily="serif"
+                android:lineSpacingExtra="12dp"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp" />
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Poetry.Card.Soft"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp">
@@ -117,88 +123,101 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="18dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="serif"
                         android:text="译文"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/translationText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#666666" />
+                        android:layout_marginTop="12dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="@color/text_secondary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Poetry.Card.Soft"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="14dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="18dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="serif"
                         android:text="注释"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/annotationText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#666666" />
+                        android:layout_marginTop="12dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="@color/text_secondary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Poetry.Card.Soft"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="14dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="18dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="serif"
                         android:text="赏析"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/appreciationText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#666666" />
+                        android:layout_marginTop="12dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="@color/text_secondary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="serif"
                 android:text="相关推荐"
-                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/relatedRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="14dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

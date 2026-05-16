@@ -189,6 +189,18 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
             }
         }
 
+        // 收藏结果
+        viewModel.collectResult.observe(viewLifecycleOwner) { result ->
+            result?.onSuccess { (isCollected, _) ->
+                val msg = if (isCollected) "收藏成功" else "已取消收藏"
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                viewModel.clearCollectResult()
+            }?.onFailure {
+                Toast.makeText(requireContext(), "操作失败: ${it.message}", Toast.LENGTH_SHORT).show()
+                viewModel.clearCollectResult()
+            }
+        }
+
         // 错误处理
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
             errorMsg?.let {

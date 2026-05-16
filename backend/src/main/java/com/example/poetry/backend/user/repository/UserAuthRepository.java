@@ -124,6 +124,14 @@ public class UserAuthRepository {
         jdbcTemplate.update(sql, params);
     }
 
+    public void updateNickname(Long userId, String nickname) {
+        String sql = "UPDATE app_user SET nickname = :nickname WHERE user_id = :userId";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("nickname", nickname)
+            .addValue("userId", userId);
+        jdbcTemplate.update(sql, params);
+    }
+
     private UserAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new UserAccount(
             rs.getLong("user_id"),

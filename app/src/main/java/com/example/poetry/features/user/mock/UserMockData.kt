@@ -9,23 +9,20 @@ import com.example.poetry.features.user.model.UserQuickActionUiModel
 object UserMockData {
 
     fun quickActions(): List<UserQuickActionUiModel> = listOf(
-        UserQuickActionUiModel("设置", "昵称、头像、密码、多账号与注销", R.id.action_user_to_settings),
-        UserQuickActionUiModel("学习进度看板", "打卡日历、掌握数量与累积天数", R.id.action_user_to_studyDashboard),
-        UserQuickActionUiModel("我的创作", "已发布、草稿与添加/删除", R.id.action_user_to_myCreations),
-        UserQuickActionUiModel("我的收藏", "诗词与帖子收藏", R.id.action_user_to_myFavorites),
-        UserQuickActionUiModel("我的关注", "列表、主页与取消关注", R.id.action_user_to_myFollows)
+        UserQuickActionUiModel("设置", "管理昵称、头像、密码与多账号", R.id.action_user_to_settings),
+        UserQuickActionUiModel("学习进度看板", "查看已学习数量、正确率与待复习内容", R.id.action_user_to_studyDashboard),
+        UserQuickActionUiModel("我的创作", "继续编辑草稿，或查看已发布内容", R.id.action_user_to_myCreations),
+        UserQuickActionUiModel("我的收藏", "整理诗词与帖子收藏，继续回看重点内容", R.id.action_user_to_myFavorites),
+        UserQuickActionUiModel("我的关注", "查看关注中的用户并进入对方主页", R.id.action_user_to_myFollows)
     )
 
-    /** 用户中心首页仅展示两项 */
     fun homeProgressStats(): List<ProgressStatUiModel> = listOf(
-        ProgressStatUiModel("已学习", "28 首"),
-        ProgressStatUiModel("打卡天数", "6 天")
+        ProgressStatUiModel("已学习", "28 首")
     )
 
-    /** 学习进度看板：其余指标 */
     fun dashboardExtraStats(): List<ProgressStatUiModel> = listOf(
         ProgressStatUiModel("掌握诗词数", "22 首"),
-        ProgressStatUiModel("累积学习天数", "41 天"),
+        ProgressStatUiModel("累计学习天数", "41 天"),
         ProgressStatUiModel("正确率", "82%"),
         ProgressStatUiModel("待复习", "12 条")
     )
@@ -37,7 +34,7 @@ object UserMockData {
 
     fun draftCreations(): List<UserCollectionUiModel> = listOf(
         UserCollectionUiModel("春夜喜雨卡片", "诗词卡片草稿，等待发布", "草稿"),
-        UserCollectionUiModel("未命名草稿", "上次编辑于昨天", "草稿")
+        UserCollectionUiModel("未命名草稿", "上次编辑于昨晚", "草稿")
     )
 
     fun initialFollows(): List<FollowUiModel> = listOf(
@@ -75,5 +72,4 @@ object UserMockData {
             openAuthorDetail = true
         )
     )
-
 }

@@ -71,7 +71,8 @@
                     android:paddingHorizontal="24dp"
                     android:paddingVertical="8dp"
                     android:background="@drawable/bg_follow_button"
-                    android:textColor="@color/teal_700" />
+                    android:textColor="@color/teal_700"
+                    app:backgroundTint="@null" />
             </LinearLayout>
 
             <!-- 简介 -->

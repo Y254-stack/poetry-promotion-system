@@ -372,3 +372,18 @@ data class ApiNotificationListResponse(
     val hasMore: Boolean,
     val unreadCount: Long
 )
+
+// ============ ???? / ???? ============
+data class ApiForgotPasswordSendCodeRequest(
+    val email: String
+)
+
+data class ApiForgotPasswordResetRequest(
+    val email: String,
+    val verificationCode: String,
+    val newPassword: String
+)
+
+data class ApiForgotPasswordSendCodeResponse(
+    val message: String
+)

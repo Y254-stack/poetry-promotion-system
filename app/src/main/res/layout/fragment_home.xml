@@ -3,22 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_paper_wash"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/searchEntryCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="18dp"
+            android:layout_marginBottom="18dp"
+            app:cardBackgroundColor="@color/card_background_white"
+            app:cardCornerRadius="24dp"
             app:cardElevation="1dp"
-            app:strokeColor="@color/teal_200"
+            app:strokeColor="@color/surface_stroke"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -26,19 +28,21 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_search" />
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/accent_indigo" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
+                    android:fontFamily="serif"
                     android:text="@string/search_hint"
-                    android:textColor="#7A7A7A"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -46,21 +50,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="serif"
             android:text="@string/section_category"
-            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:textSize="19sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoryRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:minHeight="112dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -68,16 +74,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="serif"
                 android:text="@string/section_daily_recommend"
-                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/recommendDateText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:textColor="#7A7A7A"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
@@ -86,16 +94,18 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="&#x5237;&#x65b0;&#x63a8;&#x8350;"
-                android:src="@android:drawable/ic_popup_sync" />
+                android:contentDescription="刷新推荐"
+                android:src="@android:drawable/ic_popup_sync"
+                android:tint="@color/accent_indigo" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/recommendThemeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/teal_700"
+            android:layout_marginTop="10dp"
+            android:fontFamily="serif"
+            android:textColor="@color/accent_ochre"
             android:textSize="16sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -105,7 +115,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textColor="#666666"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <ProgressBar
@@ -121,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:textColor="#C62828"
+            android:textColor="@color/red"
             android:visibility="gone" />
 
         <TextView
@@ -129,14 +140,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="&#x6682;&#x65e0;&#x63a8;&#x8350;&#x5185;&#x5bb9;"
-            android:textColor="#666666"
+            android:text="暂无推荐内容"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recommendRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="14dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -19,3 +19,4 @@ repo_data/
 backend/target/
 backend/*.log
 sql/gushiwen.sql
+.gradle-home/

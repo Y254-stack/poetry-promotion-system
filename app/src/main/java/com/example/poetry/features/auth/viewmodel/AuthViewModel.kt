@@ -3,6 +3,7 @@ package com.example.poetry.features.auth.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.poetry.core.network.ApiAuthResponse
 import com.example.poetry.core.network.NetworkModule
 import com.example.poetry.features.auth.mock.AuthMockData
@@ -12,6 +13,7 @@ import com.example.poetry.features.auth.repository.AuthRepositoryImpl
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val repository: AuthRepository = AuthRepositoryImpl(NetworkModule.poetryApiService)
@@ -28,6 +30,18 @@ class AuthViewModel(
 
     private val _authResult = MutableLiveData<ApiAuthResponse?>(null)
     val authResult: LiveData<ApiAuthResponse?> = _authResult
+
+    private val _codeSent = MutableLiveData(false)
+    val codeSent: LiveData<Boolean> = _codeSent
+
+    private val _sendCodeError = MutableLiveData<String?>(null)
+    val sendCodeError: LiveData<String?> = _sendCodeError
+
+    private val _resetSuccess = MutableLiveData(false)
+    val resetSuccess: LiveData<Boolean> = _resetSuccess
+
+    private val _resetError = MutableLiveData<String?>(null)
+    val resetError: LiveData<String?> = _resetError
 
     fun login(account: String, password: String) {
         _errorMessage.value = null
@@ -180,6 +194,65 @@ class AuthViewModel(
                 _errorMessage.value = t.message ?: "网络或服务不可用，请稍后重试。"
             }
         })
+    }
+
+    fun sendVerificationCode(email: String) {
+        _sendCodeError.value = null
+        _codeSent.value = false
+
+        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _sendCodeError.value = "请输入有效的邮箱地址"
+            return
+        }
+
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val response = repository.sendVerificationCode(email.trim())
+                _isLoading.value = false
+                _codeSent.value = true
+                _sendCodeError.value = null
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _sendCodeError.value = e.message ?: "发送验证码失败"
+            }
+        }
+    }
+
+    fun resetPassword(email: String, verificationCode: String, newPassword: String, confirmPassword: String) {
+        _resetError.value = null
+        _resetSuccess.value = false
+
+        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _resetError.value = "请输入有效的邮箱地址"
+            return
+        }
+        if (verificationCode.isBlank()) {
+            _resetError.value = "请输入验证码"
+            return
+        }
+        if (newPassword.length < 6) {
+            _resetError.value = "新密码长度不能少于 6 位"
+            return
+        }
+        if (newPassword != confirmPassword) {
+            _resetError.value = "两次输入的密码不一致"
+            return
+        }
+
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val response = repository.resetPassword(email.trim(), verificationCode.trim(), newPassword)
+                _isLoading.value = false
+                _authResult.value = response
+                _resetSuccess.value = true
+                _resetError.value = null
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _resetError.value = e.message ?: "重置密码失败"
+            }
+        }
     }
 
     private fun parseServerMessage(errorBody: String?, fallback: String): String {

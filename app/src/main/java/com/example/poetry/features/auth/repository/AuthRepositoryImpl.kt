@@ -4,6 +4,9 @@ import com.example.poetry.core.network.ApiAuthResponse
 import com.example.poetry.core.network.ApiChangePasswordRequest
 import com.example.poetry.core.network.ApiLoginRequest
 import com.example.poetry.core.network.ApiRegisterRequest
+import com.example.poetry.core.network.ApiForgotPasswordSendCodeRequest
+import com.example.poetry.core.network.ApiForgotPasswordResetRequest
+import com.example.poetry.core.network.ApiForgotPasswordSendCodeResponse
 import com.example.poetry.core.network.ApiUserProfileResponse
 import com.example.poetry.core.network.PoetryApiService
 import com.example.poetry.features.auth.mock.AuthMockData
@@ -45,4 +48,19 @@ class AuthRepositoryImpl(
     override fun changePassword(token: String, currentPassword: String, newPassword: String): Call<ApiAuthResponse> {
         return apiService.changePassword("Bearer $token", ApiChangePasswordRequest(currentPassword, newPassword))
     }
+
+    override suspend fun sendVerificationCode(email: String): ApiForgotPasswordSendCodeResponse {
+        return apiService.sendVerificationCode(ApiForgotPasswordSendCodeRequest(email = email))
+    }
+
+    override suspend fun resetPassword(email: String, verificationCode: String, newPassword: String): ApiAuthResponse {
+        return apiService.resetPassword(
+            ApiForgotPasswordResetRequest(
+                email = email,
+                verificationCode = verificationCode,
+                newPassword = newPassword
+            )
+        )
+    }
+
 }
