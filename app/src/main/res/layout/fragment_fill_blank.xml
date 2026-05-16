@@ -3,82 +3,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_learning_scene">
+    android:background="@drawable/bg_paper_wash">
 
-    <!-- Top Navigation Icons -->
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="16dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
         android:contentDescription="返回"
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#8B4513" />
+        app:tint="@color/accent_ochre" />
 
     <ImageView
         android:id="@+id/btnTranslation"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="16dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="18dp"
         android:contentDescription="译文"
         android:src="@android:drawable/ic_menu_info_details"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#8B4513" />
+        app:tint="@color/accent_ochre" />
 
-    <!-- Poem Title Box -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/poemTitleCard"
+        style="@style/Widget.Poetry.Card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="40dp"
-        app:cardBackgroundColor="#FDFCF8"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="2dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="22dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:strokeColor="#E8A0A0"
-        app:strokeWidth="1dp">
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/poemTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="serif"
                 android:gravity="center"
-                android:text="如梦令·昨夜雨疏风骤"
-                android:textColor="#5D4037"
-                android:textSize="18sp" />
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/poemAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="serif"
                 android:gravity="center"
-                android:text="李清照"
-                android:textColor="#8B7355"
-                android:textSize="14sp" />
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Answer Area -->
     <LinearLayout
         android:id="@+id/answerGrid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="18dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,86 +84,87 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal" />
 
         <LinearLayout
             android:id="@+id/row2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal" />
     </LinearLayout>
 
-    <!-- Options Area (Candidates) -->
     <GridLayout
         android:id="@+id/candidatesGrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="8dp"
         android:alignmentMode="alignBounds"
         android:columnCount="4"
+        android:gravity="top|center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/bottomActionCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/answerGrid">
-    </GridLayout>
+        app:layout_constraintTop_toBottomOf="@id/answerGrid" />
 
-    <!-- Bottom Buttons -->
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomActionCard"
+        style="@style/Widget.Poetry.Card.Soft"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:orientation="horizontal"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnReset"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="重置"
-            android:textColor="#8B4513"
-            app:cornerRadius="24dp"
-            app:strokeColor="#E6D29B" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/hintButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="#E6D29B"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:text="提示一下"
-            android:textColor="#8B4513"
-            app:cornerRadius="24dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReset"
+                style="@style/Widget.Poetry.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="重置" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnShowAnswer"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:text="查看答案"
-            android:textColor="#4CAF50"
-            app:cornerRadius="24dp"
-            app:strokeColor="#4CAF50" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/hintButton"
+                style="@style/Widget.Poetry.Button.Filled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1.3"
+                android:text="提示一下" />
 
-    <!-- Translation Popup - MUST be at the end to be on top -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShowAnswer"
+                style="@style/Widget.Poetry.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1.2"
+                android:text="查看答案" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <FrameLayout
         android:id="@+id/translationPopup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000000"
-        android:visibility="gone"
-        android:elevation="24dp">
+        android:background="#66000000"
+        android:elevation="24dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -178,10 +174,9 @@
             android:padding="32dp">
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Poetry.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#FDFCF8"
-                app:cardCornerRadius="16dp"
                 app:cardElevation="8dp">
 
                 <LinearLayout
@@ -200,8 +195,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:fontFamily="serif"
                             android:text="译文"
-                            android:textColor="#5D4037"
+                            android:textColor="@color/text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -211,7 +207,7 @@
                             android:layout_height="32dp"
                             android:contentDescription="关闭"
                             android:src="@android:drawable/ic_menu_close_clear_cancel"
-                            app:tint="#8B7355" />
+                            app:tint="@color/text_secondary" />
                     </LinearLayout>
 
                     <TextView
@@ -219,8 +215,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:lineSpacingMultiplier="1.6"
-                        android:textColor="#5D4037"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -229,7 +225,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:text="点击任意位置关闭"
-                        android:textColor="#8B7355"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

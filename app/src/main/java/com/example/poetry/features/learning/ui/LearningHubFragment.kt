@@ -5,12 +5,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poetry.R
-import com.example.poetry.core.ui.VerticalSpaceItemDecoration
-import com.example.poetry.core.util.dp
+import com.example.poetry.core.auth.SessionManager
 import com.example.poetry.databinding.FragmentLearningHubBinding
-import com.example.poetry.features.learning.adapter.LearningModeAdapter
 import com.example.poetry.features.learning.viewmodel.LearningViewModel
 
 class LearningHubFragment : Fragment(R.layout.fragment_learning_hub) {
@@ -19,21 +16,50 @@ class LearningHubFragment : Fragment(R.layout.fragment_learning_hub) {
     private val binding get() = _binding!!
 
     private val viewModel: LearningViewModel by viewModels()
-    private lateinit var adapter: LearningModeAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        android.util.Log.e("LearningHub", "========== 进入了趣味学习页面 ==========")
         _binding = FragmentLearningHubBinding.bind(view)
 
-        adapter = LearningModeAdapter { findNavController().navigate(it.destinationId) }
-        binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@LearningHubFragment.adapter
-            addItemDecoration(VerticalSpaceItemDecoration(requireContext().dp(14)))
-        }
+        viewModel.modes.observe(viewLifecycleOwner) { modes ->
+            val views = listOf(
+                Triple(binding.modeBadge1, binding.modeTitle1, binding.modeSubtitle1),
+                Triple(binding.modeBadge2, binding.modeTitle2, binding.modeSubtitle2),
+                Triple(binding.modeBadge3, binding.modeTitle3, binding.modeSubtitle3),
+                Triple(binding.modeBadge4, binding.modeTitle4, binding.modeSubtitle4)
+            )
+            val cards = listOf(
+                binding.modeCard1,
+                binding.modeCard2,
+                binding.modeCard3,
+                binding.modeCard4
+            )
 
-        viewModel.modes.observe(viewLifecycleOwner) { adapter.submitList(it) }
+            cards.forEachIndexed { index, card ->
+                val mode = modes.getOrNull(index)
+                val triple = views[index]
+                if (mode == null) {
+                    card.visibility = View.INVISIBLE
+                } else {
+                    card.visibility = View.VISIBLE
+                    triple.first.text = mode.title.take(1)
+                    triple.second.text = mode.title
+                    triple.third.text = mode.subtitle
+                    card.setOnClickListener {
+                        findNavController().navigate(mode.destinationId)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!SessionManager(requireContext()).isLoggedIn() &&
+            findNavController().currentDestination?.id == R.id.learningHubFragment
+        ) {
+            findNavController().navigate(R.id.loginFragment)
+        }
     }
 
     override fun onDestroyView() {

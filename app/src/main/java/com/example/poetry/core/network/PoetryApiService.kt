@@ -7,6 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Query
+import retrofit2.http.PATCH
 import retrofit2.http.DELETE
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
@@ -94,6 +95,12 @@ interface PoetryApiService {
         @Header("Authorization") authorization: String,
         @Body request: ApiChangePasswordRequest
     ): Call<ApiAuthResponse>
+
+    @PATCH("api/auth/me/nickname")
+    fun updateNickname(
+        @Header("Authorization") authorization: String,
+        @Body body: Map<String, String>
+    ): Call<Map<String, String>>
 
     // Learning module APIs
     @GET("api/learning/fill-blank/random")
@@ -441,4 +448,17 @@ interface PoetryApiService {
     suspend fun chainAiTurn(
         @Body request: ChainRequest
     ): ChainResponse
+
+    // ============ 忘记密码 / 重置密码 API ============
+
+    @POST("api/auth/forgot-password/send-code")
+    suspend fun sendVerificationCode(
+        @Body request: ApiForgotPasswordSendCodeRequest
+    ): ApiForgotPasswordSendCodeResponse
+
+    @POST("api/auth/forgot-password/reset")
+    suspend fun resetPassword(
+        @Body request: ApiForgotPasswordResetRequest
+    ): ApiAuthResponse
+
 }

@@ -139,10 +139,12 @@ class UserPublicProfileFragment : Fragment(R.layout.fragment_user_public_profile
         if (isFollowing) {
             binding.followButton.text = "已关注"
             binding.followButton.setBackgroundResource(R.drawable.bg_follow_button_filled)
+            binding.followButton.backgroundTintList = null
             binding.followButton.setTextColor(resources.getColor(R.color.white))
         } else {
             binding.followButton.text = "关注"
             binding.followButton.setBackgroundResource(R.drawable.bg_follow_button)
+            binding.followButton.backgroundTintList = null
             binding.followButton.setTextColor(resources.getColor(R.color.teal_700))
         }
     }

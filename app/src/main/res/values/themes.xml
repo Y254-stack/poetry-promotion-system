@@ -1,15 +1,75 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.Poetry" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/user_center_primary</item>
-        <item name="colorPrimaryVariant">@color/user_center_primary_variant</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSecondary">@color/user_center_green</item>
-        <item name="colorSecondaryVariant">@color/user_center_green</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:navigationBarColor">@android:color/white</item>
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
-        <item name="materialCardViewStyle">@style/Widget.MaterialComponents.CardView</item>
+    <style name="Theme.Poetry" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/accent_indigo</item>
+        <item name="colorPrimaryVariant">@color/accent_indigo_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/accent_ochre</item>
+        <item name="colorSecondaryVariant">@color/accent_ochre</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/accent_indigo_dark</item>
+        <item name="android:navigationBarColor">@color/card_background_white</item>
+        <item name="android:windowBackground">@drawable/bg_paper_wash</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
+        <item name="toolbarStyle">@style/Widget.Poetry.Toolbar</item>
+        <item name="materialCardViewStyle">@style/Widget.Poetry.Card</item>
+    </style>
+
+    <style name="Widget.Poetry.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@drawable/bg_toolbar_wash</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/accent_indigo_soft</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="Widget.Poetry.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/card_background_white</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">1dp</item>
+        <item name="strokeColor">@color/surface_stroke</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.Poetry.Card.Soft" parent="Widget.Poetry.Card">
+        <item name="cardBackgroundColor">@color/card_background_light</item>
+    </style>
+
+    <style name="Widget.Poetry.Button.Filled" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/accent_indigo</item>
+        <item name="cornerRadius">26dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="rippleColor">@color/accent_indigo_soft</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="Widget.Poetry.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/surface_stroke</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textColor">@color/accent_indigo</item>
+        <item name="android:minHeight">46dp</item>
+        <item name="rippleColor">@color/accent_indigo_soft</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="Widget.Poetry.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/accent_indigo</item>
+        <item name="rippleColor">@color/accent_indigo_soft</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="Widget.Poetry.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/card_background_white</item>
+        <item name="boxStrokeColor">@color/surface_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">18dp</item>
+        <item name="boxCornerRadiusTopEnd">18dp</item>
+        <item name="boxCornerRadiusBottomStart">18dp</item>
+        <item name="boxCornerRadiusBottomEnd">18dp</item>
+        <item name="hintTextColor">@color/accent_ochre</item>
     </style>
 
     <style name="PoetryGridStyle">
@@ -19,7 +79,7 @@
         <item name="android:background">@drawable/bg_poetry_grid_box</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#333333</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
@@ -30,7 +90,7 @@
         <item name="android:background">@drawable/bg_candidate_word</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:textColor">#333333</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main"
+    android:background="@drawable/bg_paper_wash"
     android:fillViewport="true">
 
     <LinearLayout
@@ -15,8 +15,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="serif"
             android:text="创建账号"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textColor="@color/text_primary"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:includeFontPadding="false" />
 
@@ -24,25 +26,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="注册后可同步学习记录、收藏和社区互动。"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:textColor="@color/user_center_text_secondary"
-            android:includeFontPadding="false" />
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="2dp"
+            android:text="注册后可同步学习记录、收藏与社区互动。"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Poetry.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxStrokeColor="@color/text_light_gray"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:hintTextColor="@color/user_center_primary"
-            app:hintEnabled="true"
             android:hint="@string/hint_account_register">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountEdit"
@@ -53,18 +47,10 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Poetry.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxStrokeColor="@color/text_light_gray"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:hintTextColor="@color/user_center_primary"
+            android:layout_marginTop="14dp"
             android:hint="昵称">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/nicknameEdit"
@@ -75,18 +61,10 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Poetry.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxStrokeColor="@color/text_light_gray"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:hintTextColor="@color/user_center_primary"
+            android:layout_marginTop="14dp"
             android:hint="邮箱">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailEdit"
@@ -97,19 +75,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Poetry.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:hint="密码"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxStrokeColor="@color/text_light_gray"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:hintTextColor="@color/user_center_primary"
             app:endIconMode="password_toggle">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordEdit"
@@ -120,19 +90,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Poetry.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:hint="确认密码"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxStrokeColor="@color/text_light_gray"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:hintTextColor="@color/user_center_primary"
             app:endIconMode="password_toggle">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/confirmEdit"
@@ -160,37 +122,31 @@
                 android:id="@+id/agreeTermsText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="2dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/user_center_text_secondary" />
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/registerButton"
+            style="@style/Widget.Poetry.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
             android:text="@string/action_register"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:backgroundTint="@color/user_center_primary"
-            app:cornerRadius="28dp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/goLoginText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
+            android:fontFamily="serif"
             android:text="已有账号？去登录"
-            android:textColor="@color/user_center_primary"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:includeFontPadding="false" />
+            android:textColor="@color/accent_indigo"
+            android:textSize="14sp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

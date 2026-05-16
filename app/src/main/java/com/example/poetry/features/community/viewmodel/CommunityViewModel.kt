@@ -86,6 +86,9 @@ class CommunityViewModel(
     private val _createCommentResult = MutableLiveData<Result<CommentUiModel>?>()
     val createCommentResult: LiveData<Result<CommentUiModel>?> = _createCommentResult
 
+    private val _collectResult = MutableLiveData<Result<Pair<Boolean, Int>>?>()
+    val collectResult: LiveData<Result<Pair<Boolean, Int>>?> = _collectResult
+
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
@@ -253,8 +256,9 @@ class CommunityViewModel(
                             collectCount = collectCount
                         )
                     }
+                    _collectResult.value = Result.success(Pair(isCollected, collectCount))
                 }.onFailure { exception ->
-                    _error.value = exception.message
+                    _collectResult.value = Result.failure(exception)
                 }
             } catch (e: Exception) {
                 _error.value = e.message
@@ -531,6 +535,10 @@ class CommunityViewModel(
                 _isLoadingFollowList.value = false
             }
         }
+    }
+
+    fun clearCollectResult() {
+        _collectResult.value = null
     }
 
     fun clearError() {

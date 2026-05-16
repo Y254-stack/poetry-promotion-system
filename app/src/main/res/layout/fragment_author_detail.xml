@@ -3,19 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_paper_wash"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/nameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
+            android:fontFamily="serif"
+            android:textColor="@color/text_primary"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
@@ -23,7 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/teal_700" />
+            android:fontFamily="serif"
+            android:textColor="@color/accent_indigo" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -38,25 +42,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:textColor="#C62828"
+            android:textColor="@color/red"
             android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Poetry.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="18dp">
+            android:layout_marginTop="18dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="&#x4F5C;&#x8005;&#x7B80;&#x4ECB;"
+                    android:fontFamily="serif"
+                    android:text="作者简介"
+                    android:textColor="@color/text_primary"
                     android:textStyle="bold" />
 
                 <TextView
@@ -65,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:lineSpacingExtra="6dp"
-                    android:textColor="#666666" />
+                    android:textColor="@color/text_secondary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -81,16 +87,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="&#x4F5C;&#x54C1;&#x5217;&#x8868;"
-                android:textSize="18sp"
+                android:fontFamily="serif"
+                android:text="作品列表"
+                android:textColor="@color/text_primary"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/viewAllWorksButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.Poetry.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="&#x67E5;&#x770B;&#x5168;&#x90E8;"
+                android:text="查看全部"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -99,8 +107,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="&#x6682;&#x65E0;&#x4F5C;&#x54C1;&#x6570;&#x636E;"
-            android:textColor="#666666"
+            android:text="暂无作品数据"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView

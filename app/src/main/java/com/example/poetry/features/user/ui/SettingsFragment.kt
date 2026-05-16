@@ -63,6 +63,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 .setPositiveButton("保存") { _, _ ->
                     val text = input.text?.toString()?.trim().orEmpty()
                     if (text.isNotEmpty()) {
+                        // 先本地更新
                         session.saveSession(
                             session.token().orEmpty(),
                             session.userId(),
@@ -71,7 +72,29 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                             session.avatarUrl()
                         )
                         refreshNicknamePreview()
-                        Toast.makeText(requireContext(), "昵称已更新（本地）", Toast.LENGTH_SHORT).show()
+                        // 同步到后端
+                        val auth = session.bearerAuthorization()
+                        if (auth != null) {
+                            thread {
+                                try {
+                                    val body = mapOf("nickname" to text)
+                                    val resp = NetworkModule.poetryApiService
+                                        .updateNickname(auth, body)
+                                        .execute()
+                                    activity?.runOnUiThread {
+                                        if (resp.isSuccessful) {
+                                            Toast.makeText(requireContext(), "昵称已更新", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(requireContext(), "同步失败 (${resp.code()})", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    activity?.runOnUiThread {
+                                        Toast.makeText(requireContext(), "同步失败: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 .setNegativeButton(android.R.string.cancel, null)

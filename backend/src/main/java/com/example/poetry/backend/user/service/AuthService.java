@@ -15,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import com.example.poetry.backend.user.dto.ResetPasswordRequest;
+import com.example.poetry.backend.user.dto.SendVerificationCodeRequest;
+import com.example.poetry.backend.user.security.VerificationCodeStore;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class AuthService {
@@ -23,19 +27,31 @@ public class AuthService {
     private static final int LOGIN_WINDOW_MINUTES = 15;
     private static final int LOGIN_LOCK_MINUTES = 15;
 
+    @Value("${app.verification-code.expiry-minutes:5}")
+    private int codeExpiryMinutes = 5;
+
+    @Value("${app.verification-code.code-length:6}")
+    private int codeLength = 6;
+
     private final UserAuthRepository repository;
     private final JwtTokenProvider jwtTokenProvider;
     private final LoginBruteForceGuard loginBruteForceGuard;
+    private final EmailService emailService;
+    private final VerificationCodeStore codeStore;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public AuthService(
         UserAuthRepository repository,
         JwtTokenProvider jwtTokenProvider,
-        LoginBruteForceGuard loginBruteForceGuard
+        LoginBruteForceGuard loginBruteForceGuard,
+        EmailService emailService,
+        VerificationCodeStore codeStore
     ) {
         this.repository = repository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.loginBruteForceGuard = loginBruteForceGuard;
+        this.emailService = emailService;
+        this.codeStore = codeStore;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -142,6 +158,14 @@ public class AuthService {
         return userId;
     }
 
+    public void updateNickname(String authHeader, String nickname) {
+        long userId = requireUserId(authHeader);
+        if (nickname == null || nickname.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称不能为空");
+        }
+        repository.updateNickname(userId, nickname.trim());
+    }
+
     public AuthResponse changePassword(String authHeader, ChangePasswordRequest request) {
         String token = extractBearerToken(authHeader);
         Long userId = jwtTokenProvider.parseUserId(token);
@@ -158,6 +182,47 @@ public class AuthService {
         // 密码修改后生成新token
         String newToken = jwtTokenProvider.generateToken(user.userId(), user.username(), user.nickname());
         return new AuthResponse(newToken, user.userId(), user.username(), user.nickname(), user.avatarUrl());
+    }
+
+
+    /**
+     * Send verification code to the given email for password reset.
+     */
+    public void sendVerificationCode(SendVerificationCodeRequest request) {
+        String email = request.email().trim().toLowerCase();
+        if (!repository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "该邮箱未注册");
+        }
+        emailService.sendVerificationCode(email, codeLength, codeExpiryMinutes);
+    }
+
+    /**
+     * Reset password using email + verification code.
+     */
+    public AuthResponse resetPassword(ResetPasswordRequest request) {
+        String email = request.email().trim().toLowerCase();
+        if (!repository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "该邮箱未注册");
+        }
+
+        if (!codeStore.verifyAndConsume(email, request.verificationCode())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "验证码错误或已过期");
+        }
+
+        var userOpt = repository.findByAccount(email);
+        if (userOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "用户不存在");
+        }
+
+        UserAccount user = userOpt.get();
+        String newHash = passwordEncoder.encode(request.newPassword());
+        repository.updatePassword(user.userId(), newHash);
+
+        // Clear login lock state after password reset
+        repository.updateLoginSecurity(user.userId(), null, 0, null);
+
+        String token = jwtTokenProvider.generateToken(user.userId(), user.username(), user.nickname());
+        return new AuthResponse(token, user.userId(), user.username(), user.nickname(), user.avatarUrl());
     }
 
     private String extractBearerToken(String authHeader) {

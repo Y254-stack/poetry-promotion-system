@@ -22,7 +22,7 @@ public class PostCollectRepository {
             JOIN community_post p ON p.post_id = cpc.post_id
             JOIN app_user u ON u.user_id = p.user_id
             WHERE cpc.user_id = :userId
-              AND p.status = 'published'
+              AND p.status = 'ACTIVE'
             """ + collectSearchFilter(hasQuery);
 
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
@@ -58,7 +58,7 @@ public class PostCollectRepository {
             JOIN community_post p ON p.post_id = cpc.post_id
             JOIN app_user u ON u.user_id = p.user_id
             WHERE cpc.user_id = :userId
-              AND p.status = 'published'
+              AND p.status = 'ACTIVE'
             """ + collectSearchFilter(hasQuery) + """
             ORDER BY cpc.created_at DESC
             LIMIT :limit OFFSET :offset

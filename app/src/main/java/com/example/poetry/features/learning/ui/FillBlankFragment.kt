@@ -2,9 +2,7 @@ package com.example.poetry.features.learning.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,6 +20,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
 
@@ -32,9 +33,9 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
     private var fullAnswer = ""
     private var currentTranslation: String? = null
     private val answerGrids = mutableListOf<TextView>()
+    private val candidateViews = mutableListOf<TextView>()
     private var selectedGridIndex = 0
     private var startTime: Long = 0
-    private val candidateViews = mutableListOf<TextView>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,38 +43,20 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
 
         resetUiState()
         loadNextQuiz()
-        
-        binding.hintButton.setOnClickListener {
-            provideHint()
-        }
-        
-        binding.btnReset.setOnClickListener {
-            resetCurrentQuiz()
-        }
-        
-        binding.btnShowAnswer.setOnClickListener {
-            showAnswer()
-        }
-        
-        binding.btnTranslation.setOnClickListener {
-            showTranslationPopup()
-        }
-        
-        binding.btnCloseTranslation.setOnClickListener {
-            hideTranslationPopup()
-        }
-        
-        binding.translationPopup.setOnClickListener {
-            hideTranslationPopup()
-        }
-        
+
+        binding.hintButton.setOnClickListener { provideHint() }
+        binding.btnReset.setOnClickListener { resetCurrentQuiz() }
+        binding.btnShowAnswer.setOnClickListener { showAnswer() }
+        binding.btnTranslation.setOnClickListener { showTranslationPopup() }
+        binding.btnCloseTranslation.setOnClickListener { hideTranslationPopup() }
+        binding.translationPopup.setOnClickListener { hideTranslationPopup() }
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 
     private fun resetUiState() {
-        binding.poemTitle.text = "正在同步后台数据..."
+        binding.poemTitle.text = "正在同步题目..."
         binding.poemAuthor.text = ""
         binding.candidatesGrid.removeAllViews()
         binding.row1.removeAllViews()
@@ -81,7 +64,7 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
         answerGrids.clear()
         candidateViews.clear()
         selectedGridIndex = 0
-        
+
         binding.hintButton.isEnabled = true
         binding.btnShowAnswer.isEnabled = true
         binding.btnReset.isEnabled = true
@@ -103,12 +86,10 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
                         binding.poemTitle.text = "暂无练习题目"
                     }
                 } else {
-                    val code = response.code()
-                    Log.e("FillBlank", "API Error: $code")
-                    binding.poemTitle.text = "同步失败 ($code)"
+                    binding.poemTitle.text = "同步失败 (${response.code()})"
                 }
             } catch (e: Exception) {
-                Log.e("FillBlank", "Connection Fail", e)
+                Log.e("FillBlank", "Load quiz failed", e)
                 binding.poemTitle.text = "网络连接异常"
             }
         }
@@ -118,40 +99,59 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
         binding.poemTitle.text = quiz.title
         binding.poemAuthor.text = quiz.author
         currentTranslation = quiz.translation
-        
-        fullAnswer = quiz.targetSentence.replace(Regex("[，。？！；：、]"), "")
+
+        fullAnswer = quiz.targetSentence.replace(Regex("[，。？！；：、\\s]"), "")
         startTime = System.currentTimeMillis()
-        setupGrids(fullAnswer.length)
-        setupCandidates(quiz.candidateWords)
-        
+
+        binding.root.post {
+            setupAnswerGrids(fullAnswer.length)
+            binding.root.post {
+                setupCandidates(quiz.candidateWords)
+            }
+        }
+
         binding.btnTranslation.isEnabled = true
-        binding.btnTranslation.alpha = 1.0f
+        binding.btnTranslation.alpha = 1f
     }
 
-    private fun setupGrids(length: Int) {
+    private fun setupAnswerGrids(length: Int) {
         answerGrids.clear()
         binding.row1.removeAllViews()
         binding.row2.removeAllViews()
-        
-        val actualLength = if (length > 0) length else 5
-        Log.d("FillBlank", "Setting up $actualLength grids")
-        
-        val firstRowSize = if (actualLength > 6) actualLength / 2 else actualLength
-        for (i in 0 until actualLength) {
+
+        val actualLength = length.coerceAtLeast(5)
+        val firstRowCount = when {
+            actualLength <= 5 -> actualLength
+            actualLength == 6 -> 3
+            else -> ceil(actualLength / 2f).toInt()
+        }
+        val secondRowCount = actualLength - firstRowCount
+        val maxRowCount = max(firstRowCount, secondRowCount)
+
+        val screenWidth = resources.displayMetrics.widthPixels
+        val horizontalGap = dp(10)
+        val availableWidth = screenWidth - dp(88)
+        val gridSize = min(
+            dp(42),
+            ((availableWidth - horizontalGap * (maxRowCount - 1)) / maxRowCount).coerceAtLeast(dp(30))
+        )
+
+        repeat(actualLength) { index ->
             val grid = TextView(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(105, 105).apply {
-                    marginStart = 10
-                    marginEnd = 10
+                layoutParams = LinearLayout.LayoutParams(gridSize, gridSize).apply {
+                    marginStart = horizontalGap / 2
+                    marginEnd = horizontalGap / 2
                 }
                 background = resources.getDrawable(R.drawable.bg_character_box, null)
                 gravity = android.view.Gravity.CENTER
-                textSize = 28f
+                textSize = if (gridSize >= dp(38)) 16f else 14f
                 setTextColor(resources.getColor(R.color.text_primary, null))
             }
-            answerGrids.add(grid)
-            val container = if (i < firstRowSize) binding.row1 else binding.row2
+            answerGrids += grid
+
+            val container = if (index < firstRowCount) binding.row1 else binding.row2
             container.addView(grid)
-            val index = i
+
             grid.setOnClickListener {
                 if (grid.text.isNotEmpty()) {
                     findAndEnableCandidate(grid.text.toString())
@@ -160,28 +160,55 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
                 updateSelection(index)
             }
         }
-        Log.d("FillBlank", "Grids setup completed, row1 has ${binding.row1.childCount} views, row2 has ${binding.row2.childCount} views")
+
         updateSelection(0)
     }
 
     private fun setupCandidates(words: List<String>) {
         binding.candidatesGrid.removeAllViews()
         candidateViews.clear()
-        
+        if (words.isEmpty()) return
+
+        val count = words.size
+        val columns = when {
+            count <= 4 -> count
+            count <= 6 -> 3
+            else -> 4
+        }
+        binding.candidatesGrid.columnCount = columns
+
+        val horizontalGap = dp(10)
+        val verticalGap = dp(10)
+        val availableWidth = (binding.root.width - dp(64)).coerceAtLeast(dp(160))
+        val availableHeight = (
+            binding.bottomActionCard.top - binding.answerGrid.bottom - dp(26)
+            ).coerceAtLeast(dp(56))
+        val rows = ceil(count / columns.toFloat()).toInt().coerceAtLeast(1)
+        val sizeByWidth =
+            ((availableWidth - horizontalGap * (columns - 1)) / columns).coerceAtLeast(dp(30))
+        val sizeByHeight =
+            ((availableHeight - verticalGap * (rows - 1)) / rows).coerceAtLeast(dp(30))
+        val cellSize = min(min(sizeByWidth, sizeByHeight), dp(46))
+        val textSize = when {
+            cellSize >= dp(42) -> 18f
+            cellSize >= dp(36) -> 16f
+            else -> 14f
+        }
+
         words.forEach { word ->
             val textView = TextView(requireContext()).apply {
                 layoutParams = GridLayout.LayoutParams().apply {
-                    width = 120
-                    height = 120
-                    marginStart = 24
-                    marginEnd = 24
-                    topMargin = 24
-                    bottomMargin = 24
+                    width = cellSize
+                    height = cellSize
+                    marginStart = horizontalGap / 2
+                    marginEnd = horizontalGap / 2
+                    topMargin = verticalGap / 2
+                    bottomMargin = verticalGap / 2
                 }
                 background = resources.getDrawable(R.drawable.bg_option_box, null)
                 gravity = android.view.Gravity.CENTER
                 text = word
-                textSize = 32f
+                this.textSize = textSize
                 setTextColor(resources.getColor(R.color.text_primary, null))
                 isEnabled = true
             }
@@ -191,19 +218,25 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
                 }
             }
             binding.candidatesGrid.addView(textView)
-            candidateViews.add(textView)
+            candidateViews += textView
         }
     }
 
     private fun fillGrid(word: String, candidateView: View) {
-        if (selectedGridIndex < answerGrids.size) {
-            val grid = answerGrids[selectedGridIndex]
-            if (grid.text.isNotEmpty()) findAndEnableCandidate(grid.text.toString())
-            grid.text = word
-            candidateView.isEnabled = false
-            candidateView.alpha = 0.5f
-            val nextEmpty = answerGrids.indexOfFirst { it.text.isEmpty() }
-            if (nextEmpty != -1) updateSelection(nextEmpty) else checkAnswer()
+        if (selectedGridIndex !in answerGrids.indices) return
+        val grid = answerGrids[selectedGridIndex]
+        if (grid.text.isNotEmpty()) {
+            findAndEnableCandidate(grid.text.toString())
+        }
+        grid.text = word
+        candidateView.isEnabled = false
+        candidateView.alpha = 0.45f
+
+        val nextEmpty = answerGrids.indexOfFirst { it.text.isEmpty() }
+        if (nextEmpty != -1) {
+            updateSelection(nextEmpty)
+        } else {
+            checkAnswer()
         }
     }
 
@@ -219,21 +252,24 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
         candidateViews.forEach { view ->
             if (view.text == word && !view.isEnabled) {
                 view.isEnabled = true
-                view.alpha = 1.0f
+                view.alpha = 1f
             }
         }
     }
 
     private fun provideHint() {
         val emptyIndex = answerGrids.indexOfFirst { it.text.isEmpty() }
-        if (emptyIndex != -1) {
-            val correctChar = fullAnswer[emptyIndex].toString()
-            answerGrids[emptyIndex].isSelected = true
-            selectedGridIndex = emptyIndex
-            Toast.makeText(context, "提示：第${emptyIndex + 1}个字是「$correctChar」", Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "已经没有空格子了！", Toast.LENGTH_SHORT).show()
+        if (emptyIndex == -1) {
+            Toast.makeText(context, "已经没有空格了", Toast.LENGTH_SHORT).show()
+            return
         }
+        val correctChar = fullAnswer[emptyIndex].toString()
+        updateSelection(emptyIndex)
+        Toast.makeText(
+            context,
+            "提示：第 ${emptyIndex + 1} 个字是「$correctChar」",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun showTranslationPopup() {
@@ -250,61 +286,64 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
     }
 
     private fun showAnswer() {
-        for (i in fullAnswer.indices) {
-            val correctChar = fullAnswer[i].toString()
-            answerGrids[i].text = correctChar
-            answerGrids[i].background = resources.getDrawable(R.drawable.bg_character_box_correct, null)
-            answerGrids[i].setTextColor(resources.getColor(android.R.color.holo_green_dark, null))
+        fullAnswer.forEachIndexed { index, char ->
+            if (index !in answerGrids.indices) return@forEachIndexed
+            answerGrids[index].text = char.toString()
+            answerGrids[index].background =
+                resources.getDrawable(R.drawable.bg_character_box_correct, null)
+            answerGrids[index].setTextColor(resources.getColor(android.R.color.holo_green_dark, null))
         }
-        
+
         candidateViews.forEach { view ->
             view.isEnabled = false
             view.alpha = 0.3f
         }
-        
+
         binding.hintButton.isEnabled = false
         binding.btnShowAnswer.isEnabled = false
         binding.btnReset.isEnabled = false
-        
+
         Toast.makeText(context, "已显示正确答案", Toast.LENGTH_LONG).show()
-        
+
         lifecycleScope.launch {
-            delay(2000)
+            delay(1800)
             resetUiState()
             loadNextQuiz()
         }
     }
 
     private fun checkAnswer() {
-        val hasEmptyGrid = answerGrids.any { it.text.isEmpty() }
-        if (hasEmptyGrid) {
-            return
-        }
-        
+        if (answerGrids.any { it.text.isEmpty() }) return
+
         val userAnswer = answerGrids.joinToString("") { it.text.toString() }
-        if (userAnswer.length == fullAnswer.length) {
-            val isCorrect = userAnswer == fullAnswer
-            submitResult(isCorrect)
-            if (isCorrect) {
-                Toast.makeText(context, "答对了！太棒了", Toast.LENGTH_SHORT).show()
-                lifecycleScope.launch {
-                    delay(1500)
-                    resetUiState()
-                    loadNextQuiz()
-                }
-            } else {
-                Toast.makeText(context, "答案有误，再检查一下吧", Toast.LENGTH_SHORT).show()
+        if (userAnswer.length != fullAnswer.length) return
+
+        val isCorrect = userAnswer == fullAnswer
+        submitResult(isCorrect)
+        if (isCorrect) {
+            Toast.makeText(context, "答对了，太棒了", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+                delay(1500)
+                resetUiState()
+                loadNextQuiz()
             }
+        } else {
+            Toast.makeText(context, "答案有误，再检查一下吧", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun resetCurrentQuiz() {
-        answerGrids.forEach { 
-            if (it.text.isNotEmpty()) {
-                findAndEnableCandidate(it.text.toString())
-                it.text = ""
+        answerGrids.forEach { grid ->
+            if (grid.text.isNotEmpty()) {
+                findAndEnableCandidate(grid.text.toString())
+                grid.text = ""
             }
+            grid.background = resources.getDrawable(R.drawable.bg_character_box, null)
+            grid.setTextColor(resources.getColor(R.color.text_primary, null))
         }
+        binding.hintButton.isEnabled = true
+        binding.btnShowAnswer.isEnabled = true
+        binding.btnReset.isEnabled = true
         updateSelection(0)
     }
 
@@ -313,7 +352,7 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
         val quiz = currentQuiz ?: return
         val userId = SessionManager(requireContext()).userId()
         if (userId <= 0L) {
-            Log.w("FillBlank", "Skip quiz record sync: user not logged in")
+            Log.w("FillBlank", "Skip quiz sync: user not logged in")
             return
         }
 
@@ -332,9 +371,13 @@ class FillBlankFragment : Fragment(R.layout.fragment_fill_blank) {
                 )
                 NetworkModule.poetryApiService.submitQuizResult(request).awaitResponse()
             } catch (e: Exception) {
-                Log.e("FillBlank", "Record Sync Fail", e)
+                Log.e("FillBlank", "Sync quiz result failed", e)
             }
         }
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
     }
 
     override fun onDestroyView() {
