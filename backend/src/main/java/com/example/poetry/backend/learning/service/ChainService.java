@@ -182,61 +182,73 @@ public class ChainService {
                 log.warn("API返回 choices 为空或格式异常");
                 return "";
             }
-            return choices.get(0).path("message").path("content").asText();
+            JsonNode firstChoice = choices.get(0);
+            JsonNode messageNode = firstChoice.path("message");
+            JsonNode contentNode = messageNode.path("content");
+            return contentNode.asText();
 
         } catch (JsonProcessingException e) {
             log.error("JSON 解析失败", e);
             return "";
-        } catch (IOException | InterruptedException e) {
-            log.error("API 调用异常", e);
+        } catch (IOException e) {
+            log.error("API 调用网络异常", e);
+            return "";
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("API 调用被中断", e);
             return "";
         }
     }
 
     private ChainResponse parseJudgeResponse(String response, String userLine, String expectedStartChar) {
         try {
-            String cleanResponse = response.trim();
-            if (cleanResponse.startsWith("```json")) {
-                cleanResponse = cleanResponse.substring(7);
-            }
-            if (cleanResponse.startsWith("```")) {
-                cleanResponse = cleanResponse.substring(3);
-            }
-            if (cleanResponse.endsWith("```")) {
-                cleanResponse = cleanResponse.substring(0, cleanResponse.length() - 3);
-            }
-            cleanResponse = cleanResponse.trim();
-
+            String cleanResponse = stripMarkdownFences(response.trim());
             log.debug("清理后的JSON: {}", cleanResponse);
 
             JsonNode json = objectMapper.readTree(cleanResponse);
-
             boolean valid = json.has("valid") && json.path("valid").asBoolean();
             boolean correctStart = json.has("correctStart") && json.path("correctStart").asBoolean();
             boolean isPoem = json.has("isPoem") && json.path("isPoem").asBoolean();
-
-            String message = json.has("message") ? json.path("message").asText() : "";
-            if (message.isEmpty() || message.equals("判断完成")) {
-                if (!isPoem) {
-                    message = "❌ \"" + userLine + "\" 不是古诗词原句";
-                } else if (!correctStart) {
-                    String actualStart = userLine.isEmpty() ? "" : String.valueOf(userLine.charAt(0));
-                    message = "⚠️ 诗句首字「" + actualStart + "」不是「" + expectedStartChar + "」";
-                } else {
-                    message = "✅ 正确！";
-                }
-            }
+            String message = resolveMessage(json, userLine, expectedStartChar, isPoem, correctStart);
 
             if (valid && correctStart && isPoem) {
-                String nextChar = getLastChar(userLine);
-                return new ChainResponse(true, message, nextChar, null, null);
-            } else {
-                return new ChainResponse(false, message, null, null, null);
+                return new ChainResponse(true, message, getLastChar(userLine), null, null);
             }
+            return new ChainResponse(false, message, null, null, null);
 
         } catch (JsonProcessingException e) {
             log.error("裁判JSON解析失败", e);
             return new ChainResponse(false, "裁判判断失败，请重试", null, null, null);
         }
+    }
+
+    private static String stripMarkdownFences(String raw) {
+        String result = raw;
+        if (result.startsWith("```json")) {
+            result = result.substring(7);
+        }
+        if (result.startsWith("```")) {
+            result = result.substring(3);
+        }
+        if (result.endsWith("```")) {
+            result = result.substring(0, result.length() - 3);
+        }
+        return result.trim();
+    }
+
+    private static String resolveMessage(JsonNode json, String userLine, String expectedStartChar,
+                                         boolean isPoem, boolean correctStart) {
+        String message = json.has("message") ? json.path("message").asText() : "";
+        if (!message.isEmpty() && !message.equals("判断完成")) {
+            return message;
+        }
+        if (!isPoem) {
+            return "❌ \"" + userLine + "\" 不是古诗词原句";
+        }
+        if (!correctStart) {
+            String actualStart = userLine.isEmpty() ? "" : String.valueOf(userLine.charAt(0));
+            return "⚠️ 诗句首字「" + actualStart + "」不是「" + expectedStartChar + "」";
+        }
+        return "✅ 正确！";
     }
 }
