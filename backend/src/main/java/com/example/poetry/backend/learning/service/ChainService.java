@@ -1,11 +1,15 @@
 package com.example.poetry.backend.learning.service;
 
 import com.example.poetry.backend.learning.dto.ChainResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,14 +17,17 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class ChainService {
 
+    private static final Logger log = LoggerFactory.getLogger(ChainService.class);
+
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String apiKey;
-    private final String apiUrl = "https://api.deepseek.com/v1/chat/completions";
+    private final String apiUrl;
 
     // 预设的起始诗句
     private final List<String> startLines = List.of(
@@ -36,16 +43,18 @@ public class ChainService {
             "白日依山尽"
     );
 
-    public ChainService(@Value("${deepseek.api.key}") String apiKey) {
+    public ChainService(
+            @Value("${deepseek.api.key}") String apiKey,
+            @Value("${deepseek.api.url:https://api.deepseek.com/v1/chat/completions}") String apiUrl) {
         this.apiKey = apiKey;
+        this.apiUrl = apiUrl;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
     }
 
     public ChainResponse startGame() {
-        // 随机选择一句起始诗
-        String startLine = startLines.get((int) (Math.random() * startLines.size()));
+        String startLine = startLines.get(ThreadLocalRandom.current().nextInt(startLines.size()));
         // 获取尾字
         String lastChar = getLastChar(startLine);
         
@@ -87,7 +96,7 @@ public class ChainService {
             """, lastChar, userLine, String.join("、", usedLines), lastChar, lastChar);
 
         String response = callDeepSeek(prompt);
-        System.out.println("DeepSeek 判断返回: " + response);
+        log.debug("DeepSeek 判断返回: {}", response);
 
         return parseJudgeResponse(response, userLine, lastChar);
     }
@@ -109,7 +118,7 @@ public class ChainService {
             """, lastChar, String.join("、", usedLines), lastChar);
 
         String response = callDeepSeek(prompt);
-        System.out.println("DeepSeek AI接龙返回: " + response);
+        log.debug("DeepSeek AI接龙返回: {}", response);
 
         String line = response.trim()
                 .replaceAll("[\"']", "")
@@ -163,15 +172,23 @@ public class ChainService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                System.out.println("API调用失败，状态码: " + response.statusCode());
+                log.warn("API调用失败，状态码: {}", response.statusCode());
                 return "";
             }
 
             JsonNode root = objectMapper.readTree(response.body());
-            return root.path("choices").get(0).path("message").path("content").asText();
+            JsonNode choices = root.path("choices");
+            if (!choices.isArray() || choices.isEmpty()) {
+                log.warn("API返回 choices 为空或格式异常");
+                return "";
+            }
+            return choices.get(0).path("message").path("content").asText();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            log.error("JSON 解析失败", e);
+            return "";
+        } catch (IOException | InterruptedException e) {
+            log.error("API 调用异常", e);
             return "";
         }
     }
@@ -190,7 +207,7 @@ public class ChainService {
             }
             cleanResponse = cleanResponse.trim();
 
-            System.out.println("清理后的JSON: " + cleanResponse);
+            log.debug("清理后的JSON: {}", cleanResponse);
 
             JsonNode json = objectMapper.readTree(cleanResponse);
 
@@ -217,8 +234,8 @@ public class ChainService {
                 return new ChainResponse(false, message, null, null, null);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            log.error("裁判JSON解析失败", e);
             return new ChainResponse(false, "裁判判断失败，请重试", null, null, null);
         }
     }
