@@ -31,3 +31,7 @@ deepseek:
   api:
     key: sk-761aebfab47741daaf174c6377200349
     url: https://api.deepseek.com
+
+anthropic:
+  api:
+    key: ark-a934a5d9-95bc-4ea5-b923-61cde6e5bbb8-5c329
