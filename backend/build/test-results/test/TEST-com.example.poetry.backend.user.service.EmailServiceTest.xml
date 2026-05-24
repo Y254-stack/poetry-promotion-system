@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.user.service.EmailServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:33.840Z" hostname="NN" time="0.007">
+  <properties/>
+  <testcase name="sendVerificationCode_storesValidCodeForEmail()" classname="com.example.poetry.backend.user.service.EmailServiceTest" time="0.007"/>
+  <system-out><![CDATA[11:02:33.845 [Test worker] INFO com.example.poetry.backend.user.service.EmailService -- === VERIFICATION CODE for User@Test.com ===
+您的验证码是：532131
+
+有效期为 5 分钟。
+
+请勿将验证码告诉他人。
+
+感谢使用诗词推广平台！
+================================
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

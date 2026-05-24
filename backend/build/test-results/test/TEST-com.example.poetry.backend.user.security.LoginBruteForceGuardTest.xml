@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:31.885Z" hostname="NN" time="0.02">
+  <properties/>
+  <testcase name="checkAllowed_emptyKey_noOp()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.002"/>
+  <testcase name="normalizeKey_nullReturnsEmpty()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.001"/>
+  <testcase name="recordFailure_atLimit_blocksFurtherAttempts()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.002"/>
+  <testcase name="recordFailure_underLimit_stillAllowed()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.001"/>
+  <testcase name="clearFailures_resetsWindow()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.001"/>
+  <testcase name="checkAllowed_noFailures_passes()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.002"/>
+  <testcase name="expiredWindow_allowsAgain()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.004"/>
+  <testcase name="normalizeKey_trimsAndLowercases()" classname="com.example.poetry.backend.user.security.LoginBruteForceGuardTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.user.service.AuthServiceTest" tests="26" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:32.043Z" hostname="NN" time="1.796">
+  <properties/>
+  <testcase name="updateNickname_success_trimsAndUpdates()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.26"/>
+  <testcase name="register_success_returnsToken()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.065"/>
+  <testcase name="me_success_returnsProfile()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.066"/>
+  <testcase name="me_missingBearer_throwsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.002"/>
+  <testcase name="register_emailExists_throwsConflict()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.004"/>
+  <testcase name="requireUserId_success_returnsUserId()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.068"/>
+  <testcase name="changePassword_userNotFound_throwsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.005"/>
+  <testcase name="login_wrongPassword_incrementsCountWithinWindow()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.129"/>
+  <testcase name="resetPassword_success_clearsLockAndReturnsToken()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.131"/>
+  <testcase name="changePassword_success_returnsNewToken()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.2"/>
+  <testcase name="login_success_clearsFailuresAndReturnsToken()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.131"/>
+  <testcase name="resetPassword_userMissingAfterValidCode_throwsNotFound()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.003"/>
+  <testcase name="login_wrongPassword_windowExpired_resetsFailureCount()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.167"/>
+  <testcase name="login_accountNotFound_recordsFailureAndThrowsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.004"/>
+  <testcase name="changePassword_wrongCurrentPassword_throwsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.147"/>
+  <testcase name="sendVerificationCode_unknownEmail_throwsNotFound()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.004"/>
+  <testcase name="me_userNotFound_throwsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.003"/>
+  <testcase name="login_wrongPassword_maxAttempts_locksAccount()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.127"/>
+  <testcase name="changePassword_missingBearer_throwsUnauthorized()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.002"/>
+  <testcase name="login_wrongPassword_firstFailureInWindow_showsRemainingAttempts()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.12"/>
+  <testcase name="sendVerificationCode_registeredEmail_sendsCode()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.001"/>
+  <testcase name="resetPassword_invalidCode_throwsBadRequest()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.001"/>
+  <testcase name="login_accountLocked_throwsLocked()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.058"/>
+  <testcase name="updateNickname_blank_throwsBadRequest()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.064"/>
+  <testcase name="register_usernameExists_throwsConflict()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.002"/>
+  <testcase name="login_guardBlocks_throwsTooManyRequests()" classname="com.example.poetry.backend.user.service.AuthServiceTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
