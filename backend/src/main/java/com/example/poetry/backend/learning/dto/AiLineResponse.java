@@ -2,8 +2,10 @@ package com.example.poetry.backend.learning.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AiLineResponse {
     private String line;      // AI出的诗句
