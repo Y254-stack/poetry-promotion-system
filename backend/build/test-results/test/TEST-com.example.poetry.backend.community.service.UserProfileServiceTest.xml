@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.community.service.UserProfileServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:31.231Z" hostname="NN" time="0.083">
+  <properties/>
+  <testcase name="getUserPosts_success_returnsPagedResult()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.042"/>
+  <testcase name="getUserProfile_userNotFound_throwsNotFound()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.005"/>
+  <testcase name="getUserProfile_selfView_isNotFollowing()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.009"/>
+  <testcase name="getUserPosts_pageSizeOverLimit_capsAt100()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.004"/>
+  <testcase name="getUserPosts_invalidPage_normalizesToFirstPage()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.005"/>
+  <testcase name="getUserPosts_userNotFound_throwsNotFound()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.006"/>
+  <testcase name="getUserProfile_success_returnsProfileWithStats()" classname="com.example.poetry.backend.community.service.UserProfileServiceTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

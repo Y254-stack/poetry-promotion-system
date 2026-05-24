@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.user.security.JwtTokenProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:31.318Z" hostname="NN" time="0.562">
+  <properties/>
+  <testcase name="parseClaims_containsUsernameAndNickname()" classname="com.example.poetry.backend.user.security.JwtTokenProviderTest" time="0.551"/>
+  <testcase name="generateAndParseUserId_roundTrip()" classname="com.example.poetry.backend.user.security.JwtTokenProviderTest" time="0.003"/>
+  <testcase name="parseClaims_malformedToken_throws()" classname="com.example.poetry.backend.user.security.JwtTokenProviderTest" time="0.002"/>
+  <testcase name="parseClaims_tamperedToken_throws()" classname="com.example.poetry.backend.user.security.JwtTokenProviderTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

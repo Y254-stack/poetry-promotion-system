@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.poetry.backend.community.service.UserAvatarServiceTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-05-24T03:02:29.492Z" hostname="NN" time="1.73">
+  <properties/>
+  <testcase name="uploadAvatar_invalidMime_throwsBadRequest()" classname="com.example.poetry.backend.community.service.UserAvatarServiceTest" time="1.66"/>
+  <testcase name="uploadAvatar_emptyFile_throwsBadRequest()" classname="com.example.poetry.backend.community.service.UserAvatarServiceTest" time="0.008"/>
+  <testcase name="uploadAvatar_nullFile_throwsBadRequest()" classname="com.example.poetry.backend.community.service.UserAvatarServiceTest" time="0.022"/>
+  <testcase name="uploadAvatar_fileTooLarge_throwsBadRequest()" classname="com.example.poetry.backend.community.service.UserAvatarServiceTest" time="0.006"/>
+  <testcase name="uploadAvatar_success_writesFileAndUpdatesDb()" classname="com.example.poetry.backend.community.service.UserAvatarServiceTest" time="0.019"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\17311\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.14.16\4a451ee6484abac3a498df0f3b33ed00a6fced4d\byte-buddy-agent-1.14.16.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>
